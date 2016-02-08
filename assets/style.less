@@ -1,0 +1,58 @@
+.raumaushang-list {
+    .flex();
+    .flex-wrap(wrap);
+    .flex-justify-content(space-between);
+
+    list-style: none;
+    margin: -0.5em;
+    padding: 0;
+
+    li {
+        .box-sizing(border-box);
+        .flex-item(1, 0);
+        flex-basis: 23em;
+
+        border: 1px solid @brand-color-lighter;
+        margin: 0.5em;
+        min-height: 4em;
+        min-width: 23em;
+        max-width: 100%;
+        padding: 0.25em 0.5em;
+
+        &:hover {
+            background-color: fadeout(@light-gray-color, 80%);
+        }
+
+        &:empty {
+            border: 0;
+            height: 0;
+            margin: 0 0.5em;
+            padding: 0 0.5em;
+            min-height: 0;
+        }
+    }
+
+    a, small {
+        display: block;
+    }
+
+    a {
+        font-weight: bold;
+    }
+    
+    small {
+        font-weight: normal;
+    }
+}
+
+a.back-link {
+    .icon-before('blue/arr_1left.svg');
+}
+
+h1 {
+    .clearfix;
+    a {
+        float: right;
+        font-size: 0.8em;
+    }
+}
