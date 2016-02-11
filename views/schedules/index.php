@@ -3,6 +3,7 @@
     <li>
         <a href="<?= $controller->url_for('schedules/building/' . $resource->id) ?>">
             <?= htmlReady($resource->name) ?>
+            (<?= htmlReady($resource->category->name) ?>)
         <? if ($resource->description): ?>
             <small><?= htmlReady($resource->description) ?></small>
         <? endif; ?>

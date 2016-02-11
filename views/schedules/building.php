@@ -9,7 +9,7 @@
 <ul class="raumaushang-list">
 <? foreach ($resources as $resource): ?>
     <li>
-        <a href="<?= $controller->url_for('schedules/schedule/' . $resource->id) ?>">
+        <a href="<?= $controller->url_for('schedules/room/' . $resource->id) ?>">
             <?= htmlReady($resource->name) ?>
             (<?= htmlReady($resource->category->name) ?>)
         <? if ($resource->description): ?>
@@ -22,3 +22,10 @@
     <li></li>
 <? endfor; ?>
 </ul>
+
+<h1>
+    <?= _('Belegung') ?>
+</h1>
+<?= $this->render_partial('schedule.php', compact('schedule') + array(
+    'show_rooms' => true,
+)) ?>

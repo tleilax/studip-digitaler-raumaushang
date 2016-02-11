@@ -8,4 +8,4 @@
     </a>
 </h1>
 
-foood
+<?= $this->render_partial('schedule.php', compact('schedule')) ?>
