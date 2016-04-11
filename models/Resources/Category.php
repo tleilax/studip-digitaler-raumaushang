@@ -12,7 +12,7 @@ class Category extends SimpleORMap
         $config['db_table'] = 'resources_categories';
 
         $config['has_many']['objects'] = array(
-            'class_name'        => 'Raumaushang\\Resources\\Object',
+            'class_name'        => 'Raumaushang\\Resources\\Objekt',
             'assoc_foreign_key' => 'category_id',
         );
 

@@ -6,7 +6,7 @@ use PDO;
 
 class Schedule
 {
-    public static function getByResource(Resources\Object $resource, $begin = null, $end = null)
+    public static function getByResource(Resources\Objekt $resource, $begin = null, $end = null)
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
         
@@ -31,7 +31,7 @@ class Schedule
         return $statement->fetchAll(PDO::FETCH_CLASS, 'Raumaushang\\Schedule');
     }
 
-    public static function getByParent(Resources\Object $resource, $begin = null, $end = null)
+    public static function getByParent(Resources\Objekt $resource, $begin = null, $end = null)
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
@@ -82,7 +82,7 @@ class Schedule
 
     public function __construct()
     {
-        $this->resource = Resources\Object::find($this->resource_id);
+        $this->resource = Resources\Objekt::find($this->resource_id);
     }
 
     public function __isset($offset)

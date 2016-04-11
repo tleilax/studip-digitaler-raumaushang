@@ -3,19 +3,19 @@ namespace Raumaushang\Resources;
 
 use SimpleORMap;
 
-class Object extends SimpleORMap
+class Objekt extends SimpleORMap
 {
     protected static function configure($config = array())
     {
         $config['db_table'] = 'resources_objects';
 
         $config['has_one']['parent'] = array(
-            'class_name'  => 'Raumaushang\\Resources\\Object',
+            'class_name'  => 'Raumaushang\\Resources\\Objekt',
             'foreign_key' => 'parent_id',
         );
 
         $config['has_one']['root'] = array(
-            'class_name'  => 'Raumaushang\\Resources\\Object',
+            'class_name'  => 'Raumaushang\\Resources\\Objekt',
             'foreign_key' => 'root_id',
         );
 
