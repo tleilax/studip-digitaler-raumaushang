@@ -12,6 +12,11 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
     public function __construct()
     {
         parent::__construct();
+
+        $navigation = new Navigation(_('Raumaushang'), $this->url_for('schedules/index'));
+        $navigation->setImage('icons/lightblue/timetable.svg');
+        $navigation->setActiveImage('icons/white/timetable.svg');
+        Navigation::addItem('/raumaushang', $navigation);
     }
     
     public function perform($unconsumed_path)

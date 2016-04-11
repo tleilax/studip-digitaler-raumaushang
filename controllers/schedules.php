@@ -5,6 +5,15 @@ use Raumaushang\Schedule;
 
 class SchedulesController extends PluginController
 {
+    protected $allow_nobody = true;
+    
+    public function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+        
+        Navigation::activateItem('/raumaushang');
+    }
+    
     public function index_action()
     {
         $this->resources = Objekt::findByCategory_id(Category::ID_BUILDING, 'ORDER BY name ASC');
