@@ -7,3 +7,4 @@
     StudipAutoloader::addAutoloadPath(__DIR__ . '/classes', 'Raumaushang');
     StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
     StudipAutoloader::addAutoloadPath(__DIR__ . '/models', 'Raumaushang');
+

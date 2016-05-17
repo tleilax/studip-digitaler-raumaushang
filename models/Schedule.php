@@ -9,7 +9,7 @@ class Schedule
     public static function getByResource(Resources\Objekt $resource, $begin = null, $end = null)
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
-        
+
         $query = "SELECT `VID` AS `code`,
                          `NAME` AS `name`,
                          `DOZENT` AS `teachers`,
@@ -61,10 +61,10 @@ class Schedule
     protected static function getBeginAndEnd($begin, $end)
     {
         if ($begin === null) {
-            $begin = strtotime('today 0:00:00');
+            $begin = strtotime('monday this week 0:00:00');
         }
         if ($end === null) {
-            $end = strtotime('23:59:59', $begin);
+            $end = strtotime('friday this week 23:59:59', $begin);
         }
 
         return array($begin, $end);
@@ -103,5 +103,20 @@ class Schedule
     public function __unset($offset)
     {
         $this->$offset = null;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id'         => md5(implode('|', [$this->code, $this->name, $this->begin, $this->end])),
+            'name'       => $this->name,
+            'code'       => $this->code,
+            'teachers'   => $this->teachers,
+            'room'       => $this->room,
+            'begin'      => $this->begin,
+            'end'        => $this->end,
+            'is_current' => $this->is_current,
+            'resource'   => $this->resource->toArray(),
+        ];
     }
 }
