@@ -15,6 +15,9 @@
         <a href="<?= $_SERVER['REQUEST_URI'] ?>">
             <?= sprintf(_('Raum %s'), htmlReady($room->name)) ?>
         </a>
+    <? if (Studip\ENV === 'development'): ?>
+        <small>(<?= date('d.m.Y H:i:s') ?>)</small>
+    <? endif; ?>
     </caption>
     <colgroup>
         <col width="5%">

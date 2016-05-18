@@ -18,20 +18,29 @@
         check_interval: 250
     };
 
-    Countdown.prototype.start = function () {
-        if (this.started === null) {
+    Countdown.prototype.start = function (reset) {
+        reset = reset || false;
+
+        if (this.started === null || reset) {
             this.ticks = 0;
             this.started = +(new Date);
+        }
 
+        if (this.interval === null) {
             this.interval = window.setInterval(this.check.bind(this), this.options.check_interval);
         }
     };
     Countdown.prototype.reset = function () {
-        this.ticks = 0;
-        this.started = +(new Date);
+        if (this.started !== null) {
+            this.ticks = 0;
+            this.started = +(new Date);
+        }
     };
     Countdown.prototype.stop = function () {
         window.clearInterval(this.interval);
+
+        this.interval = null;
+        this.started  = null;
     };
     Countdown.prototype.check = function () {
         var now  = +(new Date),
@@ -41,7 +50,7 @@
             this.callback();
         }
         if ($.isFunction(this.options.on_tick)) {
-            this.options.on_tick.call(this);
+            this.options.on_tick.call(this, diff);
         }
         this.ticks += 1;
     };

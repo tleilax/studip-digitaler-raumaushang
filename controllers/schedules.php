@@ -34,6 +34,8 @@ class SchedulesController extends PluginController
         // TODO: Remove r=
         $layout = $this->get_template_factory()->open('layout.php');
         $layout->plugin_scripts = [
+            $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
+            $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
             $this->plugin->getPluginURL() . '/assets/date.format.js',
             $this->plugin->getPluginURL() . '/assets/countdown.js',
             $this->plugin->getPluginURL() . '/assets/application.js',

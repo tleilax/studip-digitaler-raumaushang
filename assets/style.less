@@ -1,6 +1,13 @@
 * {
     box-sizing: border-box;
     font-family: Helvetica;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 body > code {
     position: fixed;
@@ -9,11 +16,26 @@ body > code {
     right: 0;
     background-color: #fec;
 }
+body > progress {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    z-index: 1;
+    opacity: 0.3;
+}
 
 table.week-schedule {
     border-collapse: collapse;
     table-layout: fixed;
     width: 100%;
+    z-index: 2;
 
     border: 1px solid #444;
 
@@ -28,10 +50,13 @@ table.week-schedule {
     }
 
     th, td {
-        overflow: hidden;
-        text-overflow: ellipsis;
         vertical-align: top;
-        white-space: nowrap;
+
+        > div {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     thead th {
@@ -58,9 +83,34 @@ table.week-schedule {
         tr:nth-child(2n) th {
             font-weight: normal;
         }
+
+        td {
+            background-color: #eee;
+            &.course-info {
+                background-color: #fff;
+            }
+        }
+    }
+
+    tr.current-slot > td, tr.current-slot > th, tr > td.current-slot {
+        background-color: fadeout(#fec, 95%);
+    }
+
+    tr.current-slot > td.course-info, tr > td.current-slot.course-info {
+        background-color: fadeout(#fec, 75%);
+    }
+
+    tr > th.current-day, tr > td.course-info.current-day {
+        background-color: fadeout(#fec, 75%);
+    }
+
+    tr > td.current-day.current-slot {
+        background-color: #fec;
+        font-weight: bold;
     }
 }
-#overlay {
+
+.overlay(@centered: false) {
     display: none;
 
     position: fixed;
@@ -70,7 +120,11 @@ table.week-schedule {
     left: 0;
 
     background: #fff;
-    font-size: 5em;
+    z-index: 2;
+
+    box-shadow: 0 0 10em #000;
+}
+.overlay(@centered: false) when (@centered = true) {
     text-align: center;
 
     // Vertical centering
@@ -80,8 +134,38 @@ table.week-schedule {
         height: 100%;
         vertical-align: middle;
     }
+}
+#loading-overlay {
+    .overlay(true);
+
+    font-size: 5em;
 
     img {
         height: 0.7em;
+    }
+}
+#course-overlay {
+    .overlay();
+
+    margin: 1em;
+    padding: 1em;
+}
+
+.course-info, #course-overlay {
+    cursor: pointer;
+}
+
+ul.teachers {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: inline;
+
+        &:not(:last-child)::after {
+            content: ', ';
+        }
     }
 }
