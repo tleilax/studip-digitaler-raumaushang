@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>Raumaushang</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <? foreach ((array)@$plugin_styles as $style): ?>
   <? if (Studip\ENV === 'production'): ?>
     <link href="<?= $style ?>" rel="stylesheet" type="text/css">
@@ -26,8 +26,24 @@
     </script>
 </head>
 <body>
-    <code></code>
+<? if (Studip\ENV === 'development'): ?>
+    <progress value="100" max="100"></progress>
+<? endif; ?>
+    <output></output>
+
     <?= $content_for_layout ?>
+
+    <div id="loading-overlay">
+        <?= Assets::img('ajax-indicator-black.svg') ?>
+        <?= _('Lade') ?> &hellip;
+    </div>
+    <div id="course-overlay"></div>
+
+    <button id="help-overlay-switch">
+        <?= Icon::create('64/black/question-circle')->render(Icon::SVG) ?>
+    </button>
+    <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
+
 <? foreach ($scripts as $script): ?>
     <script src="<?= Assets::javascript_path($script) ?>"></script>
 <? endforeach; ?>
@@ -38,13 +54,5 @@
     <script src="<?= URLHelper::getURL($script, ['r' => time()]) ?>"></script>
   <? endif; ?>
 <? endforeach; ?>
-    <div id="loading-overlay">
-        <?= Assets::img('ajax-indicator-black.svg') ?>
-        <?= _('Lade') ?> &hellip;
-    </div>
-    <div id="course-overlay"></div>
-<? if (Studip\ENV === 'development'): ?>
-    <progress value="100" max="100"></progress>
-<? endif; ?>
 </body>
 </html>

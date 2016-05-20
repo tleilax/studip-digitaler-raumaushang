@@ -2,22 +2,41 @@
 /*global jQuery, Raumaushang, Countdown */
 (function ($, Raumaushang, Countdown) {
 
+    // Allow :active style to work
+    // @see https://css-tricks.com/snippets/css/remove-gray-highlight-when-tapping-links-in-mobile-safari/
+    document.addEventListener("touchstart", function(){}, true);
+
+    // Exit with error when illegal call
     if (Raumaushang === undefined) {
         throw 'Invalid call, object Raumaushang missing';
     }
 
+    // Debug function
+    var debug_timeout = null;
     function debug(message) {
         if (console !== undefined) {
             console.log(arguments);
         }
 
         var message = $.makeArray(arguments).join(' / ');
-        $('body > code').text(message);
+        $('body > output').text(message).show();
+
+        if (debug_timeout !== null) {
+            clearTimeout(debug_timeout);
+        }
+        debug_timeout = setTimeout(function () {
+            $('body > output').hide('slow', function () {
+                debug_timeout = null;
+            })
+        }, 3000);
     }
 
+    // Initialize variables
     Raumaushang.schedule_hash = null;
     Raumaushang.course_data = {};
     Raumaushang.current = {};
+
+    // Initialize countdowns
     Raumaushang.countdowns = {};
     Raumaushang.countdowns.main = new Countdown(function () {
         debug('reloading...');
@@ -35,6 +54,7 @@
         $('#course-overlay:visible').click();
     }, {duration: 30 * 1000});
 
+    // Define request function
     Raumaushang.request = function (url, data) {
         $('#loading-overlay').show();
 
@@ -52,6 +72,7 @@
         });
     }
 
+    // Highlights cells
     Raumaushang.highlight = function () {
         var now  = new Date,
             day  = now.format('w'),
@@ -65,6 +86,7 @@
         window.setTimeout(Raumaushang.highlight, 5 * 1000);
     };
 
+    // Updates the table (internally requests data)
     Raumaushang.update = function (callback) {
         $('.week-schedule[data-resource-id]').each(function () {
             var resource_id = $(this).data().resourceId,
@@ -156,6 +178,8 @@
         });
     };
 
+    // Handlers
+
     $(document).ready(function () {
         // Init and start countdown that will reload the page after a certain
         // duration
@@ -220,6 +244,7 @@
         Raumaushang.countdowns.main.start();
         $(this).hide();
     });
+
     $('body').on('swipedown swipeup', function (event) {
         if ($('#course-overlay').is(':not(:visible)')) {
             return;
@@ -241,6 +266,14 @@
             event.preventDefault();
             event.stopPropagation();
         }
+    }).on('select', '*', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '#help-overlay-switch', function () {
+        $('#help-overlay').show();
+    }).on('click', '#help-overlay', function () {
+        $(this).hide();
     });
 
 }(jQuery, Raumaushang, Countdown));

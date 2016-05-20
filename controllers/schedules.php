@@ -31,19 +31,6 @@ class SchedulesController extends PluginController
             'auth' => Config::get()->RAUMAUSHANG_AUTH ?: ['username' => 'api@raumaushang', 'password' => 'raumaushang'],
         ];
 
-        // TODO: Remove r=
-        $layout = $this->get_template_factory()->open('layout.php');
-        $layout->plugin_scripts = [
-            $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
-            $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
-            $this->plugin->getPluginURL() . '/assets/date.format.js',
-            $this->plugin->getPluginURL() . '/assets/countdown.js',
-            $this->plugin->getPluginURL() . '/assets/application.js',
-        ];
-        $layout->plugin_styles = [
-            $this->plugin->getPluginURL() . '/assets/style.css',
-        ];
-        $this->set_layout($layout);
     }
 
     public function index_action()
@@ -60,8 +47,26 @@ class SchedulesController extends PluginController
 
     public function room_action($room_id, $begin = null, $end = null)
     {
+        $this->addOwnLayout();
+
         $this->id       = $room_id;
         $this->room     = Objekt::find($room_id);
         $this->schedule = Schedule::getByResource($this->room, $begin, $end);
+    }
+
+    private function addOwnLayout()
+    {
+        $layout = $this->get_template_factory()->open('layout.php');
+        $layout->plugin_scripts = [
+            $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
+            $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
+            $this->plugin->getPluginURL() . '/assets/date.format.js',
+            $this->plugin->getPluginURL() . '/assets/countdown.js',
+            $this->plugin->getPluginURL() . '/assets/application.js',
+        ];
+        $layout->plugin_styles = [
+            $this->plugin->getPluginURL() . '/assets/style.css',
+        ];
+        $this->set_layout($layout);
     }
 }
