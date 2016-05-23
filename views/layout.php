@@ -40,9 +40,15 @@
     <div id="course-overlay"></div>
 
     <button id="help-overlay-switch">
-        <?= Icon::create('64/black/question-circle')->render(Icon::SVG) ?>
+        <?= Icon::create('80/black/question-circle')->render(Icon::SVG) ?>
     </button>
     <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
+
+    <div id="clock"><?= date('H:i:s') ?></div>
+
+<? if (Studip\ENV === 'development'): ?>
+    <small id="debug-time">(<?= date('d.m.Y H:i:s') ?>)</small>
+<? endif; ?>
 
 <? foreach ($scripts as $script): ?>
     <script src="<?= Assets::javascript_path($script) ?>"></script>

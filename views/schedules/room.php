@@ -15,9 +15,6 @@
         <a href="<?= $_SERVER['REQUEST_URI'] ?>">
             <?= sprintf(_('Raum %s'), htmlReady($room->name)) ?>
         </a>
-    <? if (Studip\ENV === 'development'): ?>
-        <small>(<?= date('d.m.Y H:i:s') ?>)</small>
-    <? endif; ?>
     </h1>
 </header>
 <table class="week-schedule" data-resource-id="<?= $id ?>">
@@ -29,7 +26,7 @@
     </colgroup>
     <thead>
         <tr>
-            <th><?= _('Uhrzeit') ?></th>
+            <th>&nbsp;</th>
         <? foreach ($config['display_days'] as $day): ?>
             <th data-day="<?= $day ?>">
                 <?= htmlReady($print_day($day)) ?>

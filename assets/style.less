@@ -1,3 +1,5 @@
+@page-padding: 8px;
+
 @import "less/overlay-mixin.less";
 @import "less/help-overlay.less";
 
@@ -15,6 +17,11 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-tap-highlight-color: transparent;
 }
+body {
+    margin: 0;
+    padding: @page-padding;
+}
+
 body > output {
     display: none;
 
@@ -43,17 +50,28 @@ body > progress {
 }
 
 header {
+    margin-top: 7px;
+    max-height: 84px;
+    overflow: hidden;
+
     h1 {
         border-bottom: 5px solid transparent;
         font-size: 2em;
         font-weight: bold;
-        margin: 0 0 0.25em;
+
+        margin: 0;
         padding: 0.5em 0;
+        text-align: center;
 
         a {
             color: #000;
             text-decoration: none;
         }
+    }
+
+    small {
+        display: block;
+        font-size: 0.5em;
     }
 }
 
@@ -92,7 +110,7 @@ table.week-schedule {
         }
         th, td {
             border: 1px solid #444;
-            height: 3em;
+            height: 3em; // Reduce to 2.8em to gain a line beneath the schedule
             line-height: 1;
             padding: 0.25em;
         }
@@ -128,7 +146,7 @@ table.week-schedule {
 }
 
 #loading-overlay {
-    .overlay(true);
+    .overlay(true, false);
 
     font-size: 5em;
 
@@ -138,9 +156,16 @@ table.week-schedule {
 }
 #course-overlay {
     .overlay();
+    font-size: 2em;
+    overflow: auto;
+    padding-top: 1em;
 
-    margin: 1em;
-    padding: 1em;
+    h2 {
+        border-bottom: 1px solid #444;
+        font-size: 1em;
+        margin: 0;
+        padding: 0;
+    }
 }
 .course-info, #course-overlay {
     cursor: pointer;
@@ -159,4 +184,25 @@ ul.teachers {
             content: ', ';
         }
     }
+}
+
+#clock {
+    position: absolute;
+    left: (@page-padding);
+    top: (@page-padding + 20px);
+    font-size: 40px;
+    line-height: 1;
+
+    padding-left: 40px;
+    background-image: url("@{image-path}/icons/black/date.svg");
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#debug-time {
+    position: absolute;
+    left: 50%;
+    top: 65px;
+
+    .translate(-50%, 0);
 }

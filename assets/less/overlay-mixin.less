@@ -1,4 +1,4 @@
-.overlay(@centered: false) {
+.overlay(@centered: false, @with-close: true) {
     display: none;
 
     position: fixed;
@@ -10,9 +10,9 @@
     background: #fff;
     z-index: 3;
 
-    box-shadow: 0 0 10em #000;
+    padding: 80px;
 }
-.overlay(@centered: false) when (@centered = true) {
+.overlay(@centered: false, @with-close: true) when (@centered = true) {
     text-align: center;
 
     // Vertical centering
@@ -21,5 +21,21 @@
         display: inline-block;
         height: 100%;
         vertical-align: middle;
+    }
+}
+.overlay(@centered: false, @with-close: true) when (@with-close = true) {
+    &::after {
+        display: block;
+        content: '';
+        .square(80px);
+
+        position: absolute;
+        top: 1px;
+        right: 1px;
+
+        background-image: url("@{image-path}/icons/black/decline-circle.svg");
+        background-position: right 1px top 1px;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 }

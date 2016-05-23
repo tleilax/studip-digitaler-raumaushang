@@ -227,6 +227,10 @@
             modules.appendTo(overlay);
         }
 
+        if (data.description) {
+            $('<small style="white-space: pre-line">').text(data.description).appendTo(overlay);
+        }
+
         Raumaushang.countdowns.main.stop();
         $('#loading-overlay').hide();
 
@@ -275,5 +279,10 @@
     }).on('click', '#help-overlay', function () {
         $(this).hide();
     });
+
+    // Clock
+    window.setInterval(function () {
+        $('#clock').text((new Date).format('H:i:s'));
+    }, 500);
 
 }(jQuery, Raumaushang, Countdown));

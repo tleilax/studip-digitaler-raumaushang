@@ -20,7 +20,8 @@ class Schedule
                          `t`.`end_time` AS `end`,
                          `ra`.`resource_id`,
                          UNIX_TIMESTAMP() BETWEEN `t`.`date` AND `t`.`end_time` AS `is_current`,
-                         `s`.`seminar_id` AS `course_id`
+                         `s`.`seminar_id` AS `course_id`,
+                         `s`.`Beschreibung` AS `description`
                   FROM `termine` AS `t`
                   JOIN `resources_assign` AS `ra` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
                   JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
@@ -91,6 +92,7 @@ class Schedule
     protected $resource_id;
     protected $resource;
     protected $course_id;
+    protected $description;
 
     public function __construct()
     {
@@ -138,6 +140,7 @@ class Schedule
             'resource'    => $this->resource->toArray(),
             'course_id'   => $this->course_id,
             'modules'     => $this->getModules($this->course_id),
+            'description' => trim($this->description) ?: null,
         ];
     }
 
