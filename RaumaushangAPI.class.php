@@ -47,7 +47,8 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
 
             $schedules = array_map(function (Raumaushang\Schedule $schedule) {
                 $array = $schedule->toArray();
-                $array['duration'] = ceil(($array['end'] - $array['begin']) / (60 * 60));
+                $array['duration']   = ceil(($array['end'] - $array['begin']) / (60 * 60));
+                $array['is_holiday'] = false;
 
                 return $array;
             }, Raumaushang\Schedule::getByResource($resource, $from, $until));
@@ -63,6 +64,17 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
                         'timestamp' => $from + ($i - 1) * 24 * 60 * 60,
                         'slots'     => [],
                     ];
+                    $holiday = holiday($temp[$i]['timestamp']);
+                    if ($holiday !== false) {
+                        $temp[$i]['slots'][8] = [
+                            'code'       => '',
+                            'name'       => $holiday['name'],
+                            'duration'   => 14,
+                            'teachers'   => [],
+                            'modules'    => [],
+                            'is_holiday' => true,
+                        ];
+                    }
                 }
                 foreach ($schedules as $schedule) {
                     $wday = strftime('%u', $schedule['begin']);

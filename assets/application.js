@@ -70,7 +70,7 @@
         current: {
             timestamp: $('meta[name="current-timestamp"]').attr('content')
         },
-        initital: {
+        initial: {
             timestamp: $('meta[name="current-timestamp"]').attr('content')
         }
     });
@@ -134,9 +134,9 @@
             day  = now.format('w'),
             slot = window.parseInt(now.format('H'), 10);
         $('tr[data-slot],td[data-day],th[data-day]').removeClass('current-day current-slot');
-        $('[data-day="' + day + '"]').addClass('current-day');
+        $('[data-day="' + day + '"]:not(.is-holiday)').addClass('current-day');
 
-        $('tr[data-slot="' + slot + '"],td[data-slot~="' + slot + '"]').addClass('current-slot');
+        $('tr[data-slot="' + slot + '"],td[data-slot~="' + slot + '"]:not(.is-holiday)').addClass('current-slot');
 
         window.setTimeout(Raumaushang.highlight, 250);
     };
@@ -212,26 +212,16 @@
                 $.each(structure, function (slot, days) {
                     var row = $('tr[data-slot="' + slot + '"]', new_table);
                     $.each(days, function (day, data) {
-                        var td = $('<td>&nbsp;</td>'),
-                            teachers = $('<ul class="teachers">');
-                        td.attr('data-day', day);
+                        var cell = $('<td>&nbsp;</td>').attr('data-day', day);
                         if (data !== null) {
-                            td.attr('data-slot', data.slots.join(' '));
-                            td.append('<div class="name">' + [data.code, data.name].join(' ') + '</div>');
-
-                            td.addClass('course-info');
-                            td.attr('data-course-id', data.id);
-                            if (data.teachers.length) {
-                                $.each(data.teachers, function (index, teacher) {
-                                    $('<li>').text(teacher.nachname).appendTo(teachers);
-                                });
-                                td.append(teachers);
-                            }
-                            if (data.duration > 1) {
-                                td.attr('rowspan', data.duration);
-                            }
+                            cell = render('#schedule-cell-template', $.extend({}, data || {}, {
+                                day: day,
+                                'class': data.is_holiday ? 'is-holiday' : 'course-info',
+                                slots: data.slots.join(' '),
+                                hasTeachers: data.teachers.length > 0,
+                            }));
                         }
-                        row.append(td);
+                        row.append(cell);
                     });
                 });
 

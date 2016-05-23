@@ -13,24 +13,24 @@ class Schedule
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
         $query = "SELECT `s`.`veranstaltungsnummer` AS `code`,
-                         `s`.`name`,
+                         IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
-                         `t`.`date` AS `begin`,
-                         `t`.`end_time` AS `end`,
+                         `ra`.`begin` AS `begin`,
+                         `ra`.`end` AS `end`,
                          `ra`.`resource_id`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`
-                  FROM `termine` AS `t`
-                  JOIN `resources_assign` AS `ra` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
-                  JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
+                  FROM `resources_assign` AS `ra`
+                  LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
+                  LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
                   JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
-                  JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
+                  LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
                   WHERE `ro`.`level` = 2
                     AND `ra`.`resource_id` = :resource_id
-                    AND `t`.`date` >= :start
-                    AND `t`.`end_time` <= :ende
-                  GROUP BY `su`.`seminar_id`, `t`.`date`, `ro`.`name`
+                    AND `ra`.`begin` >= :start
+                    AND `ra`.`end` <= :ende
+                  GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':resource_id', $resource->id);

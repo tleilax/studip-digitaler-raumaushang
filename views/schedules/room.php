@@ -54,3 +54,4 @@
 </table>
 
 <script id="course-template" type="x-tmpl-mustache"><?= $this->render_partial('course-overlay.php') ?></script>
+<script id="schedule-cell-template" type="x-tmpl-mustache"><?= $this->render_partial('schedule-cell.php') ?></script>
