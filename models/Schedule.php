@@ -14,12 +14,11 @@ class Schedule
 
         $query = "SELECT `s`.`veranstaltungsnummer` AS `code`,
                          `s`.`name`,
-                         GROUP_CONCAT(`su`.`user_id` SEPARATOR ',') AS `teacher_ids`,
+                         GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
                          `t`.`date` AS `begin`,
                          `t`.`end_time` AS `end`,
                          `ra`.`resource_id`,
-                         UNIX_TIMESTAMP() BETWEEN `t`.`date` AND `t`.`end_time` AS `is_current`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`
                   FROM `termine` AS `t`
@@ -97,7 +96,7 @@ class Schedule
     public function __construct()
     {
         $this->resource = Resources\Objekt::find($this->resource_id);
-        $this->teachers = SimpleORMapCollection::createFromArray(User::findMany($this->teacher_ids));
+        $this->teachers = SimpleORMapCollection::createFromArray(User::findMany(explode(',', $this->teacher_ids)));
     }
 
     public function __isset($offset)
@@ -133,10 +132,8 @@ class Schedule
                 }
                 return $array;
             }, $this->teachers->getArrayCopy()),
-#            'room'        => $this->room,
             'begin'       => $this->begin,
             'end'         => $this->end,
-#            'is_current'  => (bool)$this->is_current,
             'resource'    => $this->resource->toArray(),
             'course_id'   => $this->course_id,
             'modules'     => $this->getModules($this->course_id),

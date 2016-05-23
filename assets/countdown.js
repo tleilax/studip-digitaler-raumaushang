@@ -17,6 +17,42 @@
         duration: 5 * 60 * 1000,
         check_interval: 250
     };
+    Countdown.stash = {};
+    Countdown.add = function (identifier, duration, callback, options) {
+        options = options || {};
+        options.duration = duration;
+
+        if (!this.stash.hasOwnProperty(identifier)) {
+            this.stash[identifier] = new Countdown(callback, options);
+        } else {
+            this.stash[identifier].setCallback(callback);
+        }
+
+        return this.stash[identifier].start(true);
+    };
+    Countdown.start = function (identifier, reset) {
+        if (!this.stash.hasOwnProperty(identifier)) {
+            throw 'Unknown countdown "' + identifier + '"';
+        }
+        this.stash[identifier].start(reset || false);
+    };
+    Countdown.stop = function (identifier) {
+        if (!this.stash.hasOwnProperty(identifier)) {
+            throw 'Unknown countdown "' + identifier + '"';
+        }
+        this.stash[identifier].stop();
+    };
+    Countdown.reset = function (identifier) {
+        if (identifier === undefined) {
+            $.each(this.stash, function (identifier, countdown) {
+                countdown.reset();
+            });
+        } else if (!this.stash.hasOwnProperty(identifier)) {
+            throw 'Unknown countdown "' + identifier + '"';
+        } else {
+            this.stash[identifier].reset();
+        }
+    };
 
     Countdown.prototype.start = function (reset) {
         reset = reset || false;
@@ -54,6 +90,10 @@
         }
         this.ticks += 1;
     };
+    Countdown.prototype.setCallback = function (callback) {
+        this.callback = callback;
+    };
+
 
     window.Countdown = Countdown;
 }(jQuery));

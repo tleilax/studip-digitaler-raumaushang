@@ -58,6 +58,7 @@ class SchedulesController extends PluginController
     {
         $layout = $this->get_template_factory()->open('layout.php');
         $layout->plugin_scripts = [
+            $this->plugin->getPluginURL() . '/assets/mustache-2.2.1' . (Studip\ENV === 'production' ? '.min' : '') . '.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
             $this->plugin->getPluginURL() . '/assets/date.format.js',

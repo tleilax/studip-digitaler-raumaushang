@@ -9,6 +9,7 @@
 <head>
     <title>Raumaushang</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
   <? if (Studip\ENV === 'production'): ?>
     <link href="<?= $style ?>" rel="stylesheet" type="text/css">

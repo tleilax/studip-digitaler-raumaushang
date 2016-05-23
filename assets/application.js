@@ -4,7 +4,7 @@
 
     // Allow :active style to work
     // @see https://css-tricks.com/snippets/css/remove-gray-highlight-when-tapping-links-in-mobile-safari/
-    document.addEventListener("touchstart", function(){}, true);
+    document.addEventListener('touchstart', function(){}, true);
 
     // Exit with error when illegal call
     if (Raumaushang === undefined) {
@@ -31,18 +31,54 @@
         }, 3000);
     }
 
+    //
+    function showOverlay(selector, duration) {
+        var hide = function (event) {
+            $(selector).off('.overlay', hide).hide();
+            Countdown.stop(selector);
+            Countdown.start('main', true);
+
+            if (event !== undefined) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+
+        $('#loading-overlay:visible').hide();
+        Countdown.stop('main');
+
+        $(selector).on('click.overlay', hide).show();
+        Countdown.add(selector, duration || (30 * 1000), hide);
+    }
+
+    //
+    var templates = {};
+    function render(template_id, data) {
+        if (!templates.hasOwnProperty(template_id)) {
+            templates[template_id] = $(template_id).html();
+            Mustache.parse(templates[template_id]);
+        }
+        return Mustache.render(templates[template_id], data);
+    }
+
     // Initialize variables
-    Raumaushang.schedule_hash = null;
-    Raumaushang.course_data = {};
-    Raumaushang.current = {};
+    $.extend(Raumaushang, {
+        DIRECTION_NEXT: '>',
+        DIRECTION_PREVIOUS: '<',
+        schedule_hash: null,
+        course_data: {},
+        current: {
+            timestamp: $('meta[name="current-timestamp"]').attr('content')
+        },
+        initital: {
+            timestamp: $('meta[name="current-timestamp"]').attr('content')
+        }
+    });
 
     // Initialize countdowns
-    Raumaushang.countdowns = {};
-    Raumaushang.countdowns.main = new Countdown(function () {
-        debug('reloading...');
+    Countdown.add('main', 5 * 60 * 1000, function () {
         Raumaushang.update();
     }, {
-        duration: 5 * 60 * 1000,
         on_tick: function (diff) {
             var element = $('body > progress');
             if (element.length > 0) {
@@ -50,13 +86,20 @@
             }
         }
     });
-    Raumaushang.countdowns.course = new Countdown(function () {
-        $('#course-overlay:visible').click();
-    }, {duration: 30 * 1000});
 
     // Define request function
-    Raumaushang.request = function (url, data) {
-        $('#loading-overlay').show();
+    var requests = {};
+    Raumaushang.request = function (url, data, callback, forced) {
+        if (!forced && requests.hasOwnProperty(url)) {
+            var cached = requests[url];
+            if (cached.timestamp.format('Ymd') === (new Date).format('Ymd')) {
+                return callback(cached.hash, cached.data);
+            }
+        }
+
+        window.setTimeout(function () {
+            $('#loading-overlay').show();
+        }, 300);
 
         return $.ajax({
             type: 'GET',
@@ -65,6 +108,19 @@
             dataType: 'json',
             username: Raumaushang.api.auth.username,
             password: Raumaushang.api.auth.password,
+        }).then(function (json, status, jqxhr) {
+            var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash');
+
+            requests[url] = {
+                timestamp: new Date(),
+                hash: schedule_hash,
+                data: json
+            };
+
+            if ($.isFunction(callback)) {
+                callback(schedule_hash, json);
+            }
+
         }).fail(function (jqxhr, text, error) {
             debug('ajax failed', text, error, url);
         }).always(function () {
@@ -82,24 +138,38 @@
 
         $('tr[data-slot="' + slot + '"],td[data-slot~="' + slot + '"]').addClass('current-slot');
 
-
-        window.setTimeout(Raumaushang.highlight, 5 * 1000);
+        window.setTimeout(Raumaushang.highlight, 250);
     };
 
     // Updates the table (internally requests data)
-    Raumaushang.update = function (callback) {
-        $('.week-schedule[data-resource-id]').each(function () {
-            var resource_id = $(this).data().resourceId,
-                old_table   = $(this);
+    Raumaushang.update = function (direction, callback) {
+        if (arguments.length === 1 && $.isFunction(direction)) {
+            callback  = direction;
+            direction = null;
+        }
 
-            Raumaushang.request('/raumaushang/schedule/' + resource_id, {group_by_weekday: 1}).then(function (json, status, jqxhr) {
-                var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash'),
-                    structure     = {},
-                    new_table     = old_table.clone();
-                if (schedule_hash === Raumaushang.schedule_hash) {
-                    debug('known hash, leaving...');
-                    return;
-                }
+        Countdown.stop('main');
+
+        var old_table   = $('.week-schedule[data-resource-id]').first(),
+            resource_id = old_table.data().resourceId,
+            chunks      = ['/raumaushang/schedule', resource_id],
+            forced      = false;;
+
+        if (Raumaushang.current.timestamp) {
+            if (direction === Raumaushang.DIRECTION_NEXT) {
+                chunks.push(Raumaushang.current.timestamp + 7 * 24 * 60 * 60);
+            } else if (direction === Raumaushang.DIRECTION_PREVIOUS) {
+                chunks.push(Raumaushang.current.timestamp - 7 * 24 * 60 * 60);
+            } else {
+                chunks.push(Raumaushang.current.timestamp);
+                forced = true;
+            }
+        }
+
+        Raumaushang.request(chunks.join('/'), {group_by_weekday: 1}, function (schedule_hash, json) {
+            var structure     = {},
+                new_table     = old_table.clone();
+            if (schedule_hash !== Raumaushang.schedule_hash) {
                 Raumaushang.schedule_hash = schedule_hash;
 
                 $('tbody tr', old_table).each(function () {
@@ -168,89 +238,59 @@
                 //
                 delete structure;
                 old_table.replaceWith(new_table);
-            }).always(function () {
-                Raumaushang.countdowns.main.start(true);
+            } else {
+                debug('known hash, leaving...');
+            }
+            Countdown.start('main', true);
 
-                if ($.isFunction(callback)) {
-                    callback();
-                }
-            });
-        });
+            if ($.isFunction(callback)) {
+                callback();
+            }
+        }, forced);
     };
 
     // Handlers
 
     $(document).ready(function () {
-        // Init and start countdown that will reload the page after a certain
-        // duration
-        $(document).on('mousemove mousedown mouseup touchmove touchstart touchend', function (event) {
-            Raumaushang.countdowns.course.reset();
-            Raumaushang.countdowns.main.reset();
-        });
-
         // Initialize schedule table
         Raumaushang.update(function () {
             Raumaushang.highlight();
         });
-    });
-
-    $(document).on('click', '.course-info', function () {
+    }).on('select', '*', function (event) {
+        event.preventDefault();
+    }).on('mousemove mousedown mouseup touchmove touchstart touchend', function (event) {
+        Countdown.reset();
+    }).on('click', '.course-info', function () {
         $('#loading-overlay').show();
 
         var course_id = $(this).blur().data().courseId,
             data      = Raumaushang.course_data[course_id],
-            overlay   = $('#course-overlay').hide().empty(),
-            begin     = new Date(data.begin * 1000),
-            end       = new Date(data.end * 1000),
             day       = $(this).data().day,
             slot      = $(this).closest('tr').data().slot,
-            teachers  = $('<dl class="teachers"><dt>Lehrende</dt></dl>'),
-            modules   = $('<dl class="modules"><dt>Module:</dt></dl>');
-        debug(data);
+            rendered = 'error';
 
-        $('<h2>').text([data.code, data.name].join(' ')).appendTo(overlay);
-        $('<date class="begin">').text(begin.format('d.m.Y H:i')).appendTo(overlay);
-        $('<span> bis </span>').appendTo(overlay);
-        $('<date class="end">').text(end.format('d.m.Y H:i')).appendTo(overlay);
+        $('#course-overlay').html(render('#course-template', $.extend({}, data, {
+            begin: (new Date(data.begin * 1000)).format('d.m.Y H:i'),
+            end: (new Date(data.end * 1000)).format('d.m.Y H:i'),
+            hasTeachers: data.teachers.length > 0,
+            hasModules: data.modules.length > 0
+        })));
 
-        if (data.teachers.length) {
-            $.each(data.teachers, function (index, teacher) {
-                $('<dd>').text(teacher.name_full).appendTo(teachers);
-            });
-            teachers.appendTo(overlay);
-        }
+        showOverlay('#course-overlay', 30 * 1000);
 
-        if (data.modules.length) {
-            $.each(data.modules, function (index, module) {
-                $('<dd>').text(module).appendTo(modules);
-            });
-            modules.appendTo(overlay);
-        }
-
-        if (data.description) {
-            $('<small style="white-space: pre-line">').text(data.description).appendTo(overlay);
-        }
-
-        Raumaushang.countdowns.main.stop();
-        $('#loading-overlay').hide();
-
-        Raumaushang.countdowns.course.start(true);
-        overlay.show();
-
-        Raumaushang.current.slot = slot;
-        Raumaushang.current.day  = day;
+        $.extend(Raumaushang.current, {
+            slot: slot,
+            day: day
+        });
 
         return false;
+    }).on('click', '#help-overlay-switch', function () {
+        showOverlay('#help-overlay', 10 * 1000);
     });
 
-    $(document).on('click', '#course-overlay', function () {
-        Raumaushang.countdowns.course.stop();
-        Raumaushang.countdowns.main.start();
-        $(this).hide();
-    });
-
+    //
     $('body').on('swipedown swipeup', function (event) {
-        if ($('#course-overlay').is(':not(:visible)')) {
+        if (!$('#course-overlay').is(':visible')) {
             return;
         }
 
@@ -261,28 +301,26 @@
         elements.find('td[data-day="' + Raumaushang.current.day + '"].course-info')
                 .first()
                 .click();
-    });
-
-    $(document).on('keypress', function (event) {
-        var code = (event.which || event.keyCode);
-        if (code == 27 || code == 13) {
-            window.location.reload();
-            event.preventDefault();
-            event.stopPropagation();
+    }).on('swipeleft swiperight', function (event) {
+        if ($('#course-overlay,#help-overlay').is(':visible')) {
+            return;
         }
-    }).on('select', '*', function (event) {
-        event.preventDefault();
-    });
 
-    $(document).on('click', '#help-overlay-switch', function () {
-        $('#help-overlay').show();
-    }).on('click', '#help-overlay', function () {
-        $(this).hide();
+        var direction = event.type === 'swiperight'
+                      ? Raumaushang.DIRECTION_PREVIOUS
+                      : Raumaushang.DIRECTION_NEXT;
+        Raumaushang.update(direction);
+
+        Countdown.add('return-to-current', 30 * 1000, function () {
+            Raumaushang.current.timestamp = Raumaushang.initial.timestamp;
+            Raumaushang.schedule_hash = null;
+            Raumaushang.update();
+        });
     });
 
     // Clock
     window.setInterval(function () {
         $('#clock').text((new Date).format('H:i:s'));
-    }, 500);
+    }, 100);
 
 }(jQuery, Raumaushang, Countdown));
