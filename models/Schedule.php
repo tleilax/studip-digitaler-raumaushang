@@ -2,6 +2,7 @@
 namespace Raumaushang;
 
 use DBManager;
+use AssignEventList;
 use PDO;
 use SimpleORMapCollection;
 use User;
@@ -12,13 +13,27 @@ class Schedule
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
-        $query = "SELECT `s`.`veranstaltungsnummer` AS `code`,
+        $list = new AssignEventList ($begin, $end, $resource->id, '', '', true);
+        if ($list->numberOfEvents() === 0) {
+            return [];
+        }
+
+        $events = [];
+        $ids    = [];
+        foreach ($list->events as $event) {
+            $events[] = [
+                'id'    => $event->getAssignId(),
+                'begin' => $event->getBegin(),
+                'end'   => $event->getEnd(),
+            ];
+            $ids[] = $event->getAssignId();
+        }
+
+        $query = "SELECT `ra`.`assign_id`,
+                         `s`.`veranstaltungsnummer` AS `code`,
                          IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
-                         `ra`.`begin` AS `begin`,
-                         `ra`.`end` AS `end`,
-                         `ra`.`resource_id`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`
                   FROM `resources_assign` AS `ra`
@@ -26,46 +41,19 @@ class Schedule
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
                   JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
                   LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
-                  WHERE `ro`.`level` = 2
-                    AND `ra`.`resource_id` = :resource_id
-                    AND `ra`.`begin` >= :start
-                    AND `ra`.`end` <= :ende
+                  WHERE `ra`.`assign_id` IN (:assign_ids)
                   GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
                   ORDER BY `begin`, `name`";
-        $statement = DBManager::get()->prepare($query);
-        $statement->bindValue(':resource_id', $resource->id);
-        $statement->bindValue(':start', $begin);
-        $statement->bindValue(':ende', $end);
+        $statement = DBManager::get('studip-slave')->prepare($query);
+        $statement->bindValue(':assign_ids', $ids);
         $statement->execute();
-//        var_dump($statement->fetchAll(PDO::FETCH_ASSOC));die;
-        return $statement->fetchAll(PDO::FETCH_CLASS, 'Raumaushang\\Schedule');
-    }
+        $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
 
-    public static function getByParent(Resources\Objekt $resource, $begin = null, $end = null)
-    {
-        list($begin, $end) = self::getBeginAndEnd($begin, $end);
-
-        $query = "SELECT `ri`.`VID` AS `code`,
-                         `ri`.`NAME` AS `name`,
-                         `ri`.`DOZENT` AS `teachers`,
-                         `ri`.`RAUM` AS `room`,
-                         UNIX_TIMESTAMP(`ri`.`START`) AS `begin`,
-                         UNIX_TIMESTAMP(`ri`.`ENDE`) AS `end`,
-                         NOW() BETWEEN `ri`.`START` AND `ENDE` AS `is_current`,
-                         `ri`.`RID` AS `resource_id`
-                  FROM `RoomInformation` AS `ri`
-                  JOIN `resources_objects` AS `ro` ON `ro`.`resource_id` = `ri`.`RID`
-                  WHERE `ro`.`parent_id` = :resource_id
-                    AND `START` >= FROM_UNIXTIME(:start)
-                    AND `ENDE` <= FROM_UNIXTIME(:ende)
-                  ORDER BY `begin`, `name`";
-        $statement = DBManager::get()->prepare($query);
-        $statement->bindValue(':resource_id', $resource->id);
-        $statement->bindValue(':start', $begin);
-        $statement->bindValue(':ende', $end);
-        $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_CLASS, 'Raumaushang\\Schedule');
-
+        foreach ($events as $index => $event) {
+            $data = array_merge($event, $result[$event['id']]);
+            $events[$index] = new self($data);
+        }
+        return $events;
     }
 
     protected static function getBeginAndEnd($begin, $end)
@@ -93,8 +81,16 @@ class Schedule
     protected $course_id;
     protected $description;
 
-    public function __construct()
+    public function __construct(array $data = null)
     {
+        if ($data !== null) {
+            foreach ($data as $key => $value) {
+                if (property_exists($this, $key)) {
+                    $this->$key = $value;
+                }
+            }
+        }
+
         $this->resource = Resources\Objekt::find($this->resource_id);
         $this->teachers = SimpleORMapCollection::createFromArray(User::findMany(explode(',', $this->teacher_ids)));
     }
@@ -134,7 +130,7 @@ class Schedule
             }, $this->teachers->getArrayCopy()),
             'begin'       => $this->begin,
             'end'         => $this->end,
-            'resource'    => $this->resource->toArray(),
+//            'resource'    => $this->resource->toArray(),
             'course_id'   => $this->course_id,
             'modules'     => $this->getModules($this->course_id),
             'description' => trim($this->description) ?: null,

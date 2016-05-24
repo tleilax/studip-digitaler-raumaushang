@@ -18,14 +18,4 @@
         </a>
     </li>
 <? endforeach; ?>
-<? for ($i = 0; $i < 10; $i += 1): ?>
-    <li></li>
-<? endfor; ?>
 </ul>
-
-<h1>
-    <?= _('Belegung') ?>
-</h1>
-<?= $this->render_partial('schedule.php', compact('schedule') + array(
-    'show_rooms' => true,
-)) ?>

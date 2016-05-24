@@ -42,7 +42,6 @@ class SchedulesController extends PluginController
     {
         $this->building  = Objekt::find($building_id);
         $this->resources = Objekt::findByParent_id($this->building->id, 'ORDER BY name ASC');
-        $this->schedule  = Schedule::getByParent($this->building);
     }
 
     public function room_action($room_id, $begin = null, $end = null)
