@@ -30,7 +30,6 @@
 <? if (Studip\ENV === 'development'): ?>
     <progress value="100" max="100"></progress>
 <? endif; ?>
-    <output></output>
 
     <?= $content_for_layout ?>
 
@@ -41,7 +40,7 @@
     <div id="course-overlay"></div>
 
     <button id="help-overlay-switch">
-        <?= Icon::create('80/black/question-circle')->render(Icon::SVG) ?>
+        <?= Icon::create('80/black/info-circle')->render(Icon::SVG) ?>
     </button>
     <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
 
