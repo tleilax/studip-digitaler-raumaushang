@@ -7,7 +7,7 @@
 
     background: none;
     border: 0;
-
+    cursor: pointer;
     padding: 0;
 }
 
@@ -16,17 +16,54 @@
 
     font-size: 2em;
 
-    ul {
-        list-style: none;
+    > div {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    h2 {
         margin: 0;
         padding: 0;
     }
-    li {
-        display: inline-block;
 
-        &:not(:last-child)::after {
-            content: '|';
-            padding: 0 0.5em;
+    dl {
+        .flex();
+        .flex-wrap(wrap);
+
+        margin: 0;
+        padding: 0;
+        text-align: left;
+
+        dt, dd {
+            flex: 1 1 50%;
+            margin: 0;
+            padding: 0;
+        }
+        dt {
+            padding-right: 0.25em;
+            text-align: right;
+            &::after {
+                content: ':';
+            }
+        }
+        dd {
+            padding-left: 0.25em;
+            text-align: left;
+        }
+    }
+
+    ul.contact {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: inline-block;
+
+            &:not(:last-child)::after {
+                content: '|';
+                padding: 0 0.5em;
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Raumaushang\Resources;
 
+use DBManager;
+use PDO;
 use SimpleORMap;
 
 class Objekt extends SimpleORMap
@@ -45,5 +47,31 @@ class Objekt extends SimpleORMap
             $value = '';
         }
         return parent::setValue($field, $value);
+    }
+
+    public function getProperties()
+    {
+        $query = "SELECT `name`, `state`, `type`
+                  FROM `resources_objects_properties`
+                  JOIN `resources_properties` USING (`property_id`)
+                  WHERE `resource_id` = :id";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':id', $this->id);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $properties = [];
+        foreach ($result as $row) {
+            $value = trim($row['state']);
+            if ($row['type'] === 'bool') {
+                $value = $value === 'on';
+            } elseif ($row['type'] === 'num' && preg_match('/^\d+([,.]\d+)$/', $value)) {
+                $value = (float)str_replace(',', '.', $value);
+            }
+
+            $properties[$row['name']] = $value;
+        }
+
+        return $properties;
     }
 }

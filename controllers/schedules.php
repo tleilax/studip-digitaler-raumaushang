@@ -48,9 +48,18 @@ class SchedulesController extends PluginController
     {
         $this->addOwnLayout();
 
-        $this->id       = $room_id;
-        $this->room     = Objekt::find($room_id);
-        $this->schedule = Schedule::getByResource($this->room, $begin, $end);
+        $this->id         = $room_id;
+        $this->room       = Objekt::find($room_id);
+        $this->schedule   = Schedule::getByResource($this->room, $begin, $end);
+
+        $properties = [];
+        $temp = $this->room->getProperties();
+        foreach (['Arbeitsplätze', 'Sitzplätze', 'Beamer', 'Tafel'] as $key) {
+            if (isset($temp[$key])) {
+                $properties[$key] = $temp[$key];
+            }
+        }
+        $this->properties = $properties;
     }
 
     private function addOwnLayout()
