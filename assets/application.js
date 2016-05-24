@@ -11,25 +11,26 @@
         throw 'Invalid call, object Raumaushang missing';
     }
 
-    // Debug function
-    var debug_timeout = null;
-    function debug(message) {
-        if (console !== undefined) {
-            console.log(arguments);
+    // Initialize variables
+    $.extend(Raumaushang, {
+        DIRECTION_NEXT: '>',
+        DIRECTION_PREVIOUS: '<',
+        schedule_hash: null,
+        course_data: {},
+        current: {
+            timestamp: $('meta[name="current-timestamp"]').attr('content')
+        },
+        initial: {
+            timestamp: $('meta[name="current-timestamp"]').attr('content')
+        },
+        durations: {
+            reload: 5 * 60 * 1000,
+            course: 30 * 1000,
+            help: 10 * 1000,
+            return_to_current: 30 * 1000,
+            overlay_default: 30 * 1000
         }
-
-        var message = $.makeArray(arguments).join(' / ');
-        $('body > output').text(message).show();
-
-        if (debug_timeout !== null) {
-            clearTimeout(debug_timeout);
-        }
-        debug_timeout = setTimeout(function () {
-            $('body > output').hide('slow', function () {
-                debug_timeout = null;
-            })
-        }, 3000);
-    }
+    });
 
     //
     function showOverlay(selector, duration) {
@@ -48,7 +49,7 @@
         Countdown.stop('main');
 
         $(selector).on('click.overlay', hide).show();
-        Countdown.add(selector, duration || (30 * 1000), hide);
+        Countdown.add(selector, duration || Raumaushang.durations.overlay_default, hide);
     }
 
     //
@@ -61,22 +62,8 @@
         return Mustache.render(templates[template_id], data);
     }
 
-    // Initialize variables
-    $.extend(Raumaushang, {
-        DIRECTION_NEXT: '>',
-        DIRECTION_PREVIOUS: '<',
-        schedule_hash: null,
-        course_data: {},
-        current: {
-            timestamp: $('meta[name="current-timestamp"]').attr('content')
-        },
-        initial: {
-            timestamp: $('meta[name="current-timestamp"]').attr('content')
-        }
-    });
-
     // Initialize countdowns
-    Countdown.add('main', 5 * 60 * 1000, function () {
+    Countdown.add('main', Raumaushang.durations.reload, function () {
         Raumaushang.update();
     }, {
         on_tick: function (diff) {
@@ -122,7 +109,9 @@
             }
 
         }).fail(function (jqxhr, text, error) {
-            debug('ajax failed', text, error, url);
+            if (console !== undefined) {
+                console.log('ajax failed', text, error, url);
+            }
         }).always(function () {
             $('#loading-overlay').hide();
         });
@@ -228,8 +217,6 @@
                 //
                 delete structure;
                 old_table.replaceWith(new_table);
-            } else {
-                debug('known hash, leaving...');
             }
             Countdown.start('main', true);
 
@@ -240,7 +227,6 @@
     };
 
     // Handlers
-
     $(document).ready(function () {
         // Initialize schedule table
         Raumaushang.update(function () {
@@ -266,7 +252,7 @@
             hasModules: data.modules.length > 0
         })));
 
-        showOverlay('#course-overlay', 30 * 1000);
+        showOverlay('#course-overlay', Raumaushang.durations.course);
 
         $.extend(Raumaushang.current, {
             slot: slot,
@@ -275,10 +261,10 @@
 
         return false;
     }).on('click', '#help-overlay-switch', function () {
-        showOverlay('#help-overlay', 10 * 1000);
+        showOverlay('#help-overlay', Raumaushang.durations.help);
     });
 
-    //
+    // Swipe actions
     $('body').on('swipedown swipeup', function (event) {
         if (!$('#course-overlay').is(':visible')) {
             return;
@@ -301,7 +287,7 @@
                       : Raumaushang.DIRECTION_NEXT;
         Raumaushang.update(direction);
 
-        Countdown.add('return-to-current', 30 * 1000, function () {
+        Countdown.add('return-to-current', Raumaushang.durations.return_to_current, function () {
             Raumaushang.current.timestamp = Raumaushang.initial.timestamp;
             Raumaushang.schedule_hash = null;
             Raumaushang.update();
