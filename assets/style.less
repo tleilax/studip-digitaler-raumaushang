@@ -169,6 +169,7 @@ table.week-schedule {
     .overlay();
     font-size: 2em;
     overflow: hidden;
+    padding-bottom: 0;
     padding-top: 1em;
 
     &::after {
@@ -179,7 +180,22 @@ table.week-schedule {
         bottom: 0;
         left: 0;
         right: 0;
-        height: 80px;
+        height: 1em;
+    }
+}
+.course-overlay {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+
+    header {
+        flex-shrink: 0;
+    }
+    article {
+        overflow-y: scroll;
+        > *:last-child {
+            padding-bottom: 2em;
+        }
     }
 
     h2 {
@@ -188,12 +204,18 @@ table.week-schedule {
         margin: 0;
         padding: 0;
     }
+    .description {
+        font-size: 0.8em;
+        white-space: pre-line;
+    }
+
 
     .qrcode {
         .square(200px);
         float: right;
     }
 }
+
 .course-info, #course-overlay {
     cursor: pointer;
 }

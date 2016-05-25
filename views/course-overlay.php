@@ -1,30 +1,38 @@
-<h2>{{code}} {{name}}</h2>
-<div class="dates">
-    <date class="begin">{{begin}}</date>
-    <span> bis </span>
-    <date class="end">{{end}}</date>
-</div>
+<section class="course-overlay">
 
-<div class="qrcode" data-course-id="{{course_id}}"></div>
+    <header>
+        <h2>{{code}} {{name}}</h2>
+    </header>
+    <article>
+        <div class="dates">
+            <date class="begin">{{begin}}</date>
+            <span> bis </span>
+            <date class="end">{{end}}</date>
+        </div>
 
-{{#hasTeachers}}
-<dl class="teachers">
-    <dt>Lehrende</dt>
-{{#teachers}}
-    <dd>{{name_full}}</dd>
-{{/teachers}}
-</dl>
-{{/hasTeachers}}
+        <div class="qrcode" data-course-id="{{course_id}}"></div>
 
-{{#hasModules}}
-<dl>
-    <dt>Module</dt>
-{{#modules}}
-    <dd>{{.}}</dd>
-{{/modules}}
-</dl>
-{{/hasModules}}
+    {{#hasTeachers}}
+        <dl class="teachers">
+            <dt>Lehrende</dt>
+        {{#teachers}}
+            <dd>{{name_full}}</dd>
+        {{/teachers}}
+        </dl>
+    {{/hasTeachers}}
 
-{{#description}}
-<small style="white-space: pre-line;">{{description}}</small>
-{{/description}}
+    {{#hasModules}}
+        <dl>
+            <dt>Studienmodule</dt>
+        {{#modules}}
+            <dd>{{.}}</dd>
+        {{/modules}}
+        </dl>
+    {{/hasModules}}
+
+    {{#description}}
+        <div class="description">{{description}}</div>
+    {{/description}}
+    </article>
+
+</section>

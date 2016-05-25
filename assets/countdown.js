@@ -37,10 +37,15 @@
         this.stash[identifier].start(reset || false);
     };
     Countdown.stop = function (identifier) {
-        if (!this.stash.hasOwnProperty(identifier)) {
+        if (identifier === undefined) {
+            $.each(this.stash, function (identifier, countdown) {
+                countdown.stop();
+            });
+        } else if (!this.stash.hasOwnProperty(identifier)) {
             throw 'Unknown countdown "' + identifier + '"';
+        } else {
+            this.stash[identifier].stop();
         }
-        this.stash[identifier].stop();
     };
     Countdown.reset = function (identifier) {
         if (identifier === undefined) {

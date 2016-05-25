@@ -253,6 +253,10 @@
 
         showOverlay('#course-overlay', Raumaushang.durations.course);
 
+        $('#course-overlay article').on('movestart', function (event) {
+            event.preventDefault();
+        }).scrollTop(0);
+
         $.extend(Raumaushang.current, {
             slot: slot,
             day: day
@@ -290,6 +294,7 @@
     // Make QR Code
     $.fn.extend({
         makeQRCode: function () {
+            console.log(this);
             return this.each(function () {
                 var course_id = $(this).data().courseId,
                     template  = $('meta[name="course-url-template"]').attr('content');
