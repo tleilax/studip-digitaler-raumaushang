@@ -1,5 +1,5 @@
 <?php
-    $monday = strtotime('this monday');
+    $monday = strtotime('this monday', $begin);
     $week_days = [];
     for ($i = 0; $i < 5; $i += 1) {
         $week_days[] = strftime('%A, %x', strtotime('+' . $i . ' days', $monday));

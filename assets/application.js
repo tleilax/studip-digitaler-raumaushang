@@ -25,9 +25,9 @@
         },
         durations: {
             reload: 5 * 60 * 1000,
-            course: 30 * 1000,
+            course: 10 * 1000,
             help: 10 * 1000,
-            return_to_current: 30 * 1000,
+            return_to_current: 10 * 1000,
             overlay_default: 30 * 1000
         }
     });
@@ -155,7 +155,7 @@
             }
         }
 
-        Raumaushang.request(chunks.join('/'), {group_by_weekday: 1}, function (schedule_hash, json) {
+        Raumaushang.request(chunks.join('/'), {}, function (schedule_hash, json) {
             var structure     = {},
                 new_table     = old_table.clone();
             if (schedule_hash !== Raumaushang.schedule_hash) {
@@ -205,7 +205,6 @@
                         if (data !== null) {
                             cell = render('#schedule-cell-template', $.extend({}, data || {}, {
                                 day: day,
-                                'class': data.is_holiday ? 'is-holiday' : 'course-info',
                                 slots: data.slots.join(' '),
                                 hasTeachers: data.teachers.length > 0,
                             }));
@@ -250,7 +249,7 @@
             end: (new Date(data.end * 1000)).format('d.m.Y H:i'),
             hasTeachers: data.teachers.length > 0,
             hasModules: data.modules.length > 0
-        })));
+        }))).find('.qrcode').makeQRCode();
 
         showOverlay('#course-overlay', Raumaushang.durations.course);
 
@@ -298,5 +297,26 @@
     window.setInterval(function () {
         $('#clock').text((new Date).format('H:i:s'));
     }, 100);
+
+
+    // Make QR Code
+    $.fn.extend({
+        makeQRCode: function () {
+            return this.each(function () {
+                var course_id = $(this).data().courseId,
+                    template  = $('meta[name="course-url-template"]').attr('content'),
+                    url       = template.replace('#{course_id}', course_id),
+                    svg_slug  = $('g', this).get(0),
+                    qrcode    = new QRCode(svg_slug, {
+                        width: 128,
+                        height: 128,
+                        useSVG: true,
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                qrcode.makeCode(url);
+            });
+        }
+    });
+
 
 }(jQuery, Raumaushang, Countdown));

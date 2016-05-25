@@ -5,6 +5,8 @@
     <date class="end">{{end}}</date>
 </div>
 
+<svg class="qrcode" data-course-id="{{course_id}}"><g/></svg>
+
 {{#hasTeachers}}
 <dl class="teachers">
     <dt>Lehrende</dt>

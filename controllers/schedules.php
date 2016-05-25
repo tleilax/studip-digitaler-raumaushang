@@ -44,18 +44,17 @@ class SchedulesController extends PluginController
         $this->resources = Objekt::findByParent_id($this->building->id, 'ORDER BY name ASC');
     }
 
-    public function room_action($room_id, $begin = null, $end = null)
+    public function room_action($room_id)
     {
         $this->addOwnLayout();
 
-        $this->id         = $room_id;
-        $this->room       = Objekt::find($room_id);
-        $this->schedule   = Schedule::getByResource($this->room, $begin, $end);
+        $this->id       = $room_id;
+        $this->room     = Objekt::find($room_id);
 
         $properties = [];
         $temp = $this->room->getProperties();
         foreach (['Arbeitsplätze', 'Sitzplätze', 'Beamer', 'Tafel'] as $key) {
-            if (isset($temp[$key])) {
+            if (array_key_exists($key, $temp)) {
                 $properties[$key] = $temp[$key];
             }
         }
@@ -69,6 +68,8 @@ class SchedulesController extends PluginController
             $this->plugin->getPluginURL() . '/assets/mustache-2.2.1' . (Studip\ENV === 'production' ? '.min' : '') . '.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
+            $this->plugin->getPluginURL() . '/assets/qrcode' . (Studip\ENV === 'production' ? '.min' : '') . '.js',
+
             $this->plugin->getPluginURL() . '/assets/date.format.js',
             $this->plugin->getPluginURL() . '/assets/countdown.js',
             $this->plugin->getPluginURL() . '/assets/application.js',
@@ -77,5 +78,14 @@ class SchedulesController extends PluginController
             $this->plugin->getPluginURL() . '/assets/style.css',
         ];
         $this->set_layout($layout);
+    }
+
+    public function absolute_uri($uri, $parameters = [], $ignore_bound = false)
+    {
+        $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+        $url = URLHelper::getURL($uri, $parameters, $ignore_bound);
+        URLHelper::setBaseURL($old_base);
+
+        return $url;
     }
 }

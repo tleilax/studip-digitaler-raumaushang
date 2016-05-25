@@ -9,7 +9,7 @@ use User;
 
 class Schedule
 {
-    public static function getByResource(Resources\Objekt $resource, $begin = null, $end = null)
+    public static function getByResource(Resources\Objekt $resource, &$begin = null, &$end = null)
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
@@ -35,7 +35,8 @@ class Schedule
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
-                         `s`.`Beschreibung` AS `description`
+                         `s`.`Beschreibung` AS `description`,
+                         `s`.`Seminar_id` AS `course_id`
                   FROM `resources_assign` AS `ra`
                   LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
@@ -54,6 +55,49 @@ class Schedule
             $events[$index] = new self($data);
         }
         return $events;
+    }
+
+    public static function decorate(array $schedules, $from, $extended = false)
+    {
+        $schedules = array_map(function (Schedule $schedule) use ($extended) {
+            $array = $schedule->toArray($extended);
+            $array['duration']   = ceil(($array['end'] - $array['begin']) / (60 * 60));
+            $array['is_holiday'] = false;
+
+            return $array;
+        }, $schedules);
+
+        usort($schedules, function ($a, $b) {
+            return $a['begin'] - $b['begin'];
+        });
+
+        $temp = [];
+        for ($i = 1; $i <= 5; $i += 1) {
+            $temp[$i] = [
+                'timestamp' => $from + ($i - 1) * 24 * 60 * 60,
+                'slots'     => [],
+            ];
+            $holiday = holiday($temp[$i]['timestamp']);
+            if ($holiday !== false) {
+                $temp[$i]['slots'][8] = [
+                    'code'       => '',
+                    'name'       => $holiday['name'],
+                    'duration'   => 14,
+                    'teachers'   => [],
+                    'modules'    => [],
+                    'is_holiday' => true,
+                ];
+            }
+        }
+        foreach ($schedules as $schedule) {
+            $wday = strftime('%u', $schedule['begin']);
+            $hour = (int)strftime('%H', $schedule['begin']);
+
+            $temp[$wday]['slots'][$hour] = $schedule;
+        }
+        $schedules = $temp;
+
+        return $schedules;
     }
 
     protected static function getBeginAndEnd($begin, $end)
@@ -77,7 +121,6 @@ class Schedule
     protected $end;
     protected $is_current;
     protected $resource_id;
-    protected $resource;
     protected $course_id;
     protected $description;
 
@@ -91,7 +134,6 @@ class Schedule
             }
         }
 
-        $this->resource = Resources\Objekt::find($this->resource_id);
         $this->teachers = SimpleORMapCollection::createFromArray(User::findMany(explode(',', $this->teacher_ids)));
     }
 
@@ -115,9 +157,9 @@ class Schedule
         $this->$offset = null;
     }
 
-    public function toArray()
+    public function toArray($extended = false)
     {
-        return [
+        $result = [
             'id'          => md5(implode('|', [$this->code, $this->name, $this->begin, $this->end])),
             'name'        => $this->name,
             'code'        => $this->code,
@@ -130,11 +172,16 @@ class Schedule
             }, $this->teachers->getArrayCopy()),
             'begin'       => $this->begin,
             'end'         => $this->end,
-//            'resource'    => $this->resource->toArray(),
             'course_id'   => $this->course_id,
             'modules'     => $this->getModules($this->course_id),
             'description' => trim($this->description) ?: null,
         ];
+
+        if ($extended) {
+            $result['hasTeachers'] = count($result['teachers']) > 0;
+        }
+
+        return $result;
     }
 
     protected function getModules($course_id)
