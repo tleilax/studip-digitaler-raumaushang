@@ -25,9 +25,9 @@
         },
         durations: {
             reload: 5 * 60 * 1000,
-            course: 10 * 1000,
-            help: 10 * 1000,
-            return_to_current: 10 * 1000,
+            course: 30 * 1000,
+            help: 30 * 1000,
+            return_to_current: 15 * 1000,
             overlay_default: 30 * 1000
         }
     });

@@ -2,6 +2,7 @@
 
 @import "less/overlay-mixin.less";
 @import "less/help-overlay.less";
+@import "less/course-overlay.less";
 
 * {
     box-sizing: border-box;
@@ -163,72 +164,6 @@ table.week-schedule {
 
     img {
         height: 0.7em;
-    }
-}
-#course-overlay {
-    .overlay();
-    font-size: 2em;
-    overflow: hidden;
-    padding-bottom: 0;
-    padding-top: 1em;
-
-    &::after {
-        #gradient > .vertical(fadeout(#fff, 100%), #fff);
-
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1em;
-    }
-}
-.course-overlay {
-    display: flex;
-    flex-direction: column;
-    max-height: 100%;
-
-    header {
-        flex-shrink: 0;
-    }
-    article {
-        overflow-y: auto;
-        > *:last-child {
-            padding-bottom: 2em;
-        }
-    }
-
-    h2 {
-        border-bottom: 1px solid #444;
-        font-size: 1em;
-        margin: 0;
-        padding: 0;
-    }
-    .description {
-        font-size: 0.8em;
-        white-space: pre-line;
-    }
-
-
-    .qrcode {
-        padding-top: 1em;
-        .square(200px);
-        float: right;
-
-        img {
-            max-height: 100%;
-        }
-
-        &.enlarged {
-            .square(400px);
-            margin-top: 3em;
-            padding-right: ~'calc(50% + 200px)';
-            padding-left: 50%;
-            margin-bottom: 8em;
-        }
-    }
-    canvas {
-        display: none !important;
     }
 }
 
