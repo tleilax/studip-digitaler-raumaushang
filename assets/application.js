@@ -264,19 +264,7 @@
     });
 
     // Swipe actions
-    $('body').on('swipedown swipeup', function (event) {
-        if (!$('#course-overlay').is(':visible')) {
-            return;
-        }
-
-        var elements = $('tr[data-slot="' + Raumaushang.current.slot + '"]');
-        elements = event.type === 'swipeup'
-                 ? elements.nextAll('tr')
-                 : elements.prevAll('tr');
-        elements.find('td[data-day="' + Raumaushang.current.day + '"].course-info')
-                .first()
-                .click();
-    }).on('swipeleft swiperight', function (event) {
+    $('body').on('swipeleft swiperight', function (event) {
         if ($('#course-overlay,#help-overlay').is(':visible')) {
             return;
         }
