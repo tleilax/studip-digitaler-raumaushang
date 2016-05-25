@@ -160,8 +160,11 @@
         }
 
         Raumaushang.request(chunks.join('/'), {}, function (schedule_hash, json) {
-            var structure     = {},
-                new_table     = old_table.clone();
+            var structure = {},
+                new_table = old_table.clone(),
+                first     = null,
+                last      = null,
+                text;
             if (schedule_hash !== Raumaushang.schedule_hash) {
                 Raumaushang.schedule_hash = schedule_hash;
 
@@ -182,6 +185,10 @@
                     if (day === 1) {
                         Raumaushang.current.timestamp = day_data.timestamp;
                     }
+                    if (first === null) {
+                        first = day_data.timestamp;
+                    }
+                    last = day_data.timestamp;
 
                     $.each(day_data.slots, function (slot, data) {
                         slot = parseInt(slot, 10);
@@ -199,6 +206,15 @@
                         Raumaushang.course_data[data.id] = data;
                     });
                 });
+
+                // Update week display
+                first = new Date(first * 1000);
+                last  = new Date(last * 1000);
+                text  = 'Kalenderwoche <strong>' + first.format('W/Y') + '</strong>';
+                text += ' vom <strong>' + first.format('d.m.') + '</strong>';
+                text += ' bis <strong>' + last.format('d.m.') + '</strong>';
+
+                $('body > header small').html(text);
 
                 //
                 $('td[data-day]', new_table).remove();

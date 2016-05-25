@@ -1,7 +1,7 @@
 <?php
     $monday = strtotime('this monday', $begin);
     $week_days = [];
-    for ($i = 0; $i < 5; $i += 1) {
+    for ($i = 0; $i < max($config['display_days']); $i += 1) {
         $week_days[] = strftime('%A, %x', strtotime('+' . $i . ' days', $monday));
     }
 
@@ -15,6 +15,7 @@
         <a href="<?= $_SERVER['REQUEST_URI'] ?>">
             <?= sprintf(_('Raum %s'), htmlReady($room->name)) ?>
         </a>
+        <small></small>
     </h1>
 </header>
 <table class="week-schedule" data-resource-id="<?= $id ?>">
