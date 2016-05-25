@@ -192,7 +192,7 @@ table.week-schedule {
         flex-shrink: 0;
     }
     article {
-        overflow-y: scroll;
+        overflow-y: auto;
         > *:last-child {
             padding-bottom: 2em;
         }
@@ -211,8 +211,21 @@ table.week-schedule {
 
 
     .qrcode {
+        padding-top: 1em;
         .square(200px);
         float: right;
+
+        img {
+            max-height: 100%;
+        }
+
+        &.enlarged {
+            .square(400px);
+            margin-top: 3em;
+            padding-right: ~'calc(50% + 200px)';
+            padding-left: 50%;
+            margin-bottom: 8em;
+        }
     }
 }
 

@@ -35,6 +35,10 @@
     //
     function showOverlay(selector, duration) {
         var hide = function (event) {
+            if (event && $(event.target).closest('.qrcode').length > 0) {
+                return;
+            }
+
             $(selector).off('.overlay', hide).hide();
             Countdown.stop(selector);
             Countdown.start('main', true);
@@ -263,6 +267,11 @@
         });
 
         return false;
+    }).on('click', '.qrcode', function (event) {
+        $(this).toggleClass('enlarged');
+
+        event.preventDefault();
+        event.stopPropagation();
     }).on('click', '#help-overlay-switch', function () {
         showOverlay('#help-overlay', Raumaushang.durations.help);
     });
@@ -294,14 +303,13 @@
     // Make QR Code
     $.fn.extend({
         makeQRCode: function () {
-            console.log(this);
             return this.each(function () {
                 var course_id = $(this).data().courseId,
                     template  = $('meta[name="course-url-template"]').attr('content');
                 new QRCode(this, {
                     text: template.replace('#{course_id}', course_id),
-                    width: 200,
-                    height: 200,
+                    width: 1024,
+                    height: 1024,
                     correctLevel: QRCode.CorrectLevel.H
                 });
             });

@@ -4,13 +4,13 @@
         <h2>{{code}} {{name}}</h2>
     </header>
     <article>
+        <div class="qrcode" data-course-id="{{course_id}}"></div>
+
         <div class="dates">
             <date class="begin">{{begin}}</date>
             <span> bis </span>
             <date class="end">{{end}}</date>
         </div>
-
-        <div class="qrcode" data-course-id="{{course_id}}"></div>
 
     {{#hasTeachers}}
         <dl class="teachers">
