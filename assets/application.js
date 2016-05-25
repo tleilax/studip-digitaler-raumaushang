@@ -258,7 +258,9 @@
         showOverlay('#course-overlay', Raumaushang.durations.course);
 
         $('#course-overlay article').on('movestart', function (event) {
-            event.preventDefault();
+            if ($('.qrcode.enlarged', this).length === 0) {
+                event.preventDefault();
+            }
         }).scrollTop(0);
 
         $.extend(Raumaushang.current, {
