@@ -292,16 +292,13 @@
         makeQRCode: function () {
             return this.each(function () {
                 var course_id = $(this).data().courseId,
-                    template  = $('meta[name="course-url-template"]').attr('content'),
-                    url       = template.replace('#{course_id}', course_id),
-                    svg_slug  = $('g', this).get(0),
-                    qrcode    = new QRCode(svg_slug, {
-                        width: 128,
-                        height: 128,
-                        useSVG: true,
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                qrcode.makeCode(url);
+                    template  = $('meta[name="course-url-template"]').attr('content');
+                new QRCode(this, {
+                    text: template.replace('#{course_id}', course_id),
+                    width: 200,
+                    height: 200,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
             });
         }
     });
