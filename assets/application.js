@@ -310,6 +310,19 @@
             Raumaushang.schedule_hash = null;
             Raumaushang.update();
         });
+    }).on('click', 'header nav a', function () {
+        var direction = $(this).hasClass('previous-week')
+                      ? Raumaushang.DIRECTION_PREVIOUS
+                      : Raumaushang.DIRECTION_NEXT;
+        Raumaushang.update(direction);
+
+        Countdown.add('return-to-current', Raumaushang.durations.return_to_current, function () {
+            Raumaushang.current.timestamp = Raumaushang.initial.timestamp;
+            Raumaushang.schedule_hash = null;
+            Raumaushang.update();
+        });
+
+        return false;
     });
 
     // Clock

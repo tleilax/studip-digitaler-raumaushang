@@ -17,6 +17,10 @@
         </a>
         <small></small>
     </h1>
+    <nav>
+        <a href="#" class="previous-week">&lt;</a>
+        <a href="#" class="next-week">&gt;</a>
+    </nav>
 </header>
 <table class="week-schedule" data-resource-id="<?= $id ?>">
     <colgroup>

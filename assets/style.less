@@ -4,6 +4,12 @@
 @import "less/help-overlay.less";
 @import "less/course-overlay.less";
 
+.blur(@amount: 1px) {
+    -webkit-filter: blur(@amount);
+    -moz-filter: blur(@amount);
+    filter: blur(@amount);
+}
+
 * {
     box-sizing: border-box;
     font-family: Helvetica;
@@ -65,7 +71,7 @@ header {
         font-weight: bold;
 
         margin: 0;
-        padding: 0.5em 0;
+        padding: 0.5em 0 0;
         text-align: center;
 
         a {
@@ -79,13 +85,40 @@ header {
         font-size: 0.5em;
         font-weight: normal;
     }
+
+    nav {
+        a {
+//            .blur();
+            .hide-text();
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 28px;
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            display: block;
+
+            &.previous-week {
+                background-image: url("@{image-path}/icons/black/arr_1left.svg");
+                left: 6px;
+            }
+            &.next-week {
+                background-image: url("@{image-path}/icons/black/arr_1right.svg");
+                right: 6px;
+            }
+        }
+    }
 }
 
 
 table.week-schedule {
     border-collapse: collapse;
     table-layout: fixed;
-    width: 100%;
+    margin: 0 auto;
+    width: ~'calc(100% - 64px)';
     z-index: 2;
 
     border: 1px solid #444;
