@@ -31,6 +31,7 @@ class SchedulesController extends PluginController
             'auth' => Config::get()->RAUMAUSHANG_AUTH ?: ['username' => 'api@raumaushang', 'password' => 'raumaushang'],
         ];
 
+        $this->debug = Studip\ENV !== 'production';
     }
 
     public function index_action()
@@ -65,10 +66,10 @@ class SchedulesController extends PluginController
     {
         $layout = $this->get_template_factory()->open('layout.php');
         $layout->plugin_scripts = [
-            $this->plugin->getPluginURL() . '/assets/mustache-2.2.1' . (Studip\ENV === 'production' ? '.min' : '') . '.js',
+            $this->plugin->getPluginURL() . '/assets/mustache-2.2.1' . ($this->debug ? '' : '.min') . '.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
             $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
-            $this->plugin->getPluginURL() . '/assets/qrcode' . (Studip\ENV === 'production' ? '.min' : '') . '.js',
+            $this->plugin->getPluginURL() . '/assets/qrcode' . ($this->debug ? '' : '.min') . '.js',
 
             $this->plugin->getPluginURL() . '/assets/date.format.js',
             $this->plugin->getPluginURL() . '/assets/countdown.js',

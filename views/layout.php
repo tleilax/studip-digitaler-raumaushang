@@ -28,7 +28,7 @@
     </script>
 </head>
 <body>
-<? if (Studip\ENV === 'development'): ?>
+<? if ($debug): ?>
     <progress value="100" max="100"></progress>
 <? endif; ?>
 
@@ -47,18 +47,18 @@
 
     <div id="clock"><?= date('H:i:s') ?></div>
 
-<? if (Studip\ENV === 'development'): ?>
-    <small id="debug-time">(<?= date('d.m.Y H:i:s') ?>)</small>
+<? if ($debug): ?>
+    <small id="debug-time"><?= date('d.m.Y H:i:s') ?></small>
 <? endif; ?>
 
 <? foreach ($scripts as $script): ?>
     <script src="<?= Assets::javascript_path($script) ?>"></script>
 <? endforeach; ?>
 <? foreach ((array)@$plugin_scripts as $script): ?>
-  <? if (Studip\ENV === 'production'): ?>
-    <script src="<?= $script ?>"></script>
-  <? else: ?>
+  <? if ($debug): ?>
     <script src="<?= URLHelper::getURL($script, ['r' => time()]) ?>"></script>
+  <? else: ?>
+    <script src="<?= $script ?>"></script>
   <? endif; ?>
 <? endforeach; ?>
 </body>

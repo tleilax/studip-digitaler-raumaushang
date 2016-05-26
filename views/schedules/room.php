@@ -23,6 +23,8 @@
     </nav>
 </header>
 <table class="week-schedule" data-resource-id="<?= $id ?>">
+    <caption>
+    </caption>
     <colgroup>
         <col width="5%">
     <? foreach ($config['display_days'] as $day): ?>

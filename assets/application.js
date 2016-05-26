@@ -127,7 +127,9 @@
             day  = now.format('w'),
             slot = window.parseInt(now.format('H'), 10);
         $('tr[data-slot],td[data-day],th[data-day]').removeClass('current-day current-slot');
-        $('[data-day="' + day + '"]:not(.is-holiday)').addClass('current-day');
+        if ((new Date(Raumaushang.current.timestamp * 1000)).format('W') == now.format('W')) {
+            $('[data-day="' + day + '"]:not(.is-holiday)').addClass('current-day');
+        }
 
         $('tr[data-slot="' + slot + '"],td[data-slot~="' + slot + '"]:not(.is-holiday)').addClass('current-slot');
 
@@ -236,6 +238,8 @@
                 //
                 delete structure;
                 old_table.replaceWith(new_table);
+
+                $('.schedule-cell .name', new_table).clamp();
             }
             Countdown.start('main', true);
 
@@ -343,6 +347,24 @@
                     height: 1024,
                     correctLevel: QRCode.CorrectLevel.H
                 });
+            });
+        },
+        clamp: function () {
+            return this.each(function () {
+                if (this.children.length > 0) {
+                    throw 'Cannot execute clamp() on non-text nodes';
+                }
+                var chunks  = $(this).text().split(' '),
+                    height  = $(this).height(),
+                    changed = false;
+                $(this).wrapInner('<div>');
+
+                while (height < $('div', this).height() && chunks.length > 0) {
+                    chunks.pop();
+                    $('div', this).text(chunks.join(' ') + '...');
+                }
+
+                $(this).text($('div', this).text());
             });
         }
     });

@@ -1,14 +1,9 @@
 @page-padding: 8px;
 
 @import "less/overlay-mixin.less";
+@import "less/loading-overlay.less";
 @import "less/help-overlay.less";
 @import "less/course-overlay.less";
-
-.blur(@amount: 1px) {
-    -webkit-filter: blur(@amount);
-    -moz-filter: blur(@amount);
-    filter: blur(@amount);
-}
 
 * {
     box-sizing: border-box;
@@ -62,16 +57,16 @@ body > progress {
 
 header {
     margin-top: 7px;
-    max-height: 84px;
+    max-height: 90px;
     overflow: hidden;
 
     h1 {
         border-bottom: 5px solid transparent;
-        font-size: 2em;
+        font-size: 2.2em;
         font-weight: bold;
 
         margin: 0;
-        padding: 0.5em 0 0;
+        padding: 0;
         text-align: center;
 
         a {
@@ -88,7 +83,6 @@ header {
 
     nav {
         a {
-//            .blur();
             .hide-text();
 
             position: absolute;
@@ -115,22 +109,18 @@ header {
 
 
 table.week-schedule {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     table-layout: fixed;
     margin: 0 auto;
     width: ~'calc(100% - 64px)';
     z-index: 2;
 
-    border: 1px solid #444;
+    border-left: 1px solid #444;
+    border-top: 1px solid #444;
 
     th, td {
         vertical-align: top;
-
-        > div {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
     }
 
     thead th {
@@ -138,20 +128,18 @@ table.week-schedule {
 
         border-bottom: 1px solid #444;
         border-right: 1px solid #444;
-        &:last-child {
-            border-right: 0;
-        }
     }
 
     tbody {
         th {
             vertical-align: middle;
+            padding: 0.25em;
         }
         th, td {
-            border: 1px solid #444;
+            border-bottom: 1px solid #444;
+            border-right: 1px solid #444;
             height: 3em; // Reduce to 2.8em to gain a line beneath the schedule
             line-height: 1;
-            padding: 0.25em;
         }
 
         tr:nth-child(2n) th {
@@ -160,6 +148,7 @@ table.week-schedule {
 
         td {
             background-color: #eee;
+            position: relative;
             &.course-info {
                 background-color: #fff;
             }
@@ -172,37 +161,35 @@ table.week-schedule {
         }
     }
 
-    tr.current-slot > td, tr.current-slot > th, tr > td.current-slot {
-        background-color: fadeout(#fec, 95%);
-    }
-
-    tr.current-slot > td.course-info, tr > td.current-slot.course-info {
-        background-color: fadeout(#fec, 75%);
-    }
-
-    tr > th.current-day, tr > td.course-info.current-day {
-        background-color: fadeout(#fec, 75%);
-    }
-
     tr > td.current-day.current-slot {
         background-color: #fec;
         font-weight: bold;
     }
 }
 
-#loading-overlay {
-    .overlay(true, false);
-    display: block;
+.schedule-cell {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
-    font-size: 5em;
+    padding: 0.25em;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
 
-    img {
-        height: 0.7em;
+    .name {
+        flex: 1 1 100%;
+
+        overflow: hidden;
+        line-height: 1.2;
     }
-}
-
-.course-info, #course-overlay {
-    cursor: pointer;
+    .teachers {
+        justify-content: flex-end;
+        flex: 0 0 1em;
+        text-align: right;
+    }
 }
 
 ul.teachers {
@@ -221,20 +208,23 @@ ul.teachers {
 }
 
 #clock {
+    @size: 80px;
+
     position: absolute;
-    left: (@page-padding);
-    top: (@page-padding + 20px);
+    left: 0;
+    top: 0;
     font-size: 40px;
+    padding: 20px 0 20px (@size + 5px);
     line-height: 1;
 
-    padding-left: 40px;
     background-image: url("@{image-path}/icons/black/date.svg");
     background-position: left center;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: @size;
 }
+
 #debug-time {
     position: absolute;
-    left: 50px;
+    left: 90px;
     top: 65px;
 }
