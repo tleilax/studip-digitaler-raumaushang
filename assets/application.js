@@ -13,6 +13,7 @@
 
     // Initialize variables
     $.extend(Raumaushang, {
+        max: {teachers: 3},
         DIRECTION_NEXT: '>',
         DIRECTION_PREVIOUS: '<',
         schedule_hash: null,
@@ -229,6 +230,9 @@
                                 day: day,
                                 slots: data.slots.join(' '),
                                 hasTeachers: data.teachers.length > 0,
+                                teachers: data.teachers.length > Raumaushang.max.teachers
+                                    ? [{nachname: (data.teachers.length.toString() + ' Lehrende')}]
+                                    : data.teachers
                             }));
                         }
                         row.append(cell);
