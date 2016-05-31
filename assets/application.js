@@ -79,6 +79,60 @@
         }
     });
 
+    Raumaushang.init = function () {
+        Raumaushang.offsets = {
+            fraction: null
+        };
+
+        var table         = $('.week-schedule[data-resource-id]').first(),
+            window_width  = $('body').outerWidth(true),
+            window_height = $('body').outerHeight(true);
+
+        $('tbody tr', table).each(function () {
+            var slot = $(this).data().slot;
+            $('thead th[data-day]', table).each(function () {
+                var day  = $(this).data().day,
+                    td   = $('tr[data-slot="' + slot + '"] td[data-day="' + day +'"]'),
+                    box = td[0].getBoundingClientRect();
+                if (Raumaushang.offsets[day] === undefined) {
+                    Raumaushang.offsets[day] = {
+                        left: box.left - 1,
+                        right: window_width - box.right,
+                        offsets: {}
+                    };
+                }
+                Raumaushang.offsets[day].offsets[slot] = {
+                    top: box.top - 1,
+                    bottom: window_height - box.bottom,
+                    height: box.height
+                };
+            })
+        });
+
+        return;
+
+        var Colors = {1: 'red', 2: 'blue', 3: 'green', 4: 'orange', 5: 'purple'};
+        $.each(Raumaushang.offsets, function (day, data) {
+            if (day === 'fraction') {
+                return;
+            }
+            $.each(data.offsets, function (slot, offsets) {
+                if (slot % 2 == day % 2) {
+                    return;
+                }
+                $('<div>').text(day + ' / ' + slot + ' (' + data.left + '/' + data.right + ' x ' + offsets.top + ')').css({
+                    position: 'absolute',
+                    left: data.left,
+                    right: data.right,
+                    top: offsets.top,
+                    bottom: offsets.bottom,
+                    border: '1px solid green',
+                    background: Colors[day]
+                }).appendTo('body');
+            });
+        });
+    };
+
     // Define request function
     var requests = {};
     Raumaushang.request = function (url, data, callback, forced) {
@@ -127,15 +181,46 @@
         var now  = new Date,
             day  = now.format('w'),
             slot = window.parseInt(now.format('H'), 10);
-        $('tr[data-slot],td[data-day],th[data-day]').removeClass('current-day current-slot');
-        if ((new Date(Raumaushang.current.timestamp * 1000)).format('W') == now.format('W')) {
-            $('[data-day="' + day + '"]:not(.is-holiday)').addClass('current-day');
-        }
-
-        $('tr[data-slot="' + slot + '"],td[data-slot~="' + slot + '"]:not(.is-holiday)').addClass('current-slot');
+        $('body > .schedule-item').removeClass('current-slot').filter('[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
 
         window.setTimeout(Raumaushang.highlight, 250);
     };
+
+    Raumaushang.getSpanningSlots = function (item) {
+        var slots    = [],
+            slot     = item.slot,
+            end_slot = item.slot + (item.fraction + item.duration) / 4;
+        while (slot < end_slot) {
+            slots.push(slot);
+            slot += 1;
+        }
+        return slots.join(' ');
+    };
+
+    //
+    Raumaushang.createItemOffsets = function (item, offset) {
+        if (!offset.offsets.hasOwnProperty(item.slot)) {
+            console.log(item, offset);
+        }
+
+        var top_offset = offset.offsets[item.slot],
+            bottom_slot = item.slot + (item.fraction + item.duration) / 4,
+            bottom_offset;
+
+        if (offset.offsets.hasOwnProperty(Math.floor(bottom_slot))) {
+            bottom_offset = offset.offsets[Math.floor(bottom_slot)];
+        } else {
+            console.log(item, offset, bottom_slot);
+            bottom_offset = offset.offsets[21];
+        }
+
+        return {
+            left: offset.left,
+            right: offset.right,
+            top: Math.round(top_offset.top + item.fraction * top_offset.height / 4),
+            bottom: bottom_offset.bottom + (bottom_slot % 1 > 0 ? 1 - bottom_slot % 1 : 0) * bottom_offset.height
+        };
+    }
 
     // Updates the table (internally requests data)
     Raumaushang.update = function (direction, callback) {
@@ -146,8 +231,8 @@
 
         Countdown.stop('main');
 
-        var old_table   = $('.week-schedule[data-resource-id]').first(),
-            resource_id = old_table.data().resourceId,
+        var table       = $('.week-schedule[data-resource-id]').first(),
+            resource_id = table.data().resourceId,
             chunks      = ['/raumaushang/schedule', resource_id],
             forced      = false;;
 
@@ -163,27 +248,21 @@
         }
 
         Raumaushang.request(chunks.join('/'), {}, function (schedule_hash, json) {
-            var structure = {},
-                new_table = old_table.clone(),
-                first     = null,
+            var first     = null,
                 last      = null,
-                text;
+                text,
+                cells = $();
             if (schedule_hash !== Raumaushang.schedule_hash) {
                 Raumaushang.schedule_hash = schedule_hash;
 
-                $('tbody tr', old_table).each(function () {
-                    var slot = $(this).data().slot;
-                    structure[slot] = {};
-                    $('thead th[data-day]', old_table).each(function () {
-                        var day = $(this).data().day;
-                        structure[slot][day] = null;
-                    })
-                });
+                $('.schedule-item').remove();
 
                 $.each(json, function (day, day_data) {
-                    var day = parseInt(day, 10),
-                        str = (new Date(day_data.timestamp * 1000)).format('d.m.');
-                    $('th[data-day="' + day + '"] date', new_table).text(str);
+                    var str = (new Date(day_data.timestamp * 1000)).format('d.m.');
+
+                    day = parseInt(day, 10);
+
+                    $('th[data-day="' + day + '"] date', table).text(str);
 
                     if (day === 1) {
                         Raumaushang.current.timestamp = day_data.timestamp;
@@ -193,22 +272,27 @@
                     }
                     last = day_data.timestamp;
 
-                    $.each(day_data.slots, function (slot, data) {
-                        slot = parseInt(slot, 10);
+                    $.each(day_data.slots, function (index, item) {
+                        Raumaushang.course_data[item.id] = item;
 
-                        data.slots = [slot];
-                        for (var i = 1; i < data.duration; i += 1) {
-                            if (structure[slot + i] !== undefined) {
-                                delete structure[slot + i][day];
-                                data.slots.push(slot + i);
-                            }
-                        }
+                        var offset = Raumaushang.offsets[day],
+                            html = render('#schedule-item-template', $.extend({}, item || {}, {
+                                day: day,
+                                slots: Raumaushang.getSpanningSlots(item), // TODO: All spanning slots
+                                hasTeachers: item.teachers.length > 0,
+                                teachers: item.teachers.length > Raumaushang.max.teachers
+                                    ? [{nachname: (item.teachers.length.toString() + ' Lehrende')}]
+                                    : item.teachers
+                            })),
+                            styles = Raumaushang.createItemOffsets(item, offset),
+                            cell = $(html).css(styles).attr('data-foo', styles.min_diff);
 
-                        structure[slot][day] = data;
-
-                        Raumaushang.course_data[data.id] = data;
+                        cells = cells.add(cell);
                     });
                 });
+
+                $('body').append(cells);
+                $(cells).filter(':not([data-duration="1"],[data-duration="2"])').find('.name').clamp();
 
                 // Update week display
                 first = new Date(first * 1000);
@@ -218,32 +302,6 @@
                 text += ' bis <strong>' + last.format('d.m.') + '</strong>';
 
                 $('body > header small').html(text);
-
-                //
-                $('td[data-day]', new_table).remove();
-                $.each(structure, function (slot, days) {
-                    var row = $('tr[data-slot="' + slot + '"]', new_table);
-                    $.each(days, function (day, data) {
-                        var cell = $('<td>&nbsp;</td>').attr('data-day', day);
-                        if (data !== null) {
-                            cell = render('#schedule-cell-template', $.extend({}, data || {}, {
-                                day: day,
-                                slots: data.slots.join(' '),
-                                hasTeachers: data.teachers.length > 0,
-                                teachers: data.teachers.length > Raumaushang.max.teachers
-                                    ? [{nachname: (data.teachers.length.toString() + ' Lehrende')}]
-                                    : data.teachers
-                            }));
-                        }
-                        row.append(cell);
-                    });
-                });
-
-                //
-                delete structure;
-                old_table.replaceWith(new_table);
-
-                $('.schedule-cell .name', new_table).clamp();
             }
             Countdown.start('main', true);
 
@@ -255,6 +313,14 @@
 
     // Handlers
     $(document).ready(function () {
+        Raumaushang.init();
+
+/*
+        $('#loading-overlay').hide();
+        Countdown.stop();
+        return;
+*/
+
         // Initialize schedule table
         Raumaushang.update(function () {
             Raumaushang.highlight();
@@ -269,7 +335,7 @@
         var course_id = $(this).blur().data().courseId,
             data      = Raumaushang.course_data[course_id],
             day       = $(this).data().day,
-            slot      = $(this).closest('tr').data().slot,
+            slot      = $(this).data().slot,
             rendered = 'error';
 
         $('#course-overlay').html(render('#course-template', $.extend({}, data, {

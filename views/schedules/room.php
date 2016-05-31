@@ -15,7 +15,12 @@
         <a href="<?= $_SERVER['REQUEST_URI'] ?>">
             <?= sprintf(_('Raum %s'), htmlReady($room->name)) ?>
         </a>
-        <small></small>
+        <small>
+            <? printf('Kalenderwoche <strong>%u</strong> vom <strong>%s</strong> bis <strong>%s</strong>',
+                      date('W', $monday),
+                      date('d.m.', $monday),
+                      date('d.m.', strtotime('next friday', $monday))) ?>
+        </small>
     </h1>
     <nav>
         <a href="#" class="previous-week">&lt;</a>
@@ -43,22 +48,16 @@
         </tr>
     </thead>
     <tbody>
-    <? foreach (range(8, 20, 2) as $slot): ?>
+<? foreach (range(8, 21) as $slot): ?>
         <tr data-slot="<?= $slot ?>">
             <th><?= $slot ?>:00</th>
         <? foreach ($config['display_days'] as $day): ?>
             <td data-day="<?= $day ?>">&nbsp;</td>
         <? endforeach; ?>
         </tr>
-        <tr data-slot="<?= $slot + 1 ?>">
-            <th><?= $slot + 1 ?>:00</th>
-        <? foreach ($config['display_days'] as $day): ?>
-            <td data-day="<?= $day ?>">&nbsp;</td>
-        <? endforeach; ?>
-        </tr>
-    <? endforeach; ?>
+<? endforeach; ?>
     </tbody>
 </table>
 
 <script id="course-template" type="x-tmpl-mustache"><?= $this->render_partial('course-overlay.php') ?></script>
-<script id="schedule-cell-template" type="x-tmpl-mustache"><?= $this->render_partial('schedule-cell.php') ?></script>
+<script id="schedule-item-template" type="x-tmpl-mustache"><?= $this->render_partial('schedule-item.php') ?></script>

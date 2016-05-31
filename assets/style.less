@@ -5,6 +5,18 @@
 @import "less/help-overlay.less";
 @import "less/course-overlay.less";
 
+.centered() {
+    text-align: center;
+
+    // Vertical centering
+    &::before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+}
+
 * {
     box-sizing: border-box;
     font-family: Helvetica;
@@ -26,6 +38,7 @@
 body {
     margin: 0;
     padding: @page-padding;
+    position: relative;
 }
 
 body > output {
@@ -124,60 +137,46 @@ table.week-schedule {
     }
 
     thead th {
-        line-height: 1.5;
-
         border-bottom: 1px solid #444;
         border-right: 1px solid #444;
     }
 
     tbody {
-        th {
-            vertical-align: middle;
-            padding: 0.25em;
-        }
         th, td {
             border-bottom: 1px solid #444;
             border-right: 1px solid #444;
-            height: 3em; // Reduce to 2.8em to gain a line beneath the schedule
-            line-height: 1;
         }
-
-        tr:nth-child(2n) th {
+        th {
+            height: 3em;
             font-weight: normal;
+            padding: 0.25em;
+            vertical-align: middle;
         }
 
         td {
             background-color: #eee;
+            height: 3em; // Reduce to 2.8em to gain a line beneath the schedule
+            line-height: 1;
             position: relative;
             &.course-info {
                 background-color: #fff;
             }
 
-            &.is-holiday {
-                background-color: #fcc;
-                text-align: center;
-                vertical-align: middle;
-            }
         }
     }
 
-    tr > td.current-day.current-slot {
-        background-color: #fec;
-        font-weight: bold;
-    }
 }
 
-.schedule-cell {
+.schedule-item {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
 
-    padding: 0.25em;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    padding: 0.25em;
+
+    background: white;
+    border: 1px solid #444;
 
     .name {
         flex: 1 1 100%;
@@ -189,6 +188,22 @@ table.week-schedule {
         justify-content: flex-end;
         flex: 0 0 1em;
         text-align: right;
+
+    }
+
+    &[data-duration="1"], &[data-duration="2"], &[data-duration="3"] {
+        .teachers {
+            display: none;
+        }
+    }
+
+    &.current-slot {
+        background-color: #fec;
+        font-weight: bold;
+    }
+    &.is-holiday {
+        .centered();
+        background-color: #fcc;
     }
 }
 

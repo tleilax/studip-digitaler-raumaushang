@@ -61,7 +61,9 @@ class Schedule
     {
         $schedules = array_map(function (Schedule $schedule) use ($extended) {
             $array = $schedule->toArray($extended);
-            $array['duration']   = ceil(($array['end'] - $array['begin']) / (60 * 60));
+            $array['slot'] = (int)date('H', $array['begin']);
+            $array['duration'] = ceil(($array['end'] - $array['begin']) / (60 * 60 / 4));
+            $array['fraction'] = floor(date('i', $array['begin']) / 15);
             $array['is_holiday'] = false;
 
             return $array;
@@ -82,13 +84,28 @@ class Schedule
             $wday = strftime('%u', $schedule['begin']);
             $hour = (int)strftime('%H', $schedule['begin']);
 
-            $temp[$wday]['slots'][$hour] = $schedule;
+            $temp[$wday]['slots'][] = $schedule;
         }
 
         // Check for holiday and fill empty slots per day
         for ($i = 1; $i <= 5; $i += 1) {
             $holiday = holiday($temp[$i]['timestamp']);
-            if ($holiday !== false  && $holiday['col'] == 3) {
+            if ($holiday !== false /* && $holiday['col'] == 3 */) {
+                $slots = array_fill(8, 14, array_fill_keys([0, 1, 2, 3], null));
+                var_dump($slots);die;
+/*
+                array_unshift($temp[$i]['slots'], [
+                    'id'         => md5(serialize($holiday)),
+                    'slot'       => 8,
+                    'fraction'   => 0,
+                    'code'       => '',
+                    'name'       => $holiday['name'],
+                    'duration'   => 14 * 4,
+                    'teachers'   => [],
+                    'modules'    => [],
+                    'is_holiday' => true,
+                ]);
+*/
                 $start = 0;
                 $duration = 0;
                 for ($slot = 8; $slot <= 21; $slot += 1) {
@@ -96,7 +113,8 @@ class Schedule
                         $start = $start ?: $slot;
                         $duration += 1;
                     } elseif ($start > 0) {
-                        $temp[$i]['slots'][$start] = [
+                        $temp[$i]['slots'][] = [
+                            'slot'       => $start,
                             'code'       => '',
                             'name'       => $holiday['name'],
                             'duration'   => $duration,
@@ -114,7 +132,8 @@ class Schedule
                     }
                 }
                 if ($start > 0 && $duration > 0) {
-                    $temp[$i]['slots'][$start] = [
+                    $temp[$i]['slots'][] = [
+                        'slot'       => 'start',
                         'code'       => '',
                         'name'       => $holiday['name'],
                         'duration'   => $duration,
