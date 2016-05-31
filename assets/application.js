@@ -181,7 +181,11 @@
         var now  = new Date,
             day  = now.format('w'),
             slot = window.parseInt(now.format('H'), 10);
-        $('body > .schedule-item').removeClass('current-slot').filter('[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
+        $('body > .schedule-item').removeClass('current-slot');
+
+        if ((new Date(Raumaushang.current.timestamp * 1000)).format('W') == now.format('W')) {
+             $('body > .schedule-item[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
+        }
 
         window.setTimeout(Raumaushang.highlight, 250);
     };
@@ -207,11 +211,14 @@
             bottom_slot = item.slot + (item.fraction + item.duration) / 4,
             bottom_offset;
 
+        if (bottom_slot === Math.floor(bottom_slot)) {
+            bottom_slot -= 1;
+        }
+
         if (offset.offsets.hasOwnProperty(Math.floor(bottom_slot))) {
             bottom_offset = offset.offsets[Math.floor(bottom_slot)];
         } else {
-            console.log(item, offset, bottom_slot);
-            bottom_offset = offset.offsets[21];
+            bottom_offset = offset.offsets[21]; // TODO: max should be configurable
         }
 
         return {
@@ -234,17 +241,28 @@
         var table       = $('.week-schedule[data-resource-id]').first(),
             resource_id = table.data().resourceId,
             chunks      = ['/raumaushang/schedule', resource_id],
-            forced      = false;;
+            forced      = false,
+            timestamp,
+            probe;
 
         if (Raumaushang.current.timestamp) {
             if (direction === Raumaushang.DIRECTION_NEXT) {
-                chunks.push(Raumaushang.current.timestamp + 7 * 24 * 60 * 60);
+                timestamp = Raumaushang.current.timestamp + 7 * 24 * 60 * 60;
             } else if (direction === Raumaushang.DIRECTION_PREVIOUS) {
-                chunks.push(Raumaushang.current.timestamp - 7 * 24 * 60 * 60);
+                timestamp = Raumaushang.current.timestamp - 7 * 24 * 60 * 60;
             } else {
-                chunks.push(Raumaushang.current.timestamp);
+                timestamp = Raumaushang.current.timestamp;
                 forced = true;
             }
+
+            probe = new Date(timestamp * 1000);
+            if (probe.format('H') > 20) {
+                timestamp += (24 - probe.format('H')) * 60 * 60;
+            } else if (probe.format('H') > 0) {
+                timestamp -= probe.format('H') * 60 * 60;
+            }
+
+            chunks.push(timestamp);
         }
 
         Raumaushang.request(chunks.join('/'), {}, function (schedule_hash, json) {

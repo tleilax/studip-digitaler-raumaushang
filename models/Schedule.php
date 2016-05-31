@@ -57,10 +57,10 @@ class Schedule
         return $events;
     }
 
-    public static function decorate(array $schedules, $from, $extended = false)
+    public static function decorate(array $schedules, $from)
     {
-        $schedules = array_map(function (Schedule $schedule) use ($extended) {
-            $array = $schedule->toArray($extended);
+        $schedules = array_map(function (Schedule $schedule) {
+            $array = $schedule->toArray();
             $array['slot'] = (int)date('H', $array['begin']);
             $array['duration'] = ceil(($array['end'] - $array['begin']) / (60 * 60 / 4));
             $array['fraction'] = floor(date('i', $array['begin']) / 15);
@@ -76,7 +76,7 @@ class Schedule
         $temp = [];
         for ($i = 1; $i <= 5; $i += 1) {
             $temp[$i] = [
-                'timestamp' => $from + ($i - 1) * 24 * 60 * 60,
+                'timestamp' => strtotime('+' . ($i - 1) . ' days 0:00:00', $from),
                 'slots'     => [],
             ];
         }
@@ -88,66 +88,73 @@ class Schedule
         }
 
         // Check for holiday and fill empty slots per day
-        for ($i = 1; $i <= 5; $i += 1) {
-            $holiday = holiday($temp[$i]['timestamp']);
-            if ($holiday !== false /* && $holiday['col'] == 3 */) {
-                $slots = array_fill(8, 14, array_fill_keys([0, 1, 2, 3], null));
-                var_dump($slots);die;
-/*
-                array_unshift($temp[$i]['slots'], [
-                    'id'         => md5(serialize($holiday)),
-                    'slot'       => 8,
-                    'fraction'   => 0,
-                    'code'       => '',
-                    'name'       => $holiday['name'],
-                    'duration'   => 14 * 4,
-                    'teachers'   => [],
-                    'modules'    => [],
-                    'is_holiday' => true,
-                ]);
-*/
-                $start = 0;
-                $duration = 0;
-                for ($slot = 8; $slot <= 21; $slot += 1) {
-                    if (!isset($temp[$i]['slots'][$slot])) {
-                        $start = $start ?: $slot;
-                        $duration += 1;
-                    } elseif ($start > 0) {
-                        $temp[$i]['slots'][] = [
-                            'slot'       => $start,
-                            'code'       => '',
-                            'name'       => $holiday['name'],
-                            'duration'   => $duration,
-                            'teachers'   => [],
-                            'modules'    => [],
-                            'is_holiday' => true,
-                        ];
+        for ($day = 1; $day <= 5; $day += 1) {
+            $holiday = holiday($temp[$day]['timestamp']);
+            if ($holiday !== false && $holiday['col'] == 3) {
+                // Step 1: Populate slots array with all slots unset
+                $slots = array_fill(8, 14, array_fill_keys([0, 1, 2, 3], false));
 
-                        $start = 0;
-                        $duration = 0;
+                // Step 2: Set the occupied slots
+                foreach ($temp[$day]['slots'] as $item) {
+                    $slot     = $item['slot'];
+                    $fraction = $item['fraction'];
 
-                        $slot += $temp[$i]['slots'][$slot]['duration'] - 1;
-                    } else {
-                        $slot += $temp[$i]['slots'][$slot]['duration'] - 1;
+                    for ($i = 1; $i <= $item['duration']; $i += 1) {
+                        $slots[$slot][$fraction] = true;
+
+                        $fraction += 1;
+                        if ($fraction > 3) {
+                            $slot += 1;
+                            $fraction = 0;
+                        }
                     }
                 }
-                if ($start > 0 && $duration > 0) {
-                    $temp[$i]['slots'][] = [
-                        'slot'       => 'start',
+
+                // Step 3: Aggregate the occupied slots
+                $chunks   = [];
+                $start    = null;
+                $fraction = 0;
+                $duration = 0;
+
+                foreach ($slots as $slot => $fractions) {
+                    foreach ($fractions as $frac => $value) {
+                        if ($value === true && $start !== null) {
+                            $chunks[] = compact('start', 'fraction', 'duration');
+                            $start = null;
+                            $fraction = 0;
+                            $duration = 0;
+                        } elseif ($value === false && $start === null) {
+                            $start = $slot;
+                            $fraction = $frac;
+                            $duration = 1;
+                        } elseif ($value === false) {
+                            $duration += 1;
+                        }
+                    }
+                }
+
+                if ($start !== null) {
+                    $chunks[] = compact('start', 'fraction', 'duration');
+                }
+
+                // Step 4: Write the new blocks back
+                foreach (array_reverse($chunks) as $chunk) {
+                    array_unshift($temp[$day]['slots'], [
+                        'id'         => md5(serialize($holiday) . serialize($chunk)),
+                        'slot'       => $chunk['start'],
+                        'fraction'   => $chunk['fraction'],
                         'code'       => '',
                         'name'       => $holiday['name'],
-                        'duration'   => $duration,
+                        'duration'   => $chunk['duration'],
                         'teachers'   => [],
                         'modules'    => [],
                         'is_holiday' => true,
-                    ];
+                    ]);
                 }
             }
         }
 
-        $schedules = $temp;
-
-        return $schedules;
+        return $temp;
     }
 
     protected static function getBeginAndEnd($begin, $end)
@@ -207,7 +214,7 @@ class Schedule
         $this->$offset = null;
     }
 
-    public function toArray($extended = false)
+    public function toArray()
     {
         $result = [
             'id'          => md5(implode('|', [$this->code, $this->name, $this->begin, $this->end])),
@@ -226,10 +233,6 @@ class Schedule
             'modules'     => $this->getModules($this->course_id),
             'description' => trim($this->description) ?: null,
         ];
-
-        if ($extended) {
-            $result['hasTeachers'] = count($result['teachers']) > 0;
-        }
 
         return $result;
     }
