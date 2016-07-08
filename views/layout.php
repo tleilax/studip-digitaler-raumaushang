@@ -12,10 +12,10 @@
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_uri('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
-  <? if (Studip\ENV === 'production'): ?>
-    <link href="<?= $style ?>" rel="stylesheet" type="text/css">
-  <? else: ?>
+  <? if ($debug): ?>
     <link href="<?= URLHelper::getURL($style, ['r' => time()]) ?>" rel="stylesheet" type="text/css">
+  <? else: ?>
+    <link href="<?= $style ?>" rel="stylesheet" type="text/css">
   <? endif; ?>
 <? endforeach; ?>
     <script>

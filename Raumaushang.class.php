@@ -13,10 +13,12 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
     {
         parent::__construct();
 
-        $navigation = new Navigation(_('Raumaushang'), $this->url_for('schedules/index'));
-        $navigation->setImage('icons/lightblue/timetable.svg');
-        $navigation->setActiveImage('icons/white/timetable.svg');
-        Navigation::addItem('/raumaushang', $navigation);
+        if (is_object($GLOBALS['user']) && $GLOBALS['user']->perms === 'root') {
+            $navigation = new Navigation(_('Raumaushang'), $this->url_for('schedules/index'));
+            $navigation->setImage('icons/lightblue/timetable.svg');
+            $navigation->setActiveImage('icons/white/timetable.svg');
+            Navigation::addItem('/raumaushang', $navigation);
+        }
     }
 
     public function perform($unconsumed_path)
@@ -77,7 +79,6 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
             unlink($temp_file);
             rename(str_replace('.less', '.css', $temp_file), $path . '/' . basename($asset, '.less') . '.css');
         }
-
 
         PageLayout::addStylesheet($this->getPluginURL() . '/' . ltrim(str_replace('.less', '.css', $asset), '/'));
     }

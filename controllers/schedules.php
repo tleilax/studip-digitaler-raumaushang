@@ -31,7 +31,7 @@ class SchedulesController extends PluginController
             'auth' => Config::get()->RAUMAUSHANG_AUTH ?: ['username' => 'api@raumaushang', 'password' => 'raumaushang'],
         ];
 
-        $this->debug = Studip\ENV !== 'production';
+        $this->debug = false && Studip\ENV !== 'production';
     }
 
     public function index_action()
