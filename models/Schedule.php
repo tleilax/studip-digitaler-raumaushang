@@ -21,6 +21,10 @@ class Schedule
         $events = [];
         $ids    = [];
         foreach ($list->events as $event) {
+            if (date('H', $event->getBegin()) < 8 || date('H', $event->getEnd()) > 21) {
+                continue;
+            }
+
             $events[] = [
                 'id'    => $event->getAssignId(),
                 'begin' => $event->getBegin(),
