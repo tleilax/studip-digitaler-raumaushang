@@ -11,6 +11,22 @@
         throw 'Invalid call, object Raumaushang missing';
     }
 
+    Raumaushang.loadingOverlayTimeout = null;
+    Raumaushang.showLoadingOverlay = function (immediately) {
+        clearTimeout(Raumaushang.loadingOverlayTimeout);
+        if (immediately) {
+            $('#loading-overlay').show();
+        } else {
+            Raumaushang.loadingOverlayTimeout = window.setTimeout(function () {
+                $('#loading-overlay').show();
+            }, 300);
+        }
+    };
+    Raumaushang.hideLoadingOverlay = function () {
+        clearTimeout(Raumaushang.loadingOverlayTimeout);
+        $('#loading-overlay').hide();
+    };
+
     // Initialize variables
     $.extend(Raumaushang, {
         max: {teachers: 3},
@@ -50,7 +66,7 @@
             }
         };
 
-        $('#loading-overlay:visible').hide();
+        Raumaushang.hideLoadingOverlay();
         Countdown.stop('main');
 
         $(selector).on('click.overlay', hide).show();
@@ -143,9 +159,7 @@
             }
         }
 
-        window.setTimeout(function () {
-            $('#loading-overlay').show();
-        }, 300);
+        Raumaushang.showLoadingOverlay();
 
         return $.ajax({
             type: 'GET',
@@ -172,7 +186,7 @@
                 console.log('ajax failed', text, error, url);
             }
         }).always(function () {
-            $('#loading-overlay').hide();
+            Raumaushang.hideLoadingOverlay();
         });
     }
 
@@ -348,7 +362,7 @@
     }).on('mousemove mousedown mouseup touchmove touchstart touchend', function (event) {
         Countdown.reset();
     }).on('click', '.course-info', function () {
-        $('#loading-overlay').show();
+        Raumaushang.showLoadingOverlay(true);
 
         var course_id = $(this).blur().data().courseId,
             data      = Raumaushang.course_data[course_id],
