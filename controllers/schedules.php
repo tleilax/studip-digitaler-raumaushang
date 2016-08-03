@@ -47,7 +47,10 @@ class SchedulesController extends PluginController
 
     public function room_action($room_id)
     {
-        $this->addOwnLayout();
+        $this->addOwnLayout('layout-room-view.php', [
+            'assets/room-view.less',
+            'assets/room-view.js',
+        ]);
 
         $this->id       = $room_id;
         $this->room     = Objekt::find($room_id);
@@ -62,22 +65,27 @@ class SchedulesController extends PluginController
         $this->properties = $properties;
     }
 
-    private function addOwnLayout()
+    private function addOwnLayout($name, array $assets = [])
     {
-        $layout = $this->get_template_factory()->open('layout.php');
-        $layout->plugin_scripts = [
-            $this->plugin->getPluginURL() . '/assets/mustache-2.2.1' . ($this->debug ? '' : '.min') . '.js',
-            $this->plugin->getPluginURL() . '/assets/jquery.event.move.js',
-            $this->plugin->getPluginURL() . '/assets/jquery.event.swipe.js',
-            $this->plugin->getPluginURL() . '/assets/qrcode' . ($this->debug ? '' : '.min') . '.js',
+        $js = $css = [];
+        foreach ($assets as $asset) {
+            $asset = '/' . ltrim($asset, '/');
 
-            $this->plugin->getPluginURL() . '/assets/date.format.js',
-            $this->plugin->getPluginURL() . '/assets/countdown.js',
-            $this->plugin->getPluginURL() . '/assets/application.js',
-        ];
-        $layout->plugin_styles = [
-            $this->plugin->getPluginURL() . '/assets/style.css',
-        ];
+            $extension = pathinfo($asset, PATHINFO_EXTENSION);
+            if ($extension === 'js') {
+                $js[] = $asset;
+            } elseif ($extension === 'less') {
+                $this->plugin->addLESS($asset);
+                $css[] = str_replace('.less', '.css', $asset);
+            } elseif ($extension === 'css') {
+                $css[] = $asset;
+            }
+        }
+
+        $layout = $this->get_template_factory()->open($name);
+        $layout->plugin_scripts = $js;
+        $layout->plugin_styles  = $css;
+        $layout->plugin_base    = $this->plugin->getPluginURL();
         $this->set_layout($layout);
     }
 
