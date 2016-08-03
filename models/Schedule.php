@@ -13,7 +13,7 @@ class Schedule
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
-        $list = new AssignEventList ($begin, $end, $resource->id, '', '', true);
+        $list = new AssignEventList($begin, $end, $resource->id, '', '', true);
         if ($list->numberOfEvents() === 0) {
             return [];
         }
@@ -59,6 +59,37 @@ class Schedule
             $events[$index] = new self($data);
         }
         return $events;
+    }
+
+    public static function findByBuilding(Resources\Objekt $building, $start, $end)
+    {
+        $query = "SELECT `ra`.`begin`, `ra`.`end`,
+                         `s`.`veranstaltungsnummer` AS `code`,
+                         IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
+                         GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
+                         `ro`.`name` AS `room`,
+                         `s`.`seminar_id` AS `course_id`,
+                         `s`.`Beschreibung` AS `description`,
+                         `s`.`Seminar_id` AS `course_id`
+                  FROM `resources_assign` AS `ra`
+                  LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
+                  LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
+                  JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
+                  LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
+                  WHERE `ro`.`parent_id` = :building_id
+                    AND `ra`.`end` >= :begin AND `ra`.`begin` <= :end 
+                  GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
+                  ORDER BY `begin`, `name`";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':building_id', $building->id);
+        $statement->bindValue(':begin', $start);
+        $statement->bindValue(':end', $end);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($result as $index => $row) {
+            $result[$index] = new self($row);
+        }
+        return $result;
     }
 
     public static function decorate(array $schedules, $from)

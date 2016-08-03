@@ -1,5 +1,9 @@
-<h1>
+<h1 class="flex-heading">
     <?= sprintf(_('Gebäude "%s" - Raumübersicht'), htmlReady($building->name)) ?>
+
+    <a href="<?= $controller->url_for('schedules/current/' . $building->id) ?>">
+        <?= _('Aktuelle Sicht') ?>
+    </a>
 
     <a href="<?= $controller->url_for('schedules/index') ?>" class="back-link">
         <?= _('Zurück zur Gebäudeübersicht') ?>
@@ -9,7 +13,7 @@
 <ul class="raumaushang-list">
 <? foreach ($resources as $resource): ?>
     <li>
-        <a href="<?= $controller->url_for('room_view/index/' . $resource->id) ?>">
+        <a href="<?= $controller->url_for('schedules/room/' . $resource->id) ?>">
             <?= htmlReady($resource->name) ?>
             (<?= htmlReady($resource->category->name) ?>)
         <? if ($resource->description): ?>

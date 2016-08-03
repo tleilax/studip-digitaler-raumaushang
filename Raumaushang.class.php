@@ -69,7 +69,7 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         if ($recompile) {
             $path   = dirname($less_file);
             $lines  = array_map('trim', file($less_file));
-            $parsed = '';
+            $parsed = sprintf("@plugin-url: '%s';\n", $this->getPluginURL());
             foreach ($lines as $line) {
                 if (preg_match('/^@import "(.*)";/', $line, $match)) {
                     $include_file = $path . '/' . $match[1];
