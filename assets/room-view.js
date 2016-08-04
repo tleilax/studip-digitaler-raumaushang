@@ -145,7 +145,7 @@
             data: data || {},
             dataType: 'json',
             username: Raumaushang.api.auth.username,
-            password: Raumaushang.api.auth.password,
+            password: Raumaushang.api.auth.password
         }).then(function (json, status, jqxhr) {
             var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash');
 

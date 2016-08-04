@@ -48,15 +48,13 @@ class SchedulesController extends PluginController
     public function current_action($building_id, $page = 0)
     {
         $max = 7;
-        
+
         $this->building = Objekt::find($building_id);
         $this->dates    = Schedule::findByBuilding(
             $this->building,
             strtotime('today  0:00:00'),
             strtotime('today 23:59:59')
         );
-
-        $this->dates = array_merge($this->dates, $this->dates, $this->dates, $this->dates);
 
         $this->max   = $max;
         $this->page  = $page;

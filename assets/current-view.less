@@ -148,6 +148,17 @@ body {
             background-image: url("@{plugin-url}/assets/images/rightup.png");
         }
     }
+    
+    > .empty {
+        &:not(:first-child) {
+            display: none;
+        }
+
+        display: block;
+        font-size: 5vh;
+        padding: 31vh 0;
+        text-align: center;
+    }
 }
 ul.teachers {
     display: block;

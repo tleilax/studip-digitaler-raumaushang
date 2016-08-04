@@ -13,7 +13,7 @@ class Schedule
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
-        $list = new AssignEventList($begin, $end, $resource->id, '', '', true);
+        $list = new AssignEventList($begin, $end + 1, $resource->id, '', '', true);
         if ($list->numberOfEvents() === 0) {
             return [];
         }
@@ -21,7 +21,7 @@ class Schedule
         $events = [];
         $ids    = [];
         foreach ($list->events as $event) {
-            if (date('H', $event->getBegin()) < 8 || date('H', $event->getEnd()) > 21) {
+            if (date('H', $event->getBegin()) < 8 || date('H', $event->getEnd()) > 22) {
                 continue;
             }
 
@@ -89,6 +89,7 @@ class Schedule
         foreach ($result as $index => $row) {
             $result[$index] = new self($row);
         }
+
         return $result;
     }
 
@@ -249,7 +250,7 @@ class Schedule
         $this->$offset = null;
     }
 
-    public function toArray()
+    public function toArray($minimal = false)
     {
         $result = [
             'id'          => md5(implode('|', [$this->code, $this->name, $this->begin, $this->end])),
@@ -265,9 +266,17 @@ class Schedule
             'begin'       => $this->begin,
             'end'         => $this->end,
             'course_id'   => $this->course_id,
-            'modules'     => $this->getModules($this->course_id),
-            'description' => trim($this->description) ?: null,
         ];
+
+        if (!$minimal) {
+            $result['modules']     = $this->getModules($this->course_id);
+            $result['description'] = trim($this->description) ?: null;
+        } else {
+            $result['teachers'] = array_map(function ($teacher) {
+                return $teacher['nachname'];
+            }, $result['teachers']);
+            $result['room'] = $this->room;
+        }
 
         return $result;
     }

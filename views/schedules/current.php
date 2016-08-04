@@ -1,6 +1,3 @@
-<?php
-$directions = ['', 'direction-left', 'direction-up-left', 'direction-right', 'direction-up-right']; ?>
-
 <header>
 <? //    <h1>Veranstaltungswegweiser</h1> ?>
     <h1>Veranstaltungen</h1>
@@ -15,7 +12,7 @@ $directions = ['', 'direction-left', 'direction-up-left', 'direction-right', 'di
 <section>
     <ul class="courses">
     <? foreach ($dates as $date): ?>
-        <li class="<?= $directions[array_rand($directions)] ?>">
+        <li class="course">
             <span class="time">
                 <?= date('H:i', $date->begin) ?>
                 -
@@ -29,20 +26,24 @@ $directions = ['', 'direction-left', 'direction-up-left', 'direction-right', 'di
             </span>
             <ul class="teachers">
             <? foreach ($date->teachers as $teacher): ?>
-                <li>
-                    <?= htmlReady($teacher->nachname) ?>
-                </li>
+                <li><?= htmlReady($teacher->nachname) ?></li>
             <? endforeach; ?>
             </ul>
         </li>
     <? endforeach; ?>
+        <li class="empty">
+            Aktuell finden keine Veranstaltungen statt
+        </li>
     </ul>
 </section>
 
-<footer>
-<? if ($total > $max): ?>
-    <?= sprintf('Seite %u/%u', $page + 1, ceil($total / $max)) ?>
+<footer <? if ($total <= $max) echo 'style="display: none;"'; ?>>
+    Seite
+    <span class="current-page"><?= $page + 1 ?></span>
+    /
+    <span class="total-pages"><?= ceil($total / $max) ?></span>
     -
-    <?= sprintf('Bitte warten, weitere Veranstaltungen auf Seite %u', $page + 2) ?> &raquo;
-<? endif; ?>
+    Bitte warten, weitere Veranstaltungen auf Seite
+    <span class="next-page"><?= $page + 2 ?></span>
+    &raquo;
 </footer>
