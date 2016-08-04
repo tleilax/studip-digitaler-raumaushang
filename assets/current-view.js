@@ -1,6 +1,6 @@
 /*jslint browser: true, unparam: true */
-/*global jQuery, Raumaushang, Base64 */
-(function ($, Raumaushang, Base64) {
+/*global jQuery, Raumaushang, Countdown, Base64 */
+(function ($, Raumaushang, Countdown, Base64) {
     'use strict';
 
     Date.replaceChars.longDays = [
@@ -10,7 +10,7 @@
     $.extend(Raumaushang, {
         delays: {
             schedules: 5 * 60 * 1000,
-            pagination: 10 * 1000
+            pagination: 15 * 1000
         },
         currentPage: 0,
         schedules: null
@@ -92,7 +92,14 @@
     $(document).ready(function () {
         Raumaushang.requestSchedules();
 
-        window.setInterval(Raumaushang.paginate, Raumaushang.delays.pagination);
+        Countdown.add('pagination', Raumaushang.delays.pagination, Raumaushang.paginate, {
+            check_interval: 100,
+            interval: true,
+            on_tick: function (diff) {
+                var percent = Math.max(0, 100 - diff * 100 / this.options.duration);
+                $('footer > .progress').css('right', percent + '%');
+            }
+        });
     });
 
     // Clock/date
@@ -101,4 +108,4 @@
         $('header > aside > date').text((new Date()).format('l, d.m.Y'));
     }, 100);
 
-}(jQuery, Raumaushang, Base64));
+}(jQuery, Raumaushang, Countdown, Base64));

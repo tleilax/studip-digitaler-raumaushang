@@ -1,3 +1,5 @@
+<output></output>
+
 <header>
 <? //    <h1>Veranstaltungswegweiser</h1> ?>
     <h1>Veranstaltungen</h1>
@@ -38,6 +40,8 @@
 </section>
 
 <footer <? if ($total <= $max) echo 'style="display: none;"'; ?>>
+    <div class="progress"></div>
+
     Seite
     <span class="current-page"><?= $page + 1 ?></span>
     /
@@ -46,4 +50,5 @@
     Bitte warten, weitere Veranstaltungen auf Seite
     <span class="next-page"><?= $page + 2 ?></span>
     &raquo;
+
 </footer>
