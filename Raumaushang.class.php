@@ -15,16 +15,20 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
 
         if (is_object($GLOBALS['user']) && $GLOBALS['user']->perms === 'root') {
             $navigation = new Navigation(_('Raumaushang'), $this->url_for('schedules/index'));
-            $navigation->setImage('icons/lightblue/timetable.svg');
-            $navigation->setActiveImage('icons/white/timetable.svg');
-            Navigation::addItem('/raumaushang', $navigation);
+            $navigation->setImage('icons/white/timetable.svg');
+            $navigation->setActiveImage('icons/black/timetable.svg');
+            Navigation::addItem('/resources/raumaushang', $navigation);
         }
     }
 
     public function perform($unconsumed_path)
     {
+        if (Navigation::hasItem('/resources/raumaushang')) {
+            Navigation::activateItem('/resources/raumaushang');
+        }
+
         $this->addLESS('assets/style.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/application.js');
+        $this->addJS('assets/application.js');
 
         URLHelper::removeLinkParam('cid');
 
@@ -36,8 +40,13 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         return PluginEngine::getURL($this, $params, $to);
     }
 
+    public function addJS($asset)
+    {
+        PageLayout::addScript($this->getPluginURL() . '/' . ltrim($asset, '/'));
+    }
+
     // This is ugly but I can't help it.
-    protected function addLESS($asset)
+    public function addLESS($asset)
     {
         $less_file = $this->getPluginPath() . '/' . ltrim($asset, '/');
         $css_file  = str_replace('.less', '.css', $less_file);

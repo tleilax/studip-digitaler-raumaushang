@@ -1,8 +1,5 @@
 <?php
-    $scripts = [
-        'vendor/modernizr.js',
-        'jquery/jquery-1.8.2.js',
-    ];
+$asset_postfix = $debug ? '?r=' . time() : '';
 ?>
 <!doctype html>
 <html>
@@ -12,11 +9,7 @@
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_uri('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
-  <? if ($debug): ?>
-    <link href="<?= URLHelper::getURL($style, ['r' => time()]) ?>" rel="stylesheet" type="text/css">
-  <? else: ?>
-    <link href="<?= $style ?>" rel="stylesheet" type="text/css">
-  <? endif; ?>
+    <link href="<?= $plugin_base . $style . $asset_postfix ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {
@@ -51,15 +44,18 @@
     <small id="debug-time"><?= date('d.m.Y H:i:s') ?></small>
 <? endif; ?>
 
-<? foreach ($scripts as $script): ?>
-    <script src="<?= Assets::javascript_path($script) ?>"></script>
-<? endforeach; ?>
+    <script src="<?= Assets::javascript_path('vendor/modernizr.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
+
+    <script src="<?= $plugin_base ?>/assets/mustache-2.2.1.min.js<?= $asset_postfix ?>"></script>
+    <script src="<?= $plugin_base ?>/assets/jquery.event.move.js<?= $asset_postfix ?>"></script>
+    <script src="<?= $plugin_base ?>/assets/jquery.event.swipe.js<?= $asset_postfix ?>"></script>
+    <script src="<?= $plugin_base ?>/assets/qrcode.min.js<?= $asset_postfix ?>"></script>
+    <script src="<?= $plugin_base ?>/assets/date.format.js<?= $asset_postfix ?>"></script>
+    <script src="<?= $plugin_base ?>/assets/countdown.js<?= $asset_postfix ?>"></script>
+
 <? foreach ((array)@$plugin_scripts as $script): ?>
-  <? if ($debug): ?>
-    <script src="<?= URLHelper::getURL($script, ['r' => time()]) ?>"></script>
-  <? else: ?>
-    <script src="<?= $script ?>"></script>
-  <? endif; ?>
+    <script src="<?= $plugin_base . $script . $asset_postfix ?>"></script>
 <? endforeach; ?>
 </body>
 </html>
