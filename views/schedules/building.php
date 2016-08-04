@@ -1,5 +1,9 @@
-<h1>
+<h1 class="flex-heading">
     <?= sprintf(_('Gebäude "%s" - Raumübersicht'), htmlReady($building->name)) ?>
+
+    <a href="<?= $controller->url_for('schedules/current/' . $building->id) ?>">
+        <?= _('Aktuelle Sicht') ?>
+    </a>
 
     <a href="<?= $controller->url_for('schedules/index') ?>" class="back-link">
         <?= _('Zurück zur Gebäudeübersicht') ?>

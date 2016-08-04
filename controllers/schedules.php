@@ -31,7 +31,7 @@ class SchedulesController extends PluginController
             'auth' => Config::get()->RAUMAUSHANG_AUTH ?: ['username' => 'api@raumaushang', 'password' => 'raumaushang'],
         ];
 
-        $this->debug = false && Studip\ENV !== 'production';
+        $this->debug = Studip\ENV !== 'production';
     }
 
     public function index_action()
@@ -43,6 +43,24 @@ class SchedulesController extends PluginController
     {
         $this->building  = Objekt::find($building_id);
         $this->resources = Objekt::findByParent_id($this->building->id, 'ORDER BY name ASC');
+    }
+
+    public function current_action($building_id, $page = 0)
+    {
+        $max = 7;
+
+        $this->building = Objekt::find($building_id);
+        $this->dates    = Schedule::findByBuilding($this->building);
+
+        $this->max   = $max;
+        $this->page  = $page;
+        $this->total = count($this->dates);
+        $this->dates = array_slice($this->dates, $page * $max, $max);
+
+        $this->addOwnLayout('layout-current-view.php', [
+            'assets/current-view.less',
+            'assets/current-view.js',
+        ]);
     }
 
     public function room_action($room_id)

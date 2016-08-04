@@ -1,0 +1,201 @@
+.flex-item(@growth, @shrink, @basis: auto) {
+    -webkit-box-flex: @growth;
+    -webkit-flex: @growth @shrink @basis;
+    -ms-flex: @growth @shrink @basis;
+    -moz-box-flex: @growth;
+    flex: @growth @shrink @basis;
+}
+.flex-order(@order) {
+    -webkit-order: @order;
+    -ms-order: @order;
+    order: @order;
+}
+
+@import "less/fonts.less";
+
+* {
+    .box-sizing(border-box);
+}
+
+html, body {
+    font-family: Myriad;
+
+    margin: 0;
+    padding: 0;
+
+    height: 100%;
+    width: 100%;
+}
+body {
+    background-image: url("@{plugin-url}/assets/images/current-background.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    > header {
+        position: absolute;
+        top: 2vh;
+        right: 2vw;
+        bottom: 87vh;
+        left: 25vw;
+
+        .flex();
+        .flex-direction-row();
+        .flex-wrap(nowrap);
+        .flex-justify-content(space-between);
+        .flex-align-items(flex-end);
+
+        color: white;
+        padding-bottom: 8px;
+        text-transform: uppercase;
+
+        h1, h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 4vh;
+        }
+        h1 {
+            font-family: MyriadBold;
+        }
+        aside {
+            .flex();
+            .flex-direction-column();
+            .flex-align-items(flex-end);
+            
+            time {
+                font-size: 4vh;
+            }
+            date {
+                font-size: 3.5vh;
+            }
+        }
+    }
+    > section {
+        position: absolute;
+        top: 14vh;
+        right: 2vw;
+        bottom: 6vh;
+        left: 25vw;
+
+        color: #033baa;
+    }
+    > footer {
+        position: absolute;
+        top: 94vh;
+        right: 2vw;
+        bottom: 2vh;
+        left: 25vw;
+        .flex-align-self(center);
+
+        color: white;
+        font-size: 3.5vh;
+    }
+}
+.courses {
+    list-style: none;
+    margin: 0;
+    padding: 4.6vh 3vw;
+    font-size: 3.1vh;
+
+    > li {
+        padding: 0.5em;
+
+        .flex();
+        .flex-wrap(wrap);
+
+        .time, .room {
+            .flex-item(1, 0, 25%);
+            text-align: right;
+            padding-right: 2vw;
+        }
+        .title, .teachers {
+            .flex-item(3, 0, 75%);
+        }
+
+        .time {
+            .flex-order(1);
+        }
+        .room {
+            .flex-order(3);
+        }
+        .title {
+            .flex-order(2);
+            font-family: MyriadBold;
+        }
+        .teachers {
+            .flex-order(4);
+        }
+
+        &:not(:first-child) {
+            border-top: 1px solid #a2b3cd;
+        }
+
+        &[class^="direction"] {
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-size: 6vh;
+        }
+
+        &.direction-left {
+            background-image: url("@{plugin-url}/assets/images/left.png");
+        }
+        &.direction-up-left {
+            background-image: url("@{plugin-url}/assets/images/leftup.png");
+        }
+        &.direction-right {
+            background-image: url("@{plugin-url}/assets/images/right.png");
+        }
+        &.direction-up-left {
+            background-image: url("@{plugin-url}/assets/images/rightup.png");
+        }
+    }
+    
+    > .empty {
+        &:not(:first-child) {
+            display: none;
+        }
+
+        display: block;
+        font-size: 5vh;
+        padding: 31vh 0;
+        text-align: center;
+    }
+}
+ul.teachers {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: inline;
+
+        &:not(:last-child)::after {
+            content: ', ';
+        }
+    }
+}
+
+footer > .progress {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background: #fff;
+    border: 1px solid #eee;
+    left: 0;
+    right: 100%;
+}
+
+body:target {
+    > header {
+        border: 1px solid red;
+        background: rgba(255, 0, 0, 0.3);
+    }
+    > section {
+        border: 1px solid green;
+        background: rgba(0, 255, 0, 0.3);
+    }
+    > footer {
+        border: 1px solid blue;
+        background: rgba(0, 0, 255, 0.3);
+    }    
+}

@@ -15,7 +15,8 @@
     };
     Countdown.default_options = {
         duration: 5 * 60 * 1000,
-        check_interval: 250
+        check_interval: 250,
+        interval: false
     };
     Countdown.stash = {};
     Countdown.add = function (identifier, duration, callback, options) {
@@ -89,6 +90,10 @@
         if (diff > this.options.duration) {
             this.stop();
             this.callback();
+
+            if (this.options.interval) {
+                this.start(true);
+            }
         }
         if ($.isFunction(this.options.on_tick)) {
             this.options.on_tick.call(this, diff);

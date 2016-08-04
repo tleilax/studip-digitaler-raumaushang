@@ -14,6 +14,7 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
         return [
             '/raumaushang/query' => _('Ressource finden'),
             '/raumaushang/schedule/:resource_id(/:from(/:until))' => _('Belegung abrufen'),
+            '/raumaushang/currentschedule/:resource_id' => _('Tagesaktuelle Belegung abrufen'),
         ];
     }
 
@@ -47,6 +48,23 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
 
             $schedules = Raumaushang\Schedule::getByResource($resource, $from, $until);
             $schedules = Raumaushang\Schedule::decorate($schedules, $from);
+
+            header('X-Schedule-Hash: ' . md5(serialize($schedules)));
+            $router->render($schedules);
+        })->conditions(['resource_id' => '[a-f0-9]{1,32}']);
+
+        $router->get('/raumaushang/currentschedule/:resource_id', function ($id) use ($router) {
+            $resource = Raumaushang\Resources\Objekt::find($id);
+
+            if (!$resource) {
+                $router->halt(404, 'Resource not found');
+            }
+
+            $schedules = Raumaushang\Schedule::findByBuilding($resource);
+            foreach ($schedules as $index => $schedule) {
+                $schedules[$index] = $schedule->toArray(true);
+            }
+//            $schedules = Raumaushang\Schedule::decorate($schedules, $from);
 
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
             $router->render($schedules);
