@@ -9,7 +9,7 @@
 <ul class="raumaushang-list">
 <? foreach ($resources as $resource): ?>
     <li>
-        <a href="<?= $controller->url_for('room_view/index/' . $resource->id) ?>">
+        <a href="<?= $controller->url_for('schedules/room/' . $resource->id) ?>">
             <?= htmlReady($resource->name) ?>
             (<?= htmlReady($resource->category->name) ?>)
         <? if ($resource->description): ?>
