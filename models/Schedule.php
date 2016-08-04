@@ -9,6 +9,8 @@ use User;
 
 class Schedule
 {
+    const TIMEFRAME = 6;
+
     public static function getByResource(Resources\Objekt $resource, &$begin = null, &$end = null)
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
@@ -61,8 +63,18 @@ class Schedule
         return $events;
     }
 
-    public static function findByBuilding(Resources\Objekt $building, $start, $end)
+    public static function findByBuilding(Resources\Objekt $building, $start = null, $end = null)
     {
+        if ($start === null) {
+            $start = time();
+        }
+        if ($end === null) {
+            $end = min(
+                strtotime('today 23:59:59', $start),
+                strtotime('+' . self::TIMEFRAME . ' hours', $start)
+            );
+        }
+
         $query = "SELECT `ra`.`begin`, `ra`.`end`,
                          `s`.`veranstaltungsnummer` AS `code`,
                          IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
@@ -77,7 +89,7 @@ class Schedule
                   JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
                   LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
                   WHERE `ro`.`parent_id` = :building_id
-                    AND `ra`.`end` >= :begin AND `ra`.`begin` <= :end 
+                    AND `ra`.`end` >= :begin AND `ra`.`begin` <= :end
                   GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get()->prepare($query);

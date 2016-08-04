@@ -50,11 +50,7 @@ class SchedulesController extends PluginController
         $max = 7;
 
         $this->building = Objekt::find($building_id);
-        $this->dates    = Schedule::findByBuilding(
-            $this->building,
-            strtotime('today  0:00:00'),
-            strtotime('today 23:59:59')
-        );
+        $this->dates    = Schedule::findByBuilding($this->building);
 
         $this->max   = $max;
         $this->page  = $page;

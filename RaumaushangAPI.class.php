@@ -60,10 +60,7 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
                 $router->halt(404, 'Resource not found');
             }
 
-            $from  = strtotime('today  0:00:00');
-            $until = strtotime('today 23:59:59');
-
-            $schedules = Raumaushang\Schedule::findByBuilding($resource, $from, $until);
+            $schedules = Raumaushang\Schedule::findByBuilding($resource);
             foreach ($schedules as $index => $schedule) {
                 $schedules[$index] = $schedule->toArray(true);
             }
