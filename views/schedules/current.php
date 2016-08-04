@@ -24,7 +24,7 @@
                 <?= htmlReady($date->room) ?>
             </span>
             <span class="title">
-                <?= htmlReady($date->name) ?>
+                <?= htmlReady($date->code . ' ' . $date->name) ?>
             </span>
             <ul class="teachers">
             <? foreach ($date->teachers as $teacher): ?>

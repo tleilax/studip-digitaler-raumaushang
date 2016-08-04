@@ -72,7 +72,9 @@
                 ].join(' - ')
             ).appendTo(item);
             $('<span class="room">').text(schedule.room).appendTo(item);
-            $('<span class="title">').text(schedule.name).appendTo(item);
+            $('<span class="title">').text(
+                [schedule.code, schedule.name].join(' ').trim()
+            ).appendTo(item);
             schedule.teachers.forEach(function (teacher) {
                 $('<li>').text(teacher).appendTo(teachers);
             });
