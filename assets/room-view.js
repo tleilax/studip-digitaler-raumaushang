@@ -272,6 +272,10 @@
 
                     day = parseInt(day, 10);
 
+                    if ($('th[data-day="' + day + '"]', table).length === 0) {
+                        return;
+                    }
+
                     $('th[data-day="' + day + '"] date', table).text(str);
 
                     if (day === 1) {

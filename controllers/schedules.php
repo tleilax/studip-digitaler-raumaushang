@@ -7,6 +7,11 @@ class SchedulesController extends PluginController
 {
     protected $allow_nobody = true;
 
+    public function __construct($dispatcher)
+    {
+        parent::__construct($dispatcher);
+    }
+
     public function before_filter(&$action, &$args)
     {
         if (!method_exists($this, $action . '_action')) {
@@ -65,9 +70,11 @@ class SchedulesController extends PluginController
 
     public function room_action($room_id)
     {
+        $manifest = $this->plugin->getMetadata();
+        
         $this->addOwnLayout('layout-room-view.php', [
-            'assets/room-view.less',
-            'assets/room-view.js',
+            'assets/room-view.less?v=' . $manifest['version'],
+            'assets/room-view.js?v=' . $manifest['version'],
         ]);
 
         $this->id       = $room_id;
@@ -89,11 +96,12 @@ class SchedulesController extends PluginController
         foreach ($assets as $asset) {
             $asset = '/' . ltrim($asset, '/');
 
-            $extension = pathinfo($asset, PATHINFO_EXTENSION);
+            $path = parse_url($asset, PHP_URL_PATH);
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
             if ($extension === 'js') {
                 $js[] = $asset;
             } elseif ($extension === 'less') {
-                $this->plugin->addLESS($asset);
+                $this->plugin->addLESS(substr($asset, 0, strpos($asset, $path) + strlen($path)));
                 $css[] = str_replace('.less', '.css', $asset);
             } elseif ($extension === 'css') {
                 $css[] = $asset;
@@ -111,6 +119,15 @@ class SchedulesController extends PluginController
     {
         $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
         $url = URLHelper::getURL($uri, $parameters, $ignore_bound);
+        URLHelper::setBaseURL($old_base);
+
+        return $url;
+    }
+
+    public function absolute_link($uri, $parameters = [], $ignore_bound = false)
+    {
+        $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+        $url = URLHelper::getLink($uri, $parameters, $ignore_bound);
         URLHelper::setBaseURL($old_base);
 
         return $url;
