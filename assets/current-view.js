@@ -54,7 +54,7 @@
         var totalPages = Math.ceil(Raumaushang.schedules.length / Raumaushang.maxPages),
             list = $('');
 
-        Raumaushang.currentPage = (Raumaushang.currentPage + 1) % totalPages;
+        Raumaushang.currentPage = ((Raumaushang.currentPage + 1) % totalPages) || 0;
 
         $('.courses .course').remove();
 
