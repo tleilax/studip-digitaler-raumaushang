@@ -27,10 +27,12 @@
             [Raumaushang.api.auth.username, Raumaushang.api.auth.password].join(':')
         ));
         request.addEventListener('load', function (event) {
-            if ($.isFunction(callback)) {
+            var version = this.getResponseHeader('X-Plugin-Version');
+            if (version && version !== Raumaushang.version) {
+                location.reload();
+            } else if ($.isFunction(callback)) {
                 try {
-                    var json = JSON.parse(request.responseText);
-                    callback(json);
+                    callback(JSON.parse(request.responseText));
                 } catch (e) {
                 }
             }

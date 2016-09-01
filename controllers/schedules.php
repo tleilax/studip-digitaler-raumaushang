@@ -107,6 +107,7 @@ class SchedulesController extends PluginController
         $layout->plugin_scripts = $js;
         $layout->plugin_styles  = $css;
         $layout->plugin_base    = $this->plugin->getPluginURL();
+        $layout->plugin_version = $this->plugin->getMetadata()['version'];
         $this->set_layout($layout);
     }
 

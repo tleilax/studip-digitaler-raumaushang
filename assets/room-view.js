@@ -147,7 +147,13 @@
             username: Raumaushang.api.auth.username,
             password: Raumaushang.api.auth.password
         }).then(function (json, status, jqxhr) {
-            var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash');
+            var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash'),
+                version       = jqxhr.getResponseHeader('X-Plugin-Version');
+
+            if (version && version !== Raumaushang.version) {
+                location.reload();
+                return;
+            }
 
             requests[url] = {
                 timestamp: new Date(),

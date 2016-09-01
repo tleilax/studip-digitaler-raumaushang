@@ -16,7 +16,8 @@ $post = ['r' => time()];
         api: {
             auth: <?= json_encode($config['auth']) ?>,
             url: <?= json_encode(URLHelper::getURL('plugins.php/restipplugin/api', [], true)) ?>
-        }
+        },
+        version: <?= json_encode($plugin_version) ?>
     };
     </script>
 </head>

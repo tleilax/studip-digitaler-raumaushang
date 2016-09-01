@@ -18,7 +18,8 @@ $post = ['r' => time()];
             url: <?= json_encode(URLHelper::getURL('plugins.php/restipplugin/api/', [], true)) ?>
         },
         current_id: <?= json_encode($building->id) ?>,
-        maxPages: <?= json_encode($max) ?>
+        maxPages: <?= json_encode($max) ?>,
+        version: <?= json_encode($plugin_version) ?>
     };
     </script>
 </head>
