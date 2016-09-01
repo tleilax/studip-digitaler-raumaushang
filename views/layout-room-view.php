@@ -1,5 +1,5 @@
 <?php
-$post = $debug ? ['r' => time()] : [];
+$post = ['r' => time()];
 ?>
 <!doctype html>
 <html>
