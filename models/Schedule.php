@@ -105,7 +105,7 @@ class Schedule
         return $result;
     }
 
-    public static function decorate(array $schedules, $from)
+    public static function decorate(array $schedules, $from, $max_days = 5)
     {
         $schedules = array_map(function (Schedule $schedule) {
             $array = $schedule->toArray();
@@ -122,7 +122,7 @@ class Schedule
         });
 
         $temp = [];
-        for ($i = 1; $i <= 5; $i += 1) {
+        for ($i = 1; $i <= $max_days; $i += 1) {
             $temp[$i] = [
                 'timestamp' => strtotime('+' . ($i - 1) . ' days 0:00:00', $from),
                 'slots'     => [],
@@ -136,7 +136,7 @@ class Schedule
         }
 
         // Check for holiday and fill empty slots per day
-        for ($day = 1; $day <= 5; $day += 1) {
+        for ($day = 1; $day <= $max_days; $day += 1) {
             $holiday = holiday($temp[$day]['timestamp']);
             if ($holiday !== false && $holiday['col'] == 3) {
                 // Step 1: Populate slots array with all slots unset
