@@ -34,7 +34,11 @@
         </li>
     <? endforeach; ?>
         <li class="empty">
-            Aktuell finden keine Veranstaltungen statt
+            <p>
+                Herzlich Willkommen!<br>
+                <br>
+                Aktuell finden keine Veranstaltungen statt
+            </p>
         </li>
     </ul>
 </section>
