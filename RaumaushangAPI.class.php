@@ -45,13 +45,20 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
             }
 
             $from  = $from  ?: strtotime('monday this week  0:00:00');
-            $until = $until ?: strtotime('friday this week 23:59:59', $from);
+            if ($resource->show_weekend) {
+                $until    = $until ?: strtotime('sunday this week 23:59:59', $from);
+                $max_days = 7;
+            } else {
+                $until = $until ?: strtotime('friday this week 23:59:59', $from);
+                $max_days = 5;
+            }
 
             $schedules = Raumaushang\Schedule::getByResource($resource, $from, $until);
-            $schedules = Raumaushang\Schedule::decorate($schedules, $from);
+            $schedules = Raumaushang\Schedule::decorate($schedules, $from, $max_days);
 
             header('X-Plugin-Version: ' . $this->getMetadata()['version']);
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
+
             $router->render($schedules);
         })->conditions(['resource_id' => '[a-f0-9]{1,32}']);
 

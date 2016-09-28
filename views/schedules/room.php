@@ -48,7 +48,7 @@
         </tr>
     </thead>
     <tbody>
-<? foreach (range(8, 21) as $slot): ?>
+<? foreach ($config['display_slots'] as $slot): ?>
         <tr data-slot="<?= $slot ?>">
             <th><?= $slot ?>:00</th>
         <? foreach ($config['display_days'] as $day): ?>

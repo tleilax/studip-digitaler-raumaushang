@@ -27,7 +27,8 @@ class SchedulesController extends PluginController
         parent::before_filter($action, $args);
 
         $this->config = [
-            'display_days' => [1, 2, 3, 4, 5],
+            'display_days'  => range(1, 5),
+            'display_slots' => range(8, 21),
             'auth' => Config::get()->RAUMAUSHANG_AUTH ?: ['username' => 'api@raumaushang', 'password' => 'raumaushang'],
         ];
 
@@ -66,7 +67,7 @@ class SchedulesController extends PluginController
     public function room_action($room_id)
     {
         $manifest = $this->plugin->getMetadata();
-        
+
         $this->addOwnLayout('layout-room-view.php', [
             'assets/room-view.less?v=' . $manifest['version'],
             'assets/room-view.js?v=' . $manifest['version'],
@@ -74,6 +75,10 @@ class SchedulesController extends PluginController
 
         $this->id       = $room_id;
         $this->room     = Objekt::find($room_id);
+
+        if ($this->room->show_weekend) {
+            $this->config['display_days'] = range(1, 7);
+        }
 
         $properties = [];
         $temp = $this->room->getProperties();

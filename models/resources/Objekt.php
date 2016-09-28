@@ -7,6 +7,8 @@ use SimpleORMap;
 
 class Objekt extends SimpleORMap
 {
+    const PROPERTY_WEEKEND = 'Raumaushang: Ganze Woche anzeigen';
+
     protected static function configure($config = array())
     {
         $config['db_table'] = 'resources_objects';
@@ -26,6 +28,15 @@ class Objekt extends SimpleORMap
             'foreign_key'       => 'category_id',
             'assoc_foreign_key' => 'category_id',
         );
+
+        $config['additional_fields']['show_weekend'] = [
+            'get' => function (Objekt $object, $field) {
+                $properties = $object->getProperties();
+                return isset($properties[self::PROPERTY_WEEKEND])
+                    && $properties[self::PROPERTY_WEEKEND] === 'ja';
+            },
+            'set' => false,
+        ];
 
         parent::configure($config);
     }

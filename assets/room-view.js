@@ -203,6 +203,7 @@
     Raumaushang.createItemOffsets = function (item, offset) {
         if (!offset.offsets.hasOwnProperty(item.slot)) {
             console.log(item, offset);
+            return false;
         }
 
         var top_offset = offset.offsets[item.slot],
@@ -305,9 +306,11 @@
                                     : item.teachers
                             })),
                             styles = Raumaushang.createItemOffsets(item, offset),
+                            cell;
+                        if (styles !== false) {
                             cell = $(html).css(styles).attr('data-foo', styles.min_diff);
-
-                        cells = cells.add(cell);
+                            cells = cells.add(cell);
+                        }
                     });
                 });
 
