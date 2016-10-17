@@ -39,7 +39,7 @@ $post = ['r' => time()];
     </button>
     <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
 
-    <div id="clock"><?= date('H:i:s') ?></div>
+    <div id="clock"><?= date('H:i') ?></div>
 
 <? if ($debug): ?>
     <small id="debug-time"><?= date('d.m.Y H:i:s') ?></small>

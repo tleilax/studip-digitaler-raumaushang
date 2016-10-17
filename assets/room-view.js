@@ -424,7 +424,7 @@
 
     // Clock
     window.setInterval(function () {
-        $('#clock').text((new Date).format('H:i:s'));
+        $('#clock').text((new Date).format('H:i'));
     }, 100);
 
 
