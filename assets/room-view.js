@@ -49,6 +49,7 @@
             overlay_default: 30 * 1000
         }
     });
+    setCurrentDate(Raumaushang.now.getTime() / 1000);
 
     //
     function showOverlay(selector, duration) {
@@ -72,6 +73,14 @@
 
         $(selector).on('click.overlay', hide).show();
         Countdown.add(selector, duration || Raumaushang.durations.overlay_default, hide);
+    }
+
+    function getCurrentDate() {
+        return new Date((new Date()).getTime() - Raumaushang.now_diff);
+    }
+    function setCurrentDate(unix_timestamp) {
+        Raumaushang.now      = new Date(unix_timestamp * 1000);
+        Raumaushang.now_diff = (new Date()).getTime() - Raumaushang.now;
     }
 
     //
@@ -132,7 +141,7 @@
     Raumaushang.request = function (url, data, callback, forced) {
         if (!forced && requests.hasOwnProperty(url)) {
             var cached = requests[url];
-            if (cached.timestamp.format('Ymd') === (new Date).format('Ymd')) {
+            if (cached.timestamp.format('Ymd') === getCurrentDate().format('Ymd')) {
                 return callback(cached.hash, cached.data);
             }
         }
@@ -148,7 +157,10 @@
             password: Raumaushang.api.auth.password
         }).then(function (json, status, jqxhr) {
             var schedule_hash = jqxhr.getResponseHeader('X-Schedule-Hash'),
-                version       = jqxhr.getResponseHeader('X-Plugin-Version');
+                version       = jqxhr.getResponseHeader('X-Plugin-Version'),
+                server_time   = jqxhr.getResponseHeader('X-Raumaushang-Timestamp');
+
+            setCurrentDate(server_time);
 
             if (version && version !== Raumaushang.version) {
                 location.reload();
@@ -156,7 +168,7 @@
             }
 
             requests[url] = {
-                timestamp: new Date(),
+                timestamp: Raumaushang.now,
                 hash: schedule_hash,
                 data: json
             };
@@ -176,7 +188,7 @@
 
     // Highlights cells
     Raumaushang.highlight = function () {
-        var now  = new Date,
+        var now  = getCurrentDate(),
             day  = now.format('w'),
             slot = window.parseInt(now.format('H'), 10);
         $('body > .schedule-item').removeClass('current-slot');
@@ -424,9 +436,8 @@
 
     // Clock
     window.setInterval(function () {
-        $('#clock').text((new Date).format('H:i'));
+        $('#clock').text(getCurrentDate().format('H:i'));
     }, 100);
-
 
     // Make QR Code
     $.fn.extend({

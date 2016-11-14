@@ -34,6 +34,8 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
             }
 
             header('X-Plugin-Version: ' . $this->getMetadata()['version']);
+            header('X-Raumaushang-Timestamp: ' . time());
+
             $router->render($temp->id);
         });
 
@@ -58,6 +60,7 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
 
             header('X-Plugin-Version: ' . $this->getMetadata()['version']);
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
+            header('X-Raumaushang-Timestamp: ' . time());
 
             $router->render($schedules);
         })->conditions(['resource_id' => '[a-f0-9]{1,32}']);
@@ -76,6 +79,8 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
 
             header('X-Plugin-Version: ' . $this->getMetadata()['version']);
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
+            header('X-Raumaushang-Timestamp: ' . time());
+
             $router->render($schedules);
         })->conditions(['resource_id' => '[a-f0-9]{1,32}']);
     }

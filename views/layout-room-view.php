@@ -17,7 +17,8 @@ $post = ['r' => time()];
             auth: <?= json_encode($config['auth']) ?>,
             url: <?= json_encode(URLHelper::getURL('plugins.php/restipplugin/api', [], true)) ?>
         },
-        version: <?= json_encode($plugin_version) ?>
+        version: <?= json_encode($plugin_version) ?>,
+        now: new Date(<?= time() ?> * 1000)
     };
     </script>
 </head>

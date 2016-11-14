@@ -9,12 +9,13 @@
 
     $.extend(Raumaushang, {
         delays: {
-            schedules: 5 * 60 * 1000,
+            schedules: 30 * 1000, // 5 * 60 * 1000,
             pagination: 15 * 1000
         },
         currentPage: 0,
         schedules: null
     });
+    setCurrentDate(Raumaushang.now.getTime() / 1000);
 
     Raumaushang.request = function (url, callback) {
         var request = new XMLHttpRequest();
@@ -27,10 +28,13 @@
             [Raumaushang.api.auth.username, Raumaushang.api.auth.password].join(':')
         ));
         request.addEventListener('load', function (event) {
-            var version = this.getResponseHeader('X-Plugin-Version');
+            var version     = this.getResponseHeader('X-Plugin-Version'),
+                server_time = this.getResponseHeader('X-Raumaushang-Timestamp');
+
             if (version && version !== Raumaushang.version) {
                 location.reload();
             } else if ($.isFunction(callback)) {
+                setCurrentDate(server_time);
                 try {
                     callback(JSON.parse(request.responseText));
                 } catch (e) {
@@ -39,6 +43,14 @@
         });
         request.send();
     };
+
+    function getCurrentDate() {
+        return new Date((new Date()).getTime() - Raumaushang.now_diff);
+    }
+    function setCurrentDate(unix_timestamp) {
+        Raumaushang.now      = new Date(unix_timestamp * 1000);
+        Raumaushang.now_diff = (new Date()).getTime() - Raumaushang.now;
+    }
 
     Raumaushang.requestSchedules = function () {
         Raumaushang.request('raumaushang/currentschedule/' + Raumaushang.current_id, function (json) {
@@ -108,8 +120,8 @@
 
     // Clock/date
     window.setInterval(function () {
-        $('header > aside > time').text((new Date()).format('H:i'));
-        $('header > aside > date').text((new Date()).format('l, d.m.Y'));
+        $('header > aside > time').text(getCurrentDate().format('H:i'));
+        $('header > aside > date').text(getCurrentDate().format('l, d.m.Y'));
     }, 100);
 
 }(jQuery, Raumaushang, Countdown, Base64));

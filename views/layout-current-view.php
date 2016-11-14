@@ -19,7 +19,8 @@ $post = ['r' => time()];
         },
         current_id: <?= json_encode($building->id) ?>,
         maxPages: <?= json_encode($max) ?>,
-        version: <?= json_encode($plugin_version) ?>
+        version: <?= json_encode($plugin_version) ?>,
+        now: new Date(<?= time() ?> * 1000)
     };
     </script>
 </head>
