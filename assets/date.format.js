@@ -30,7 +30,17 @@ Date.replaceChars = {
     w: function() { return this.getDay(); },
     z: function() { var d = new Date(this.getFullYear(),0,1); return Math.ceil((this - d) / 86400000); }, // Fixed now
     // Week
-    W: function() { var d = new Date(+this); d.setHours(0,0,0); d.setDate(d.getDate() + 4 - (d.getDay() || 7)); return Math.ceil((((d - new Date(d.getFullYear(), 0 , 1)) / 86400000) + 1) / 7); }, // Fixed now
+    W: function() {
+        var target = new Date(this.valueOf());
+        var dayNr = (this.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        var firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() !== 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return retVal = 1 + Math.ceil((firstThursday - target) / 604800000);
+    }, // Fixed now
     // Month
     F: function() { return Date.replaceChars.longMonths[this.getMonth()]; },
     m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
