@@ -47,7 +47,7 @@ $post = ['r' => time()];
 <? endif; ?>
 
     <script src="<?= Assets::javascript_path('vendor/modernizr.js') ?>"></script>
-    <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
 
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/mustache-2.2.1.min.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.move.js', $post) ?>"></script>

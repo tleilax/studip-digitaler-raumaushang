@@ -101,8 +101,9 @@ class SchedulesController extends PluginController
             if ($extension === 'js') {
                 $js[] = $asset;
             } elseif ($extension === 'less') {
-                $this->plugin->addLESS(substr($asset, 0, strpos($asset, $path) + strlen($path)));
-                $css[] = str_replace('.less', '.css', $asset);
+                $css[] = $this->plugin->addLESS(
+                    substr($asset, 0, strpos($asset, $path) + strlen($path))
+                );
             } elseif ($extension === 'css') {
                 $css[] = $asset;
             }

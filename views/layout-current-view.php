@@ -9,7 +9,7 @@ $post = ['r' => time()];
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
-    <link href="<?= URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {
@@ -27,7 +27,7 @@ $post = ['r' => time()];
 <body id="debug">
     <?= $content_for_layout ?>
 
-    <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
 
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/base64.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base .'/assets/date.format.js', $post) ?>"></script>
