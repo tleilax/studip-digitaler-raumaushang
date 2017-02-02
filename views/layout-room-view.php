@@ -36,7 +36,7 @@ $post = ['r' => time()];
     <div id="course-overlay"></div>
 
     <button id="help-overlay-switch">
-        <?= Icon::create('80/black/info-circle')->render(Icon::SVG) ?>
+        <?= Icon::create('info-circle', 'info')->asImg(80) ?>
     </button>
     <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
 
@@ -46,7 +46,7 @@ $post = ['r' => time()];
     <small id="debug-time"><?= date('d.m.Y H:i:s') ?></small>
 <? endif; ?>
 
-    <script src="<?= Assets::javascript_path('vendor/modernizr.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('vendor/modernizr-2.8.3.js') ?>"></script>
     <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
 
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/mustache-2.2.1.min.js', $post) ?>"></script>
