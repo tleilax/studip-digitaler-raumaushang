@@ -80,6 +80,7 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         // Compile asset if neccessary
         if ($asset->isNew()) {
             $variables['plugin-path'] = $this->getPluginURL();
+            $variables['plugin-url']  = $this->getPluginURL();
 
             $less = file_get_contents($less_file);
 
