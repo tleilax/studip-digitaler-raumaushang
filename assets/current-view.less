@@ -19,6 +19,7 @@
 
 html, body {
     font-family: Myriad;
+    font-size: 3.1vh;
 
     margin: 0;
     padding: 0;
@@ -93,22 +94,22 @@ body {
 .courses {
     list-style: none;
     margin: 0;
-    padding: 4.6vh 3vw;
-    font-size: 3.1vh;
+    padding: 2vh 2vw;
 
     > li {
-        padding: 0.5em;
+        padding: 0.4em 0.5em;
+        min-height: 3.3em;
 
         .flex();
         .flex-wrap(wrap);
 
         .time, .room {
-            .flex-item(1, 0, 25%);
+            .flex-item(1, 0, 17%);
             text-align: right;
             padding-right: 2vw;
         }
         .title, .teachers {
-            .flex-item(3, 0, 75%);
+            .flex-item(3, 0, 83%);
         }
 
         .time {
@@ -123,6 +124,14 @@ body {
         }
         .teachers {
             .flex-order(4);
+        }
+
+        .time, .room, .title, .teachers {
+            font-size: 0.75rem;
+
+            &::first-line {
+                font-size: 1rem;
+            }
         }
 
         &:not(:first-child) {

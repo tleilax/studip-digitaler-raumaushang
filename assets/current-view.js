@@ -65,15 +65,15 @@
             var item = $('<li class="course">'),
                 teachers = $('<ul class="teachers">');
 
-            $('<span class="time">').text(
+            $('<div class="time">').text(
                 [
                     moment(schedule.begin).format('HH:mm'),
                     moment(schedule.end).format('HH:mm')
                 ].join(' - ')
             ).appendTo(item);
-            $('<span class="room">').text(schedule.room).appendTo(item);
-            $('<span class="title">').text(
-                [schedule.code, schedule.name].join(' ').trim()
+            $('<div class="room">').text(schedule.room).appendTo(item);
+            $('<div class="title">').text(
+                [schedule.code, schedule.name].join(' ').trim() || 'Keine Angaben'
             ).appendTo(item);
             schedule.teachers.forEach(function (teacher) {
                 $('<li>').text(teacher).appendTo(teachers);
