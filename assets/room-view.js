@@ -1,16 +1,11 @@
 /*jslint browser: true */
-/*global jQuery, Raumaushang, Countdown */
-(function ($, Raumaushang, Countdown, Mustache) {
+/*global jQuery, Raumaushang, Countdown, Mustache, moment */
+(function ($, Raumaushang, Countdown, Mustache, moment) {
     'use strict';
 
     // Allow :active style to work
     // @see https://css-tricks.com/snippets/css/remove-gray-highlight-when-tapping-links-in-mobile-safari/
     document.addEventListener('touchstart', function () {}, true);
-
-    // Exit with error when illegal call
-    if (Raumaushang === undefined) {
-        throw 'Invalid call, object Raumaushang missing';
-    }
 
     Raumaushang.loadingOverlayTimeout = null;
     Raumaushang.showLoadingOverlay = function (immediately) {
@@ -36,10 +31,14 @@
         schedule_hash: null,
         course_data: {},
         current: {
-            timestamp: $('meta[name="current-timestamp"]').attr('content')
+            timestamp: moment(
+                $('meta[name="current-timestamp"]').attr('content')
+            )
         },
         initial: {
-            timestamp: $('meta[name="current-timestamp"]').attr('content')
+            timestamp: moment(
+                $('meta[name="current-timestamp"]').attr('content')
+            )
         },
         durations: {
             reload: 5 * 60 * 1000,
@@ -49,7 +48,6 @@
             overlay_default: 30 * 1000
         }
     });
-    setCurrentDate(Raumaushang.now.getTime() / 1000);
 
     //
     function showOverlay(selector, duration) {
@@ -73,14 +71,6 @@
 
         $(selector).on('click.overlay', hide).show();
         Countdown.add(selector, duration || Raumaushang.durations.overlay_default, hide);
-    }
-
-    function getCurrentDate() {
-        return new Date((new Date()).getTime() - Raumaushang.now_diff);
-    }
-    function setCurrentDate(unix_timestamp) {
-        Raumaushang.now      = new Date(unix_timestamp * 1000);
-        Raumaushang.now_diff = (new Date()).getTime() - Raumaushang.now;
     }
 
     //
@@ -141,7 +131,7 @@
     Raumaushang.request = function (url, data, callback, forced) {
         if (!forced && requests.hasOwnProperty(url)) {
             var cached = requests[url];
-            if (cached.timestamp.format('Ymd') === getCurrentDate().format('Ymd')) {
+            if (this.getMoment().isSame(cached.timestamp, 'day')) {
                 return callback(cached.hash, cached.data);
             }
         }
@@ -160,7 +150,7 @@
                 version       = jqxhr.getResponseHeader('X-Plugin-Version'),
                 server_time   = jqxhr.getResponseHeader('X-Raumaushang-Timestamp');
 
-            setCurrentDate(server_time);
+            Raumaushang.setMoment(server_time);
 
             if (version && version !== Raumaushang.version) {
                 location.reload();
@@ -188,12 +178,13 @@
 
     // Highlights cells
     Raumaushang.highlight = function () {
-        var now  = getCurrentDate(),
-            day  = now.format('w'),
+        var now  = Raumaushang.getMoment(),
+            day  = now.format('d'),
             slot = window.parseInt(now.format('H'), 10);
+
         $('body > .schedule-item').removeClass('current-slot');
 
-        if ((new Date(Raumaushang.current.timestamp * 1000)).format('W') == now.format('W')) {
+        if (Raumaushang.current.timestamp.format('W') == now.format('W')) {
              $('body > .schedule-item[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
         }
 
@@ -257,28 +248,28 @@
             probe;
 
         if (Raumaushang.current.timestamp) {
+            timestamp = Raumaushang.current.timestamp.clone();
             if (direction === Raumaushang.DIRECTION_NEXT) {
-                timestamp = Raumaushang.current.timestamp + 7 * 24 * 60 * 60;
+                timestamp.add(1, 'weeks');
             } else if (direction === Raumaushang.DIRECTION_PREVIOUS) {
-                timestamp = Raumaushang.current.timestamp - 7 * 24 * 60 * 60;
+                timestamp.subtract(1, 'weeks');
             } else {
-                timestamp = Raumaushang.current.timestamp;
                 forced = true;
             }
 
-            probe = new Date(timestamp * 1000);
-            if (probe.format('H') > 20) {
-                timestamp += (24 - probe.format('H')) * 60 * 60;
-            } else if (probe.format('H') > 0) {
-                timestamp -= probe.format('H') * 60 * 60;
+            probe = window.parseInt(timestamp.format('H'), 10);
+            if (probe > 20) {
+                timestamp.add(24 - probe, 'hours');
+            } else if (probe > 0) {
+                timestamp.subtract(probe, 'hours');
             }
 
-            chunks.push(timestamp);
+            chunks.push(timestamp.format('X'));
         }
 
         Raumaushang.request(chunks.join('/'), {}, function (schedule_hash, json) {
-            var first     = null,
-                last      = null,
+            var first = null,
+                last  = null,
                 text,
                 cells = $();
             if (schedule_hash !== Raumaushang.schedule_hash) {
@@ -287,7 +278,7 @@
                 $('.schedule-item').remove();
 
                 $.each(json, function (day, day_data) {
-                    var str = (new Date(day_data.timestamp * 1000)).format('d.m.');
+                    var str = moment(day_data.timestamp).format('DD.MM.');
 
                     day = parseInt(day, 10);
 
@@ -298,12 +289,12 @@
                     $('th[data-day="' + day + '"] date', table).text(str);
 
                     if (day === 1) {
-                        Raumaushang.current.timestamp = day_data.timestamp;
+                        Raumaushang.current.timestamp = moment(day_data.timestamp);
                     }
                     if (first === null) {
-                        first = day_data.timestamp;
+                        first = moment(day_data.timestamp);
                     }
-                    last = day_data.timestamp;
+                    last = moment(day_data.timestamp);
 
                     $.each(day_data.slots, function (index, item) {
                         Raumaushang.course_data[item.id] = item;
@@ -330,11 +321,9 @@
                 $(cells).filter(':not([data-duration="1"],[data-duration="2"])').find('.name').clamp();
 
                 // Update week display
-                first = new Date(first * 1000);
-                last  = new Date(last * 1000);
-                text  = 'Kalenderwoche <strong>' + first.format('W/Y') + '</strong>';
-                text += ' vom <strong>' + first.format('d.m.') + '</strong>';
-                text += ' bis <strong>' + last.format('d.m.') + '</strong>';
+                text  = 'Kalenderwoche <strong>' + first.format('W/YYYY') + '</strong>';
+                text += ' vom <strong>' + first.format('DD.MM.') + '</strong>';
+                text += ' bis <strong>' + last.format('DD.MM.') + '</strong>';
 
                 $('body > header small').html(text);
             }
@@ -374,8 +363,8 @@
             rendered = 'error';
 
         $('#course-overlay').html(render('#course-template', $.extend({}, data, {
-            begin: (new Date(data.begin * 1000)).format('d.m.Y H:i'),
-            end: (new Date(data.end * 1000)).format('d.m.Y H:i'),
+            begin: moment(data.begin).format('DD.MM.YYYY HH:mm'),
+            end: moment(data.end).format('DD.MM.YYYY HH:mm'),
             hasTeachers: data.teachers.length > 0,
             hasModules: data.modules.length > 0
         }))).find('.qrcode').makeQRCode();
@@ -436,7 +425,7 @@
 
     // Clock
     window.setInterval(function () {
-        $('#clock').text(getCurrentDate().format('H:i'));
+        $('#clock').text(Raumaushang.getMoment().format('HH:mm'));
     }, 100);
 
     // Make QR Code
@@ -452,26 +441,8 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
             });
-        },
-        clamp: function () {
-            return this.each(function () {
-                if (this.children.length > 0) {
-                    throw 'Cannot execute clamp() on non-text nodes';
-                }
-                var chunks  = $(this).text().split(' '),
-                    height  = $(this).height(),
-                    changed = false;
-                $(this).wrapInner('<div>');
-
-                while (height < $('div', this).height() && chunks.length > 0) {
-                    chunks.pop();
-                    $('div', this).text(chunks.join(' ') + '...');
-                }
-
-                $(this).text($('div', this).text());
-            });
         }
     });
 
 
-}(jQuery, Raumaushang, Countdown, Mustache));
+}(jQuery, Raumaushang, Countdown, Mustache, moment));

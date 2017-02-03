@@ -1,11 +1,7 @@
 /*jslint browser: true, unparam: true */
-/*global jQuery, Raumaushang, Countdown, Base64 */
-(function ($, Raumaushang, Countdown, Base64) {
+/*global jQuery, Raumaushang, Countdown, Base64, moment */
+(function ($, Raumaushang, Countdown, Base64, moment) {
     'use strict';
-
-    Date.replaceChars.longDays = [
-        'Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'
-    ];
 
     $.extend(Raumaushang, {
         delays: {
@@ -15,14 +11,12 @@
         currentPage: 0,
         schedules: null
     });
-    setCurrentDate(Raumaushang.now.getTime() / 1000);
 
     Raumaushang.request = function (url, callback) {
         var request = new XMLHttpRequest();
         request.open(
             'GET',
-            Raumaushang.api.url + url,
-            false
+            Raumaushang.api.url + url
         );
         request.setRequestHeader('Authorization', 'Basic ' + Base64.encode(
             [Raumaushang.api.auth.username, Raumaushang.api.auth.password].join(':')
@@ -34,7 +28,7 @@
             if (version && version !== Raumaushang.version) {
                 location.reload();
             } else if ($.isFunction(callback)) {
-                setCurrentDate(server_time);
+                Raumaushang.setMoment(server_time);
                 try {
                     callback(JSON.parse(request.responseText));
                 } catch (e) {
@@ -43,14 +37,6 @@
         });
         request.send();
     };
-
-    function getCurrentDate() {
-        return new Date((new Date()).getTime() - Raumaushang.now_diff);
-    }
-    function setCurrentDate(unix_timestamp) {
-        Raumaushang.now      = new Date(unix_timestamp * 1000);
-        Raumaushang.now_diff = (new Date()).getTime() - Raumaushang.now;
-    }
 
     Raumaushang.requestSchedules = function () {
         Raumaushang.request('raumaushang/currentschedule/' + Raumaushang.current_id, function (json) {
@@ -81,8 +67,8 @@
 
             $('<span class="time">').text(
                 [
-                    (new Date(schedule.begin * 1000)).format('H:i'),
-                    (new Date(schedule.end * 1000)).format('H:i')
+                    moment(schedule.begin).format('HH:mm'),
+                    moment(schedule.end).format('HH:mm')
                 ].join(' - ')
             ).appendTo(item);
             $('<span class="room">').text(schedule.room).appendTo(item);
@@ -120,8 +106,8 @@
 
     // Clock/date
     window.setInterval(function () {
-        $('header > aside > time').text(getCurrentDate().format('H:i'));
-        $('header > aside > date').text(getCurrentDate().format('l, d.m.Y'));
+        $('header > aside > time').text(Raumaushang.getMoment().format('HH:mm'));
+        $('header > aside > date').text(Raumaushang.getMoment().format('dddd, DD.MM.YYYY'));
     }, 100);
 
-}(jQuery, Raumaushang, Countdown, Base64));
+}(jQuery, Raumaushang, Countdown, Base64, moment));

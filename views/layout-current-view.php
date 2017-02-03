@@ -20,7 +20,8 @@ $post = ['r' => time()];
         current_id: <?= json_encode($building->id) ?>,
         maxPages: <?= json_encode($max) ?>,
         version: <?= json_encode($plugin_version) ?>,
-        now: new Date(<?= time() ?> * 1000)
+        now: <?= json_encode(date('c')) ?>,
+        timezone: <?= json_encode(date('e')) ?>
     };
     </script>
 </head>
@@ -30,7 +31,9 @@ $post = ['r' => time()];
     <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
 
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/base64.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/date.format.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-2.17.1.min.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-locale-de.min.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-timezone-0.5.10.min.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base .'/assets/countdown.js', $post) ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>
