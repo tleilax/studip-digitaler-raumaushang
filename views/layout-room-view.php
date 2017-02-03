@@ -50,15 +50,6 @@ $post = ['r' => time()];
     <script src="<?= Assets::javascript_path('vendor/modernizr-2.8.3.js') ?>"></script>
     <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
 
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/mustache-2.2.1.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.move.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.swipe.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/qrcode.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-2.17.1.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-locale-de.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-timezone-0.5.10.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/countdown.js', $post) ?>"></script>
-
 <? foreach ((array)@$plugin_scripts as $script): ?>
     <script src="<?= URLHelper::getLink($plugin_base . $script, $post) ?>"></script>
 <? endforeach; ?>

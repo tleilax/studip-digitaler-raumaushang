@@ -1,6 +1,6 @@
 /*jslint browser: true, unparam: true */
-/*global jQuery, Raumaushang, Countdown, Base64, moment */
-(function ($, Raumaushang, Countdown, Base64, moment) {
+/*global jQuery, Raumaushang, Countdown, base64, moment */
+(function ($, Raumaushang, Countdown, base64, moment) {
     'use strict';
 
     $.extend(Raumaushang, {
@@ -18,7 +18,7 @@
             'GET',
             Raumaushang.api.url + url
         );
-        request.setRequestHeader('Authorization', 'Basic ' + Base64.encode(
+        request.setRequestHeader('Authorization', 'Basic ' + base64.encode(
             [Raumaushang.api.auth.username, Raumaushang.api.auth.password].join(':')
         ));
         request.addEventListener('load', function (event) {
@@ -110,4 +110,4 @@
         $('header > aside > date').text(Raumaushang.getMoment().format('dddd, DD.MM.YYYY'));
     }, 100);
 
-}(jQuery, Raumaushang, Countdown, Base64, moment));
+}(jQuery, Raumaushang, Countdown, base64, moment));

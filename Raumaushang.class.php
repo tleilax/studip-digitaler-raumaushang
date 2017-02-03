@@ -28,7 +28,6 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         }
 
         $this->addLESS('assets/style.less');
-        $this->addJS('assets/application.js');
 
         URLHelper::removeLinkParam('cid');
 

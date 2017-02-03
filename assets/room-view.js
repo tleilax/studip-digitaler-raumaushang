@@ -1,6 +1,6 @@
 /*jslint browser: true */
-/*global jQuery, Raumaushang, Countdown, Mustache, moment */
-(function ($, Raumaushang, Countdown, Mustache, moment) {
+/*global jQuery, Raumaushang, Countdown, Mustache, moment, QRCode */
+(function ($, Raumaushang, Countdown, Mustache, moment, QRCode) {
     'use strict';
 
     // Allow :active style to work
@@ -445,4 +445,4 @@
     });
 
 
-}(jQuery, Raumaushang, Countdown, Mustache, moment));
+}(jQuery, Raumaushang, Countdown, Mustache, moment, QRCode));
