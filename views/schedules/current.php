@@ -15,17 +15,17 @@
     <ul class="courses">
     <? foreach ($dates as $date): ?>
         <li class="course">
-            <span class="time">
+            <div class="time">
                 <?= date('H:i', $date->begin) ?>
                 -
                 <?= date('H:i', $date->end) ?>
-            </span>
-            <span class="room">
+            </div>
+            <div class="room">
                 <?= htmlReady($date->room) ?>
-            </span>
-            <span class="title">
-                <?= htmlReady($date->code . ' ' . $date->name) ?>
-            </span>
+            </div>
+            <div class="title">
+                <?= htmlReady($date->code . ' ' . $date->name) ?: 'Keine Angaben' ?>
+            </div>
             <ul class="teachers">
             <? foreach ($date->teachers as $teacher): ?>
                 <li><?= htmlReady($teacher->nachname) ?></li>
