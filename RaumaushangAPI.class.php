@@ -18,6 +18,14 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
         ];
     }
 
+    public static function before()
+    {
+        $info = PluginManager::getInstance()->getPlugin(static::class)->getMetadata();
+
+        header('X-Plugin-Version: ' . $info['version']);
+        header('X-Raumaushang-Timestamp: ' . date('c'));
+    }
+
     public function routes(&$router)
     {
         $router->get('/raumaushang/query', function () use ($router) {
@@ -27,16 +35,13 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
                 $router->halt(400);
             }
 
-            $temp = Raumaushang\Resources\Objekt::find($needle);
+            $object = Raumaushang\Resources\Objekt::find($needle);
 
-            if (!$temp) {
+            if (!$object) {
                 $router->halt(404, 'No resource found');
             }
 
-            header('X-Plugin-Version: ' . $this->getMetadata()['version']);
-            header('X-Raumaushang-Timestamp: ' . time());
-
-            $router->render($temp->id);
+            $router->render($object->id);
         });
 
         $router->get('/raumaushang/schedule/:resource_id(/:from(/:until))', function ($id, $from = null, $until = null) use ($router) {
@@ -46,7 +51,7 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
                 $router->halt(404, 'Resource not found');
             }
 
-            $from  = $from  ?: strtotime('monday this week  0:00:00');
+            $from = $from ?: strtotime('monday this week  0:00:00');
             if ($resource->show_weekend) {
                 $until    = $until ?: strtotime('sunday this week 23:59:59', $from);
                 $max_days = 7;
@@ -58,9 +63,16 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
             $schedules = Raumaushang\Schedule::getByResource($resource, $from, $until);
             $schedules = Raumaushang\Schedule::decorate($schedules, $from, $max_days);
 
-            header('X-Plugin-Version: ' . $this->getMetadata()['version']);
+            // Convert unix timestamps to ISO8601 format
+            foreach ($schedules as &$schedule) {
+                $schedule['timestamp'] = date('c', $schedule['timestamp']);
+                foreach ($schedule['slots'] as &$slot) {
+                    $slot['begin'] = date('c', $slot['begin']);
+                    $slot['end']   = date('c', $slot['end']);
+                }
+            }
+
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
-            header('X-Raumaushang-Timestamp: ' . time());
 
             $router->render($schedules);
         })->conditions(['resource_id' => '[a-f0-9]{1,32}']);
@@ -74,12 +86,16 @@ class RaumaushangAPI extends StudIPPlugin implements APIPlugin
 
             $schedules = Raumaushang\Schedule::findByBuilding($resource);
             foreach ($schedules as $index => $schedule) {
-                $schedules[$index] = $schedule->toArray(true);
+                $array = $schedule->toArray(true);
+
+                // Convert unix timestamps to ISO8601 format
+                $array['begin'] = date('c', $array['begin']);
+                $array['end']   = date('c', $array['end']);
+
+                $schedules[$index] = $array;
             }
 
-            header('X-Plugin-Version: ' . $this->getMetadata()['version']);
             header('X-Schedule-Hash: ' . md5(serialize($schedules)));
-            header('X-Raumaushang-Timestamp: ' . time());
 
             $router->render($schedules);
         })->conditions(['resource_id' => '[a-f0-9]{1,32}']);

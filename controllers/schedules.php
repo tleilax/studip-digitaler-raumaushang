@@ -59,8 +59,9 @@ class SchedulesController extends PluginController
         $this->dates = array_slice($this->dates, $page * $max, $max);
 
         $this->addOwnLayout('layout-current-view.php', [
-            'assets/current-view.less',
+            'assets/raumaushang.js',
             'assets/current-view.js',
+            'assets/current-view.less',
         ]);
     }
 
@@ -69,8 +70,9 @@ class SchedulesController extends PluginController
         $manifest = $this->plugin->getMetadata();
 
         $this->addOwnLayout('layout-room-view.php', [
-            'assets/room-view.less?v=' . $manifest['version'],
+            'assets/raumaushang.js',
             'assets/room-view.js?v=' . $manifest['version'],
+            'assets/room-view.less?v=' . $manifest['version'],
         ]);
 
         $this->id       = $room_id;

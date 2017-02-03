@@ -6,7 +6,7 @@ $post = ['r' => time()];
 <head>
     <title>Raumaushang</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
+    <meta name="current-timestamp" content="<?= date('c', strtotime('monday this week 0:00:00')) ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_link('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
     <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
@@ -18,7 +18,8 @@ $post = ['r' => time()];
             url: <?= json_encode(URLHelper::getURL('plugins.php/restipplugin/api', [], true)) ?>
         },
         version: <?= json_encode($plugin_version) ?>,
-        now: new Date(<?= time() ?> * 1000)
+        now: <?= json_encode(date('c')) ?>,
+        timezone: <?= json_encode(date('e')) ?>
     };
     </script>
 </head>
@@ -53,7 +54,9 @@ $post = ['r' => time()];
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.move.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.swipe.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/qrcode.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/date.format.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-2.17.1.min.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-locale-de.min.js', $post) ?>"></script>
+    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-timezone-0.5.10.min.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/countdown.js', $post) ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>
