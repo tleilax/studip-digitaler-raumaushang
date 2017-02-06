@@ -29,6 +29,7 @@ $post = ['r' => time()];
     <?= $content_for_layout ?>
 
     <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('lodash.underscore-1.3.1.js') ?>"></script>
 
     <script src="<?= URLHelper::getLink($plugin_base . '/assets/base64.js', $post) ?>"></script>
     <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-2.17.1.min.js', $post) ?>"></script>
