@@ -1,6 +1,6 @@
-/*jslint browser: true, unparam: true */
-/*global jQuery, Raumaushang, Countdown, base64, moment */
-(function ($, Raumaushang, Countdown, base64, moment) {
+/*jslint browser: true, unparam: true, nomen: true */
+/*global jQuery, Raumaushang, Countdown, base64, moment, _ */
+(function ($, Raumaushang, Countdown, base64, moment, _) {
     'use strict';
 
     $.extend(Raumaushang, {
@@ -89,10 +89,37 @@
         $('footer .total-pages').text(totalPages);
         $('footer .next-page').text((Raumaushang.currentPage + 1) % totalPages + 1);
         $('footer').toggle(totalPages > 1);
+
+        Raumaushang.applyScrolling();
+    };
+
+    Raumaushang.applyScrolling = function () {
+        $('.course').find('.room,.teachers').each(function () {
+            var height = $(this).height(),
+                actual = $(this)[0].scrollHeight;
+
+            if (height === actual) {
+                return;
+            }
+
+            Raumaushang.scroll(this, actual - height);
+        });
+    };
+
+    Raumaushang.scroll = function (element, value, revert) {
+        _.delay(function () {
+            var prefix = revert ? '-=' : '+=';
+            $(element).animate({
+                scrollTop: prefix + (value + 23)
+            }, 2500, 'linear', function () {
+                Raumaushang.scroll(element, value, !revert);
+            });
+        }, 2500);
     };
 
     $(document).ready(function () {
         Raumaushang.requestSchedules();
+        Raumaushang.applyScrolling();
 
         Countdown.add('pagination', Raumaushang.delays.pagination, Raumaushang.paginate, {
             check_interval: 100,
@@ -110,4 +137,4 @@
         $('header > aside > date').text(Raumaushang.getMoment().format('dddd, DD.MM.YYYY'));
     }, 100);
 
-}(jQuery, Raumaushang, Countdown, base64, moment));
+}(jQuery, Raumaushang, Countdown, base64, moment, _));

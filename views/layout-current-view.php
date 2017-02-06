@@ -29,6 +29,7 @@ $post = ['r' => time()];
     <?= $content_for_layout ?>
 
     <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('vendor/lodash.underscore-3.10.1.js') ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>
     <script src="<?= URLHelper::getLink($plugin_base . $script, $post) ?>"></script>

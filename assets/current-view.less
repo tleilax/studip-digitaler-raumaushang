@@ -126,12 +126,17 @@ body {
             .flex-order(4);
         }
 
-        .time, .room, .title, .teachers {
+        .time, .title {
             font-size: 0.75rem;
 
             &::first-line {
                 font-size: 1rem;
             }
+        }
+
+        .room, .teachers {
+            max-height: 1.2em;
+            overflow: hidden;
         }
 
         &:not(:first-child) {
