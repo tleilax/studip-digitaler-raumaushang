@@ -58,23 +58,17 @@ class SchedulesController extends PluginController
         $this->total = count($this->dates);
         $this->dates = array_slice($this->dates, $page * $max, $max);
 
-        $this->addOwnLayout('layout-current-view.php', [
-            'assets/raumaushang.js',
-            'assets/current-view.js',
-            'assets/current-view.less',
-        ]);
+        $assets = ['assets/current-view.less'];
+        if ($this->debug) {
+            $assets = array_merge($assets, $this->getJSAssets('current'));
+        } else {
+            $assets[] = 'assets/current-view-all.min.js';
+        }
+        $this->addOwnLayout('layout-current-view.php', $assets);
     }
 
     public function room_action($room_id)
     {
-        $manifest = $this->plugin->getMetadata();
-
-        $this->addOwnLayout('layout-room-view.php', [
-            'assets/raumaushang.js',
-            'assets/room-view.js?v=' . $manifest['version'],
-            'assets/room-view.less?v=' . $manifest['version'],
-        ]);
-
         $this->id       = $room_id;
         $this->room     = Objekt::find($room_id);
 
@@ -90,6 +84,15 @@ class SchedulesController extends PluginController
             }
         }
         $this->properties = $properties;
+
+        $assets = ['assets/room-view.less'];
+        if ($this->debug) {
+            $assets = array_merge($assets, $this->getJSAssets('room'));
+        } else {
+            $assets[] = 'assets/room-view-all.min.js';
+        }
+
+        $this->addOwnLayout('layout-room-view.php', $assets);
     }
 
     private function addOwnLayout($name, array $assets = [])
@@ -103,8 +106,9 @@ class SchedulesController extends PluginController
             if ($extension === 'js') {
                 $js[] = $asset;
             } elseif ($extension === 'less') {
-                $this->plugin->addLESS(substr($asset, 0, strpos($asset, $path) + strlen($path)));
-                $css[] = str_replace('.less', '.css', $asset);
+                $css[] = $this->plugin->addLESS(
+                    substr($asset, 0, strpos($asset, $path) + strlen($path))
+                );
             } elseif ($extension === 'css') {
                 $css[] = $asset;
             }
@@ -134,5 +138,14 @@ class SchedulesController extends PluginController
         URLHelper::setBaseURL($old_base);
 
         return $url;
+    }
+
+    private function getJSAssets($index)
+    {
+        $config = json_decode(file_get_contents(__DIR__ . '/../assets.json'), true);
+        if (!isset($config[$index])) {
+            throw new Exception('Unknown asset index "' . $index . '"');
+        }
+        return $config[$index];
     }
 }

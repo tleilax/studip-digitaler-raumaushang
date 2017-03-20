@@ -28,7 +28,6 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         }
 
         $this->addLESS('assets/style.less');
-        $this->addJS('assets/application.js');
 
         URLHelper::removeLinkParam('cid');
 
@@ -45,50 +44,74 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         PageLayout::addScript($this->getPluginURL() . '/' . ltrim($asset, '/'));
     }
 
-    // This is ugly but I can't help it.
-    public function addLESS($asset)
+    // This is still ugly, since it copies almost all of the core functionality
+    public function addLESS($filename)
     {
-        $less_file = $this->getPluginPath() . '/' . ltrim($asset, '/');
-        $css_file  = str_replace('.less', '.css', $less_file);
+        if (substr($filename, -5) !== '.less') {
+            $url = $this->getPluginURL() . '/' . $filename;
+            PageLayout::addStylesheet($url);
+            return;
+        }
 
-	    $recompile = false;
-        if (file_exists($css_file)) {
-            $last_compiled = filemtime($css_file);
-            if (filemtime($less_file) > $last_compiled) {
-                $recompile = true;
-            } else {
-                $less_files = glob(dirname($less_file) . '/less/*.less');
-                foreach ($less_files as $file) {
-                    $recompile = $recompile || filemtime($file) > $last_compiled;
+        // Create absolute path to less file
+        $less_file = $GLOBALS['ABSOLUTE_PATH_STUDIP']
+                   . $this->getPluginPath() . '/'
+                   . $filename;
+
+        // Fail if file does not exist
+        if (!file_exists($less_file)) {
+            throw new Exception('Could not locate LESS file "' . $filename . '"');
+        }
+
+        // Get plugin version from metadata
+        $metadata = $this->getMetadata();
+        $plugin_version = $metadata['version'];
+
+        // Get plugin id (or parent plugin id if any)
+        $plugin_id = $this->plugin_info['depends'] ?: $this->getPluginId();
+
+        // Get asset file from storage
+        $asset = Assets\Storage::getFactory()->createCSSFile($less_file, array(
+            'plugin_id'      => $this->plugin_info['depends'] ?: $this->getPluginId(),
+            'plugin_version' => $metadata['version'],
+        ));
+
+        // Compile asset if neccessary
+        if ($asset->isNew()) {
+            $variables['plugin-path'] = $this->getPluginURL();
+            $variables['plugin-url']  = $this->getPluginURL();
+
+            $less = file_get_contents($less_file);
+
+            if (strpos($less, '@import') !== false) {
+                // Import things here!!
+                $path  = dirname($less_file);
+                $lines = array_map('trim', explode("\n", $less));
+                $less = '';
+                foreach ($lines as $line) {
+                    if (preg_match('/^@import "(.*)";/', $line, $match)) {
+                        $include_file = $path . '/' . $match[1];
+                        $line = trim(file_get_contents($include_file));
+                    }
+                    $less .= $line . "\n";
                 }
             }
+
+            $css  = Assets\Compiler::compileLESS($less, $variables);
+            $asset->setContent($css);
+        }
+
+        // Include asset in page by reference or directly
+        $download_uri = $asset->getDownloadLink();
+        if ($download_uri === false) {
+            PageLayout::addStyle($asset->getContent(), $link_attr);
         } else {
-            $recompile = true;
+            $link_attr['rel']  = 'stylesheet';
+            $link_attr['href'] = $download_uri;
+            $link_attr['type'] = 'text/css';
+            PageLayout::addHeadElement('link', $link_attr);
         }
 
-        if ($recompile) {
-            $path   = dirname($less_file);
-            $lines  = array_map('trim', file($less_file));
-            $parsed = sprintf("@plugin-url: '%s';\n", $this->getPluginURL());
-            foreach ($lines as $line) {
-                if (preg_match('/^@import "(.*)";/', $line, $match)) {
-                    $include_file = $path . '/' . $match[1];
-                    $line = trim(file_get_contents($include_file));
-                }
-                $parsed .= $line . "\n";
-            }
-
-            $temp_less = md5(uniqid('less-file', true)) . '.less';
-            $temp_file = $path . '/' . $temp_less;
-            file_put_contents($temp_file, $parsed);
-
-            parent::addStylesheet(dirname($asset) . '/' . $temp_less);
-            PageLayout::removeStylesheet($this->getPluginURL() . '/' . str_replace('.less', '.css', $asset));
-
-            unlink($temp_file);
-            rename(str_replace('.less', '.css', $temp_file), $path . '/' . basename($asset, '.less') . '.css');
-        }
-
-        PageLayout::addStylesheet($this->getPluginURL() . '/' . ltrim(str_replace('.less', '.css', $asset), '/'));
+        return $asset;
     }
 }

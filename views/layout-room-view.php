@@ -9,7 +9,7 @@ $post = ['r' => time()];
     <meta name="current-timestamp" content="<?= date('c', strtotime('monday this week 0:00:00')) ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_link('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array)@$plugin_styles as $style): ?>
-    <link href="<?= URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {
@@ -37,7 +37,7 @@ $post = ['r' => time()];
     <div id="course-overlay"></div>
 
     <button id="help-overlay-switch">
-        <?= Icon::create('80/black/info-circle')->render(Icon::SVG) ?>
+        <?= Icon::create('info-circle', 'info')->asImg(80) ?>
     </button>
     <div id="help-overlay"><?= $this->render_partial('help-overlay.php') ?></div>
 
@@ -47,17 +47,8 @@ $post = ['r' => time()];
     <small id="debug-time"><?= date('d.m.Y H:i:s') ?></small>
 <? endif; ?>
 
-    <script src="<?= Assets::javascript_path('vendor/modernizr.js') ?>"></script>
-    <script src="<?= Assets::javascript_path('jquery/jquery-1.8.2.js') ?>"></script>
-
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/mustache-2.2.1.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.move.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/jquery.event.swipe.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/qrcode.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-2.17.1.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-locale-de.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base .'/assets/moment-timezone-0.5.10.min.js', $post) ?>"></script>
-    <script src="<?= URLHelper::getLink($plugin_base . '/assets/countdown.js', $post) ?>"></script>
+    <script src="<?= Assets::javascript_path('vendor/modernizr-2.8.3.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>
     <script src="<?= URLHelper::getLink($plugin_base . $script, $post) ?>"></script>

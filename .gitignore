@@ -1,2 +1,11 @@
 assets/*.css
+node_modules/*
+bower_components/*
+!bower_components/base-64
+!bower_components/jquery.event.move
+!bower_components/jquery.event.swipe
+!bower_components/moment
+!bower_components/moment-timezone
+!bower_components/mustache.js
+!bower_components/qrcode.js
 
