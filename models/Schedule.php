@@ -295,18 +295,17 @@ class Schedule
 
     protected function getModules($course_id)
     {
-        $query = "SELECT DISTINCT CONCAT_WS(' ', `modulschluessel`, `modultitel`)
+        $query = "SELECT DISTINCT CONCAT_WS(' ', `code`, `bezeichnung`)
                   FROM `seminare` AS `s`
-                  -- Get semester
-                  JOIN `semester_data` AS `sd` ON (`s`.`start_time` BETWEEN `sd`.`beginn` AND `sd`.`ende`)
-                  -- Get modules
-                  JOIN `seminar_sem_tree` AS `sst` ON (`s`.`seminar_id` = `sst`.`seminar_id`)
-                  JOIN `sem_tree` AS `st` ON (`sst`.`sem_tree_id` = `st`.`sem_tree_id` AND `st`.`TYPE` = 5)
-                  JOIN `mod_zuordnung` AS `mz` ON (`st`.`sem_tree_id` = `mz`.`sem_tree_id`)
-                  JOIN `module` AS `m` ON (`m`.`modul_abst_id` = `mz`.`modul_abst_id` AND `m`.`semester` = `sd`.`semester_id`)
-                  JOIN `modul_deskriptor` AS `md` ON (`m`.`desk_id` = `md`.`desk_id`)
+                  JOIN `mvv_lvgruppe_seminar` USING (`seminar_id`)
+                  JOIN `mvv_lvgruppe` USING (`lvgruppe_id`)
+                  JOIN `mvv_lvgruppe_modulteil` USING (`lvgruppe_id`)
+                  JOIN `mvv_modulteil` USING (`modulteil_id`)
+                  JOIN `mvv_modul` USING (`modul_id`)
+                  JOIN `mvv_modul_deskriptor` USING (`modul_id`)
                   WHERE `s`.`seminar_id` = :course_id
-                  ORDER BY `modulschluessel`, `modultitel`";
+                    AND `sprache` = 'de'
+                  ORDER BY `code`, `bezeichnung`";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $course_id);
         $statement->execute();
