@@ -37,7 +37,7 @@ class Schedule
 
         $query = "SELECT `ra`.`assign_id`,
                          `s`.`veranstaltungsnummer` AS `code`,
-                         IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
+                         IFNULL(`s`.`name`, IF(LENGTH(`ra`.`user_free_name`) > 0, `ra`.`user_free_name`, IF(`aum`.`user_id` IS NULL, '(unbekannt)', CONCAT(`aum`.`Vorname`, ' ', `Nachname`)))) AS `name`,
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
@@ -48,6 +48,7 @@ class Schedule
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
                   JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
                   LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
+                  LEFT JOIN `auth_user_md5` AS `aum` ON (`ra`.`assign_user_id` = `aum`.`user_id`)
                   WHERE `ra`.`assign_id` IN (:assign_ids)
                   GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
                   ORDER BY `begin`, `name`";
