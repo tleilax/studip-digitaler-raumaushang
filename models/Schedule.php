@@ -37,7 +37,7 @@ class Schedule
 
         $query = "SELECT `ra`.`assign_id`,
                          `s`.`veranstaltungsnummer` AS `code`,
-                         IFNULL(`s`.`name`, IF(LENGTH(`ra`.`user_free_name`) > 0, `ra`.`user_free_name`, IF(`aum`.`user_id` IS NULL, '(unbekannt)', CONCAT(`aum`.`Vorname`, ' ', `Nachname`)))) AS `name`,
+                         `s`.`name`, `ra`.`user_free_name`, CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS `user_fullname`,
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
@@ -59,6 +59,17 @@ class Schedule
 
         foreach ($events as $index => $event) {
             $data = array_merge($event, $result[$event['id']]);
+            if (!$data['name']) {
+                if (!$data['user_free_name']) {
+                    $data['name'] = $data['user_fullname'];
+                } else {
+                    $data['name'] = $data['user_free_name'];
+                    if ($data['user_fullname']) {
+                        $data['name'] .= ' (' . $data['user_fullname'] . ')';
+                    }
+                }
+                $data['name'] = $data['name'] ?: ('(' . _('unbekannt') . ')');
+            }
             $events[$index] = new self($data);
         }
         return $events;

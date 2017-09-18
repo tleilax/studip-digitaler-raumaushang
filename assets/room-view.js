@@ -362,12 +362,14 @@
             slot      = $(this).data().slot,
             rendered = 'error';
 
+        console.log(data);
+
         $('#course-overlay').html(render('#course-template', $.extend({}, data, {
             begin: moment(data.begin).format('DD.MM.YYYY HH:mm'),
             end: moment(data.end).format('DD.MM.YYYY HH:mm'),
             hasTeachers: data.teachers.length > 0,
             hasModules: data.modules.length > 0
-        }))).find('.qrcode').makeQRCode();
+        }))).find('.qrcode').makeQRCode().toggle(data.course_id !== null);
 
         showOverlay('#course-overlay', Raumaushang.durations.course);
 
