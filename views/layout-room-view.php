@@ -23,7 +23,7 @@ $post = ['r' => time()];
     };
     </script>
 </head>
-<body>
+<body data-current-day="<?= date('N') ?>">
 <? if ($debug): ?>
     <progress value="100" max="100"></progress>
 <? endif; ?>

@@ -8,7 +8,7 @@ var gulp = require('gulp'),
 
 gulp.task('js', function () {
     var assets = require('./assets.json');
-    
+
     return merge(
         gulp.src(assets.current)
             .pipe(concat('current-view-all.min.js'))

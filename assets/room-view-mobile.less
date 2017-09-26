@@ -1,0 +1,49 @@
+@media (orientation: portrait) {
+    body > {
+        header,
+        progress,
+        #help-overlay-switch,
+        #clock,
+        #debug-time,
+        table thead,
+        .qrcode {
+            display: none !important;
+        }
+    }
+
+    #loading-overlay {
+        font-size: 2em;
+    }
+    #course-overlay {
+        background-image: none;
+        font-size: 1em;
+        padding: 0.5em;
+
+        .dates {
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+        }
+        .description {
+            font-size: 1em;
+        }
+    }
+
+    table.week-schedule {
+        width: 100%;
+
+        colgroup col:first-child {
+            width: 4%;
+        }
+    }
+
+    // This hides all columns that are not on the current day
+    .hide-days(@day) when (@day > 0) {
+        .hide-days((@day - 1));
+        body[data-current-day="@{day}"] {
+            [data-day]:not([data-day="@{day}"]) {
+                display: none;
+            }
+        }
+    }
+    .hide-days(7);
+}
