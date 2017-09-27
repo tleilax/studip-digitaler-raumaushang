@@ -15,7 +15,7 @@ $post = ['r' => time()];
     var Raumaushang = {
         api: {
             auth: <?= json_encode($config['auth']) ?>,
-            url: <?= json_encode(URLHelper::getURL('plugins.php/restipplugin/api/', [], true)) ?>
+            url: <?= json_encode(URLHelper::getURL('api.php/', [], true)) ?>
         },
         current_id: <?= json_encode($building->id) ?>,
         maxPages: <?= json_encode($max) ?>,

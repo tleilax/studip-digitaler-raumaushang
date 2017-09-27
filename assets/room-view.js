@@ -362,8 +362,6 @@
             slot      = $(this).data().slot,
             rendered = 'error';
 
-        console.log(data);
-
         $('#course-overlay').html(render('#course-template', $.extend({}, data, {
             begin: moment(data.begin).format('DD.MM.YYYY HH:mm'),
             end: moment(data.end).format('DD.MM.YYYY HH:mm'),
