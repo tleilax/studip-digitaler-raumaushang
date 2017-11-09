@@ -27,10 +27,10 @@
 <? endif; ?>
     <hr>
     <p>
-        Bei Raumleerständen oder bei einem Raumtausch bitte eine Meldung an das
+        Bei RaumleerstÃ¤nden oder bei einem Raumtausch bitte eine Meldung an das
     </p>
     <ul class="contact">
-        <li>Raumbüro</li>
+        <li>RaumbÃ¼ro</li>
         <li>
             <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
             798 <strong>2483</strong> / <strong>2545</strong> / <strong>4273</strong>

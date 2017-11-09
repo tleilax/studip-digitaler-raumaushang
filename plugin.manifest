@@ -2,5 +2,5 @@ pluginname=Raumaushang
 pluginclassname=Raumaushang
 pluginclassname=RaumaushangAPI
 origin=UOL
-version=1.5
-studipMinVersion=3.5
+version=2.0
+studipMinVersion=4.0
