@@ -23,7 +23,7 @@ class Schedule
         $events = [];
         $ids    = [];
         foreach ($list->events as $event) {
-            if (date('H', $event->getBegin()) < 8 || date('H', $event->getEnd()) > 22) {
+            if (date('H', $event->getBegin()) >= 22 || date('H', $event->getEnd()) <= 8) {
                 continue;
             }
 
