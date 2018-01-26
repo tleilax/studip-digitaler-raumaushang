@@ -32,6 +32,6 @@
     "commit": "978ca4d1cb207845fdf7c60ece384206583746dd"
   },
   "_source": "https://github.com/stephband/jquery.event.swipe.git",
-  "_target": "^0.5.4",
+  "_target": "*",
   "_originalSource": "jquery.event.swipe"
 }

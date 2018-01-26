@@ -28,7 +28,7 @@ $post = ['r' => time()];
 <body id="debug">
     <?= $content_for_layout ?>
 
-    <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-3.1.0.js') ?>"></script>
     <script src="<?= Assets::javascript_path('vendor/lodash.underscore-3.10.1.js') ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>

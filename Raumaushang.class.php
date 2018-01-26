@@ -15,8 +15,8 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
 
         if (is_object($GLOBALS['user']) && $GLOBALS['user']->perms === 'root') {
             $navigation = new Navigation(_('Raumaushang'), $this->url_for('schedules/index'));
-            $navigation->setImage('icons/white/timetable.svg');
-            $navigation->setActiveImage('icons/black/timetable.svg');
+            $navigation->setImage(Icon::create('timetable', Icon::ROLE_INFO_ALT));
+            $navigation->setActiveImage(Icon::create('timetable', Icon::ROLE_INFO));
             Navigation::addItem('/resources/raumaushang', $navigation);
         }
     }

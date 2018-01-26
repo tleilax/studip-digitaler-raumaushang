@@ -12,8 +12,7 @@
   },
   "author": "Jan-Hendrik Willms <tleilax+studip@gmail.com>",
   "license": "GPL-2.0",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",

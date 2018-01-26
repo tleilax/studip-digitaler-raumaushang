@@ -18,8 +18,8 @@
   "dependencies": {
     "base-64": "^0.1.0",
     "qrcode.js": "qrcode-js#*",
-    "jquery.event.move": "^1.3.6",
-    "jquery.event.swipe": "^0.5.4",
+    "jquery.event.move": "*",
+    "jquery.event.swipe": "*",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
     "mustache.js": "mustache#^2.3.0"
