@@ -172,7 +172,6 @@
             if ($.isFunction(callback)) {
                 callback(schedule_hash, json);
             }
-
         }).fail(function (jqxhr, text, error) {
             debuglog('ajax failed', text, error, url);
         }).always(function () {
@@ -254,6 +253,10 @@
 
         if (Raumaushang.current.timestamp) {
             timestamp = Raumaushang.current.timestamp.clone();
+            if (arguments.length === 0 && moment().isAfter(timestamp, 'week')) {
+                timestamp = moment().startOf('week');
+            }
+
             if (direction === Raumaushang.DIRECTION_NEXT) {
                 timestamp.add(1, 'weeks');
             } else if (direction === Raumaushang.DIRECTION_PREVIOUS) {
@@ -341,7 +344,7 @@
     };
 
     // Handlers
-    $(document).ready(function () {
+    $(window).on('load', function () {
         Raumaushang.init();
 
 /*
@@ -354,7 +357,8 @@
         Raumaushang.update(function () {
             Raumaushang.highlight();
         });
-    }).on('select', '*', function (event) {
+    });
+    $(document).on('select', '*', function (event) {
         event.preventDefault();
     }).on('mousemove mousedown mouseup touchmove touchstart touchend', function (event) {
         Countdown.reset();
@@ -391,11 +395,10 @@
         });
 
         return false;
-    }).on('click', '.qrcode', function (event) {
+    }).on('click', '.qrcode', function () {
         $(this).toggleClass('enlarged');
 
-        event.preventDefault();
-        event.stopPropagation();
+        return false;
     }).on('click', '#help-overlay-switch', function () {
         showOverlay('#help-overlay', Raumaushang.durations.help);
     });
