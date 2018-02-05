@@ -206,10 +206,28 @@
         return slots.join(' ');
     };
 
+    Raumaushang.adjustItemSlotAndDuration = function (item, offset) {
+        var slots = Object.keys(offset.offsets),
+            min   = Math.min.apply(null, slots);
+
+        // Lower bound not exceeded (this includes upper bound exceeded)
+        // or lower bound exceedance not fixable => return original
+        if (item.slot >= min || item.slot + item.duration / 4 <= min) {
+            return item;
+        }
+
+        item.duration -= (min - item.slot) * 4;
+        item.slot      = min;
+
+        return item;
+    };
+
     //
     Raumaushang.createItemOffsets = function (item, offset) {
+        item = Raumaushang.adjustItemSlotAndDuration(item, offset);
+
         if (!offset.offsets.hasOwnProperty(item.slot)) {
-            debuglog(item, offset);
+            debuglog('invalid offset', item, offset);
             return false;
         }
 
@@ -381,7 +399,7 @@
 
         setTimeout(function () {
             $('#course-overlay').find('.qrcode').makeQRCode();
-        }, 0)
+        }, 0);
 
         $('#course-overlay article').on('movestart', function (event) {
             if ($('.qrcode.enlarged', this).length === 0) {
