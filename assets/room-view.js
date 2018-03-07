@@ -1,7 +1,13 @@
-/*jslint browser: true */
+/*jslint browser: true, unparam: true, todo: true */
 /*global jQuery, Raumaushang, Countdown, Mustache, moment, QRCode */
 (function ($, Raumaushang, Countdown, Mustache, moment, QRCode) {
     'use strict';
+
+    function debuglog() {
+        if (window.hasOwnProperty('console')) {
+            window.console.log.apply(window, arguments);
+        }
+    }
 
     // Allow :active style to work
     // @see https://css-tricks.com/snippets/css/remove-gray-highlight-when-tapping-links-in-mobile-safari/
@@ -80,7 +86,7 @@
             templates[template_id] = $(template_id).html();
             Mustache.parse(templates[template_id]);
         }
-        return Mustache.render(templates[template_id], data);
+        return Mustache.render(templates[template_id] || '', data);
     }
 
     // Initialize countdowns
@@ -166,15 +172,12 @@
             if ($.isFunction(callback)) {
                 callback(schedule_hash, json);
             }
-
         }).fail(function (jqxhr, text, error) {
-            if (console !== undefined) {
-                console.log('ajax failed', text, error, url);
-            }
+            debuglog('ajax failed', text, error, url);
         }).always(function () {
             Raumaushang.hideLoadingOverlay();
         });
-    }
+    };
 
     // Highlights cells
     Raumaushang.highlight = function () {
@@ -184,13 +187,14 @@
 
         $('body > .schedule-item').removeClass('current-slot');
 
-        if (Raumaushang.current.timestamp.format('W') == now.format('W')) {
-             $('body > .schedule-item[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
+        if (Raumaushang.current.timestamp.format('W') === now.format('W')) {
+            $('body > .schedule-item[data-slot~="' + slot + '"][data-day="' + day + '"]:not(.is-holiday)').addClass('current-slot');
         }
 
         window.setTimeout(Raumaushang.highlight, 250);
     };
 
+    //
     Raumaushang.getSpanningSlots = function (item) {
         var slots    = [],
             slot     = item.slot,
@@ -218,13 +222,12 @@
         return item;
     };
 
-
     //
     Raumaushang.createItemOffsets = function (item, offset) {
         item = Raumaushang.adjustItemSlotAndDuration(item, offset);
 
         if (!offset.offsets.hasOwnProperty(item.slot)) {
-            console.log(item, offset);
+            debuglog('invalid offset', item, offset);
             return false;
         }
 
@@ -248,7 +251,7 @@
             top: Math.round(top_offset.top + item.fraction * top_offset.height / 4),
             bottom: bottom_offset.bottom + (bottom_slot % 1 > 0 ? 1 - bottom_slot % 1 : 0) * bottom_offset.height
         };
-    }
+    };
 
     // Updates the table (internally requests data)
     Raumaushang.update = function (direction, callback) {
@@ -268,6 +271,10 @@
 
         if (Raumaushang.current.timestamp) {
             timestamp = Raumaushang.current.timestamp.clone();
+            if (arguments.length === 0 && moment().isAfter(timestamp, 'week')) {
+                timestamp = moment().startOf('week');
+            }
+
             if (direction === Raumaushang.DIRECTION_NEXT) {
                 timestamp.add(1, 'weeks');
             } else if (direction === Raumaushang.DIRECTION_PREVIOUS) {
@@ -355,7 +362,7 @@
     };
 
     // Handlers
-    $(document).ready(function () {
+    $(window).on('load', function () {
         Raumaushang.init();
 
 /*
@@ -368,7 +375,8 @@
         Raumaushang.update(function () {
             Raumaushang.highlight();
         });
-    }).on('select', '*', function (event) {
+    });
+    $(document).on('select', '*', function (event) {
         event.preventDefault();
     }).on('mousemove mousedown mouseup touchmove touchstart touchend', function (event) {
         Countdown.reset();
@@ -378,17 +386,20 @@
         var course_id = $(this).blur().data().courseId,
             data      = Raumaushang.course_data[course_id],
             day       = $(this).data().day,
-            slot      = $(this).data().slot,
-            rendered = 'error';
+            slot      = $(this).data().slot;
 
         $('#course-overlay').html(render('#course-template', $.extend({}, data, {
             begin: moment(data.begin).format('DD.MM.YYYY HH:mm'),
             end: moment(data.end).format('DD.MM.YYYY HH:mm'),
             hasTeachers: data.teachers.length > 0,
             hasModules: data.modules.length > 0
-        }))).find('.qrcode').makeQRCode().toggle(data.course_id !== null);
+        }))).toggle(data.course_id !== null);
 
         showOverlay('#course-overlay', Raumaushang.durations.course);
+
+        setTimeout(function () {
+            $('#course-overlay').find('.qrcode').makeQRCode();
+        }, 0);
 
         $('#course-overlay article').on('movestart', function (event) {
             if ($('.qrcode.enlarged', this).length === 0) {
@@ -402,11 +413,10 @@
         });
 
         return false;
-    }).on('click', '.qrcode', function (event) {
+    }).on('click', '.qrcode', function () {
         $(this).toggleClass('enlarged');
 
-        event.preventDefault();
-        event.stopPropagation();
+        return false;
     }).on('click', '#help-overlay-switch', function () {
         showOverlay('#help-overlay', Raumaushang.durations.help);
     });

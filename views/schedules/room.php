@@ -59,5 +59,5 @@
     </tbody>
 </table>
 
-<script id="course-template" type="x-tmpl-mustache"><?= $this->render_partial('course-overlay.php') ?></script>
 <script id="schedule-item-template" type="x-tmpl-mustache"><?= $this->render_partial('schedule-item.php') ?></script>
+<script id="course-template" type="x-tmpl-mustache"><?= $this->render_partial('course-overlay.php') ?></script>

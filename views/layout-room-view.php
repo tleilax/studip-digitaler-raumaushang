@@ -48,7 +48,7 @@ $post = ['r' => time()];
 <? endif; ?>
 
     <script src="<?= Assets::javascript_path('vendor/modernizr-2.8.3.js') ?>"></script>
-    <script src="<?= Assets::javascript_path('jquery/jquery-1.11.3.js') ?>"></script>
+    <script src="<?= Assets::javascript_path('jquery/jquery-3.1.0.js') ?>"></script>
 
 <? foreach ((array)@$plugin_scripts as $script): ?>
     <script src="<?= URLHelper::getLink($plugin_base . $script, $post) ?>"></script>

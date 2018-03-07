@@ -3,7 +3,7 @@
 <header>
 <? //    <h1>Veranstaltungswegweiser</h1> ?>
     <h1>Veranstaltungen</h1>
-    <h2><?= sprintf('Gebäude %s', htmlReady($building->name)) ?></h2>
+    <h2><?= sprintf('GebÃ¤ude %s', htmlReady($building->name)) ?></h2>
 
     <aside class="date-and-clock">
         <time><?= date('H:i') ?></time>

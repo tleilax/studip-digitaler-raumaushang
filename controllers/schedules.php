@@ -68,7 +68,7 @@ class SchedulesController extends Raumaushang\Controller
 
         $properties = [];
         $temp = $this->room->getProperties();
-        foreach (['Arbeitspl‰tze', 'Sitzpl‰tze', 'Beamer', 'Tafel'] as $key) {
+        foreach (['Arbeitspl√§tze', 'Sitzpl√§tze', 'Beamer', 'Tafel'] as $key) {
             if (array_key_exists($key, $temp)) {
                 $properties[$key] = $temp[$key];
             }
