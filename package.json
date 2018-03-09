@@ -14,9 +14,9 @@
   "license": "GPL-2.0",
   "dependencies": {
     "base-64": "^0.1.0",
-    "jquery.event.move": "stephband/jquery.event.move",
-    "jquery.event.swipe": "stephband/jquery.event.swipe",
-    "moment": "^2.20.1",
+    "jquery.event.move": "github:stephband/jquery.event.move",
+    "jquery.event.swipe": "github:stephband/jquery.event.swipe",
+    "moment": "^2.21.0",
     "moment-timezone": "^0.5.14",
     "mustache": "^2.3.0",
     "qrcode_js": "^1.0.0"

@@ -10,7 +10,6 @@
     ],
     "room": [
         "assets/module-fixer.js",
-        "node_modules/jquery.event.move/js/jquery.event.move.js",
         "node_modules/jquery.event.swipe/js/jquery.event.swipe.js",
         "node_modules/mustache/mustache.js",
         "node_modules/moment/moment.js",
