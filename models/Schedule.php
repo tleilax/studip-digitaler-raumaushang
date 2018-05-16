@@ -37,7 +37,7 @@ class Schedule
 
         $query = "SELECT `ra`.`assign_id`,
                          `s`.`veranstaltungsnummer` AS `code`,
-                         `s`.`name`, `ra`.`user_free_name`, CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS `user_fullname`,
+                         IFNULL(`s`.`name`, IF(LENGTH(`ra`.`user_free_name`) > 0, IF(`aum`.`user_id` IS NULL,`ra`.`user_free_name` , CONCAT(`ra`.`user_free_name`, ' - ', CONCAT(`aum`.`Vorname`, ' ', `Nachname`))), IF(`aum`.`user_id` IS NULL, '(unbekannt)', CONCAT(`aum`.`Vorname`, ' ', `Nachname`)))) AS `name`,
                          GROUP_CONCAT(`su`.`user_id`ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
                          `ro`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,

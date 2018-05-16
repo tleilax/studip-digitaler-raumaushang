@@ -27,7 +27,7 @@ class SchedulesController extends Raumaushang\Controller
 
     public function index_action()
     {
-        $this->resources = Objekt::findByCategory_id(Category::ID_BUILDING, 'ORDER BY name ASC');
+        $this->resources = Objekt::findBySQL('parent_id = "0" ORDER BY name ASC');
     }
 
     public function building_action($building_id)

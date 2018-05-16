@@ -7,24 +7,25 @@
         <dd><?= htmlReady($value) ?></dd>
     <? endforeach; ?>
     </dl>
+    
+    <? if (!empty($properties['Beamer'])): ?>
+        <hr>
+        <p>
+            Bei Problemen mit dem Beamer wenden Sie sich bitte an:
+        </p>
+        <ul class="contact">
+            <li>IT-Support</li>
+            <li>
+                <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+                04441 15 <strong>432</strong>
+            </li>
+            <li>
+                <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+                it-support@uni-vechta.de
+            </li>
+        </ul>
+    <? endif; ?>
 
-<? if (!empty($properties['Beamer'])): ?>
-    <hr>
-    <p>
-        Bei Problemen mit dem Beamer wenden Sie sich bitte an:
-    </p>
-    <ul class="contact">
-        <li>Thomas Hots</li>
-        <li>
-            <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            798 <strong>4468</strong>
-        </li>
-        <li>
-            <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            thomas.hots@uni-oldenburg.de
-        </li>
-    </ul>
-<? endif; ?>
     <hr>
     <p>
         Bei Raumleerständen oder bei einem Raumtausch bitte eine Meldung an das
@@ -33,11 +34,11 @@
         <li>Raumbüro</li>
         <li>
             <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            798 <strong>2483</strong> / <strong>2545</strong> / <strong>4273</strong>
+            04441 15 <strong>200</strong>
         </li>
         <li>
             <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            raumbuero@uni-oldenburg.de
+            info.raumplanung@uni-vechta.de
         </li>
     </ul>
 </div>
