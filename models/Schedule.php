@@ -338,17 +338,30 @@ class Schedule
 
     protected function getModules($course_id)
     {
-        $query = "SELECT DISTINCT CONCAT_WS(' ', `code`, `bezeichnung`)
-                  FROM `seminare` AS `s`
-                  JOIN `mvv_lvgruppe_seminar` USING (`seminar_id`)
-                  JOIN `mvv_lvgruppe` USING (`lvgruppe_id`)
-                  JOIN `mvv_lvgruppe_modulteil` USING (`lvgruppe_id`)
-                  JOIN `mvv_modulteil` USING (`modulteil_id`)
-                  JOIN `mvv_modul` USING (`modul_id`)
-                  JOIN `mvv_modul_deskriptor` USING (`modul_id`)
-                  WHERE `s`.`seminar_id` = :course_id
-                    AND `sprache` = 'de'
-                  ORDER BY `code`, `bezeichnung`";
+        if (\StudipVersion::newerThan('4.0')) {
+            $query = "SELECT DISTINCT CONCAT_WS(' ', `code`, `bezeichnung`)
+                      FROM `seminare` AS `s`
+                      JOIN `mvv_lvgruppe_seminar` USING (`seminar_id`)
+                      JOIN `mvv_lvgruppe` USING (`lvgruppe_id`)
+                      JOIN `mvv_lvgruppe_modulteil` USING (`lvgruppe_id`)
+                      JOIN `mvv_modulteil` USING (`modulteil_id`)
+                      JOIN `mvv_modul` USING (`modul_id`)
+                      JOIN `mvv_modul_deskriptor` USING (`modul_id`)
+                      WHERE `s`.`seminar_id` = :course_id
+                      ORDER BY `code`, `bezeichnung`";
+        } else {
+            $query = "SELECT DISTINCT CONCAT_WS(' ', `code`, `bezeichnung`)
+                      FROM `seminare` AS `s`
+                      JOIN `mvv_lvgruppe_seminar` USING (`seminar_id`)
+                      JOIN `mvv_lvgruppe` USING (`lvgruppe_id`)
+                      JOIN `mvv_lvgruppe_modulteil` USING (`lvgruppe_id`)
+                      JOIN `mvv_modulteil` USING (`modulteil_id`)
+                      JOIN `mvv_modul` USING (`modul_id`)
+                      JOIN `mvv_modul_deskriptor` USING (`modul_id`)
+                      WHERE `s`.`seminar_id` = :course_id
+                        AND `sprache` = 'de'
+                      ORDER BY `code`, `bezeichnung`";
+        }
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $course_id);
         $statement->execute();
