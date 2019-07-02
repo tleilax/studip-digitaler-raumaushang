@@ -50,6 +50,7 @@
             reload: 5 * 60 * 1000,
             course: 30 * 1000,
             help: 30 * 1000,
+            opencast: 30 * 1000,
             return_to_current: 15 * 1000,
             overlay_default: 30 * 1000
         }
@@ -419,6 +420,8 @@
         return false;
     }).on('click', '#help-overlay-switch', function () {
         showOverlay('#help-overlay', Raumaushang.durations.help);
+    }).on('click', '#opencast-overlay-switch', function () {
+        showOverlay('#opencast-overlay', Raumaushang.durations.opencast);
     });
 
     // Swipe actions

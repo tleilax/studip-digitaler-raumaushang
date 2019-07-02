@@ -1,7 +1,6 @@
 <output></output>
 
 <header>
-<? //    <h1>Veranstaltungswegweiser</h1> ?>
     <h1>Veranstaltungen</h1>
     <h2><?= sprintf('Gebäude %s', htmlReady($building->name)) ?></h2>
 
