@@ -325,4 +325,13 @@ ul.teachers {
     top: 65px;
 }
 
+.yearweek {
+    &::before {
+        content: '(';
+    }
+    &::after {
+        content: ')';
+    }
+}
+
 @import "room-view-mobile.less";

@@ -348,11 +348,8 @@
                 $(cells).filter(':not([data-duration="1"],[data-duration="2"])').find('.name').clamp();
 
                 // Update week display
-                text  = 'Kalenderwoche <strong>' + first.format('W/YYYY') + '</strong>';
-                text += ' vom <strong>' + first.format('DD.MM.') + '</strong>';
-                text += ' bis <strong>' + last.format('DD.MM.') + '</strong>';
 
-                $('body > header small').html(text);
+                $('body > header .yearweek').text('KW ' + first.format('W/YYYY'));
             }
             Countdown.start('main', true);
 
