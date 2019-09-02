@@ -1,5 +1,6 @@
 {
     "current": [
+        "node_modules/jquery/dist/jquery.js",
         "node_modules/base-64/base64.js",
         "node_modules/moment/moment.js",
         "node_modules/moment/locale/de.js",
@@ -10,6 +11,7 @@
     ],
     "room": [
         "assets/module-fixer.js",
+        "node_modules/jquery/dist/jquery.js",
         "node_modules/jquery.event.swipe/js/jquery.event.swipe.js",
         "node_modules/mustache/mustache.js",
         "node_modules/moment/moment.js",
