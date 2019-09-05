@@ -1,5 +1,5 @@
 <?php
-    $monday = strtotime('this monday', $begin);
+    $monday = strtotime('this monday');
     $week_days = [];
     for ($i = 0; $i < max($config['display_days']); $i += 1) {
         $week_days[] = strftime('%A, %x', strtotime('+' . $i . ' days', $monday));
@@ -14,12 +14,11 @@
     <h1>
         <a href="<?= $_SERVER['REQUEST_URI'] ?>">
             <?= sprintf(_('Raum %s'), htmlReady($room->name)) ?>
+            <span class="yearweek"><?= sprintf(_('KW %s'), date('W/Y', $monday)) ?></span>
         </a>
         <small>
-            <? printf('Kalenderwoche <strong>%u</strong> vom <strong>%s</strong> bis <strong>%s</strong>',
-                      date('W', $monday),
-                      date('d.m.', $monday),
-                      date('d.m.', strtotime('next friday', $monday))) ?>
+            <?= _('Hinweis:') ?>
+            <?= _('Der Raum wird 30 Minuten vor Veranstaltungsbeginn elektromagnetisch geöffnet.') ?>
         </small>
     </h1>
     <nav>

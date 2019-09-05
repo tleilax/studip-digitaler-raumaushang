@@ -2,7 +2,7 @@
 
 @import "less/overlay-mixin.less";
 @import "less/loading-overlay.less";
-@import "less/help-overlay.less";
+@import "less/switches.less";
 @import "less/course-overlay.less";
 
 .centered() {
@@ -216,6 +216,76 @@ table.week-schedule {
             align-self: center;
         }
     }
+
+    &.has-recording {
+        &::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 32px;
+
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+
+            padding: 0px 2px 0px;
+            border: 1px solid #444;
+            border-left: 0px;
+            border-bottom: 0px;
+            border-top-right-radius: 2px;
+
+            background-image: url("@{image-path}/icons/grey/video.svg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 32px;
+
+            pointer-events: none;
+        }
+
+        &.current-slot {
+
+            @keyframes fade-in-out {
+                0% { opacity: 1; }
+                100% {opacity: 0; }
+            }
+
+            &::before {
+                background-color: @red-20;
+                background-image: url("@{image-path}/icons/black/video.svg");
+            }
+
+            &::after {
+                animation: fade-in-out 1s alternate infinite;
+
+                content: '';
+                display: block;
+                width: 32px;
+                height: 32px;
+
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+
+                padding: 0px 2px 0px;
+                border: 1px solid @red-60;
+                border-left: 0px;
+                border-bottom: 0px;
+                border-top-right-radius: 2px;
+
+                background-color: @red-20;
+                background-image: url("@{image-path}/icons/red/video.svg");
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 32px;
+
+                pointer-events: none;
+            }
+        }
+
+        .teachers {
+            margin-left: 48px;
+        }
+    }
 }
 
 ul.teachers {
@@ -253,6 +323,15 @@ ul.teachers {
     position: absolute;
     left: 90px;
     top: 65px;
+}
+
+.yearweek {
+    &::before {
+        content: '(';
+    }
+    &::after {
+        content: ')';
+    }
 }
 
 @import "room-view-mobile.less";

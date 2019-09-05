@@ -50,6 +50,7 @@
             reload: 5 * 60 * 1000,
             course: 30 * 1000,
             help: 30 * 1000,
+            opencast: 30 * 1000,
             return_to_current: 15 * 1000,
             overlay_default: 30 * 1000
         }
@@ -347,11 +348,8 @@
                 $(cells).filter(':not([data-duration="1"],[data-duration="2"])').find('.name').clamp();
 
                 // Update week display
-                text  = 'Kalenderwoche <strong>' + first.format('W/YYYY') + '</strong>';
-                text += ' vom <strong>' + first.format('DD.MM.') + '</strong>';
-                text += ' bis <strong>' + last.format('DD.MM.') + '</strong>';
 
-                $('body > header small').html(text);
+                $('body > header .yearweek').text('KW ' + first.format('W/YYYY'));
             }
             Countdown.start('main', true);
 
@@ -419,6 +417,8 @@
         return false;
     }).on('click', '#help-overlay-switch', function () {
         showOverlay('#help-overlay', Raumaushang.durations.help);
+    }).on('click', '#opencast-overlay-switch', function () {
+        showOverlay('#opencast-overlay', Raumaushang.durations.opencast);
     });
 
     // Swipe actions

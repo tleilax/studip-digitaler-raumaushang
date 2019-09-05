@@ -1,4 +1,4 @@
-<div class="schedule-item {{#is_holiday}}is-holiday{{/is_holiday}}{{^is_holiday}}course-info{{/is_holiday}}" data-course-id="{{id}}" data-day="{{day}}" data-slot="{{slots}}" data-duration="{{duration}}">
+<div class="schedule-item {{#recording}}has-recording{{/recording}} {{#is_holiday}}is-holiday{{/is_holiday}}{{^is_holiday}}course-info{{/is_holiday}}" data-course-id="{{id}}" data-day="{{day}}" data-slot="{{slots}}" data-duration="{{duration}}">
     <div class="name">{{code}} {{name}}</div>
 {{#hasTeachers}}
     <ul class="teachers">

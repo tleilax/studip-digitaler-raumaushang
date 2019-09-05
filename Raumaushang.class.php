@@ -41,7 +41,15 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
 
     public function addJS($asset)
     {
-        PageLayout::addScript($this->getPluginURL() . '/' . ltrim($asset, '/'));
+        static $manifest = null;
+        if ($manifest === null) {
+            $manifest = $this->getMetadata();
+        }
+
+        PageLayout::addScript(URLHelper::getURL(
+            $this->getPluginURL() . '/' . ltrim($asset, '/'),
+            ['v' => $manifest['version']]
+        ));
     }
 
     // This is still ugly, since it copies almost all of the core functionality
@@ -97,7 +105,7 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
                 }
             }
 
-            $css  = Assets\Compiler::compileLESS($less, $variables);
+            $css  = Assets\LESSCompiler::getInstance()->compile($less, $variables);
             $asset->setContent($css);
         }
 

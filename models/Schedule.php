@@ -42,7 +42,8 @@ class Schedule
                          `ro`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`,
-                         `s`.`Seminar_id` AS `course_id`
+                         `s`.`Seminar_id` AS `course_id`,
+                         `t`.`termin_id`
                   FROM `resources_assign` AS `ra`
                   LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
@@ -57,8 +58,14 @@ class Schedule
         $statement->execute();
         $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
 
+        $termin_ids = [];
+
         foreach ($events as $index => $event) {
             $data = array_merge($event, $result[$event['id']]);
+
+            $termin_ids[$index] = $data['termin_id'];
+            unset($data['termin_id']);
+
             if (!$data['name']) {
                 if (!$data['user_free_name']) {
                     $data['name'] = $data['user_fullname'];
@@ -72,6 +79,28 @@ class Schedule
             }
             $events[$index] = new self($data);
         }
+
+        if (count($termin_ids) > 0 && \PluginEngine::getPlugin('OpenCast')) {
+            $query = "SELECT `termin_id`
+                      FROM `termine` AS t
+                      JOIN `resources_assign` AS ra
+                        ON (ra.`assign_user_id` = t.`termin_id`)
+                      JOIN `oc_scheduled_recordings` AS osr
+                        ON (t.`termin_id` = osr.`date_id` AND ra.`resource_id` = osr.`resource_id`)
+                      WHERE t.`termin_id` IN (:termin_ids)
+                        AND osr.`resource_id` = :resource_id";
+            $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':termin_ids', array_values($termin_ids));
+            $statement->bindValue(':resource_id', $resource->id);
+            $statement->execute();
+            $statement->setFetchMode(PDO::FETCH_COLUMN, 0);
+
+            foreach ($statement as $termin_id) {
+                $index = array_search($termin_id, $termin_ids);
+                $events[$index]->has_oc_recording = true;
+            }
+        }
+
         return $events;
     }
 
@@ -240,6 +269,7 @@ class Schedule
     protected $resource_id;
     protected $course_id;
     protected $description;
+    protected $has_oc_recording = false;
 
     public function __construct(array $data = null)
     {
@@ -290,6 +320,7 @@ class Schedule
             'begin'       => $this->begin,
             'end'         => $this->end,
             'course_id'   => $this->course_id,
+            'recording'   => $this->has_oc_recording,
         ];
 
         if (!$minimal) {
@@ -317,7 +348,10 @@ class Schedule
                   JOIN `mvv_modul_deskriptor` USING (`modul_id`)
                   JOIN `i18n` ON `i18n`.`table` = 'mvv_modul_deskriptor' AND `i18n`.`lang` = 'de_DE' AND `i18n`.`field` = 'bezeichnung' AND `i18n`.`object_id` = `mvv_modul_deskriptor`.`deskriptor_id`
                   WHERE `s`.`seminar_id` = :course_id
+<<<<<<< HEAD
                   
+=======
+>>>>>>> origin/master
                   ORDER BY `code`, `bezeichnung`";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $course_id);

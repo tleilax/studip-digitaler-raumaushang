@@ -1,0 +1,129 @@
+#switches {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px;
+
+    > button {
+        vertical-align: middle;
+    }
+
+    #help-overlay-switch,
+    #opencast-overlay-switch {
+        z-index: 2;
+
+        cursor: pointer;
+        padding: 0;
+
+        background-color: transparent;
+        background-position: center;
+        background-size: 40px;
+        background-repeat: no-repeat;
+        box-sizing: border-box;
+
+        border: 6px solid #000;
+        border-radius: 50%;
+
+        width: 64px;
+        height: 64px;
+
+        img {
+            display: none;
+        }
+    }
+
+    #help-overlay-switch {
+        background-image: url("@{image-path}/icons/black/info.svg");
+    }
+
+    #opencast-overlay-switch {
+        background-image: url("@{image-path}/icons/black/video.svg");
+    }
+}
+
+#help-overlay {
+    .overlay(true);
+
+    font-size: 2em;
+
+    > div {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    h2 {
+        margin: 0;
+        padding: 0;
+    }
+
+    dl {
+        .flex();
+        .flex-wrap(wrap);
+
+        margin: 0;
+        padding: 0;
+        text-align: left;
+
+        dt, dd {
+            flex: 1 1 50%;
+            margin: 0;
+            padding: 0;
+        }
+        dt {
+            padding-right: 0.25em;
+            text-align: right;
+            &::after {
+                content: ':';
+            }
+        }
+        dd {
+            padding-left: 0.25em;
+            text-align: left;
+        }
+    }
+
+    ul.contact {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: inline-block;
+
+            &:not(:last-child)::after {
+                content: '|';
+                padding: 0 0.25em;
+            }
+        }
+    }
+}
+
+#opencast-overlay {
+    .overlay(true);
+
+    font-size: 2em;
+
+    > div {
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    h2 {
+        background-image: url("@{image-path}/icons/black/video.svg");
+        background-position: left center;
+        background-repeat: no-repeat;
+        background-size: 128px;
+        border-bottom: 3px solid #444;
+        margin: 0;
+        padding: 0 0 0 140px;
+    }
+
+    li:last-child {
+        margin-top: 1em;
+    }
+
+    li img {
+        vertical-align: text-bottom;
+    }
+}
