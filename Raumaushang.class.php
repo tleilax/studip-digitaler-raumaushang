@@ -105,7 +105,11 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
                 }
             }
 
-            $css  = Assets\Compiler::compileLESS($less, $variables);
+            if (class_exists('Assets\LESSCompiler')) {
+                $css = Assets\LESSCompiler::getInstance()->compile($less, $variables);
+            } else {
+                $css = Assets\Compiler::compileLESS($less, $variables);
+            }
             $asset->setContent($css);
         }
 
