@@ -348,10 +348,6 @@ class Schedule
                   JOIN `mvv_modul_deskriptor` USING (`modul_id`)
                   JOIN `i18n` ON `i18n`.`table` = 'mvv_modul_deskriptor' AND `i18n`.`lang` = 'de_DE' AND `i18n`.`field` = 'bezeichnung' AND `i18n`.`object_id` = `mvv_modul_deskriptor`.`deskriptor_id`
                   WHERE `s`.`seminar_id` = :course_id
-<<<<<<< HEAD
-                  
-=======
->>>>>>> origin/master
                   ORDER BY `code`, `bezeichnung`";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':course_id', $course_id);
