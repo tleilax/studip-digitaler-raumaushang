@@ -8,7 +8,7 @@ $post = ['r' => time()];
     <title>Raumaushang</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
-<? foreach ((array)@$plugin_styles as $style): ?>
+<? foreach ((array) @$plugin_styles as $style): ?>
     <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
@@ -28,9 +28,7 @@ $post = ['r' => time()];
 <body id="debug">
     <?= $content_for_layout ?>
 
-    <script src="<?= Assets::javascript_path('vendor/lodash.underscore-3.10.1.js') ?>"></script>
-
-<? foreach ((array)@$plugin_scripts as $script): ?>
+<? foreach ((array) @$plugin_scripts as $script): ?>
     <script src="<?= URLHelper::getLink($plugin_base . $script, $post) ?>"></script>
 <? endforeach; ?>
 </body>
