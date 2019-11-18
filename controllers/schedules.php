@@ -32,7 +32,7 @@ class SchedulesController extends Raumaushang\Controller
 
     public function building_action($building_id)
     {
-        $this->building  = Objekt::find($building_id);
+        $this->building  = $this->requireObject($building_id);
         $this->resources = Objekt::findByParent_id($this->building->id, 'ORDER BY name ASC');
     }
 
@@ -40,7 +40,7 @@ class SchedulesController extends Raumaushang\Controller
     {
         $max = 7;
 
-        $this->building = Objekt::find($building_id);
+        $this->building = $this->requireObject($building_id);
         $this->dates    = Schedule::findByBuilding($this->building);
 
         $this->max   = $max;
@@ -59,8 +59,8 @@ class SchedulesController extends Raumaushang\Controller
 
     public function room_action($room_id)
     {
-        $this->id       = $room_id;
-        $this->room     = Objekt::find($room_id);
+        $this->id   = $room_id;
+        $this->room = $this->requireObject($room_id);
 
         if ($this->room->show_weekend) {
             $this->config['display_days'] = range(1, 7);
@@ -85,5 +85,16 @@ class SchedulesController extends Raumaushang\Controller
         $this->opencast = (bool) PluginEngine::getPlugin('opencast');
 
         $this->addOwnLayout('layout-room-view.php', $assets);
+    }
+
+    private function requireObject($object_id)
+    {
+        $object = Objekt::find($object_id);
+
+        if (!$object) {
+            throw new Trails_UnknownAction("Unknown object with id '{$object_id}'");
+        }
+
+        return $object;
     }
 }
