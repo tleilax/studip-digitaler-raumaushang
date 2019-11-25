@@ -33,7 +33,7 @@ class SchedulesController extends Raumaushang\Controller
     public function building_action($building_id)
     {
         $this->building  = Objekt::find($building_id);
-        $this->resources = Objekt::findByParent_id($this->building->id, 'ORDER BY name ASC');
+        $this->resources = Objekt::findBySQL('`parent_id` = ? AND `parent_id` != `root_id` ORDER BY name ASC');
     }
 
     public function current_action($building_id, $page = 0)
