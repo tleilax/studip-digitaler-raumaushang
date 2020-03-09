@@ -13,21 +13,21 @@ class Objekt extends SimpleORMap
     {
         $config['db_table'] = 'resources_objects';
 
-        $config['has_one']['parent'] = array(
-            'class_name'  => 'Raumaushang\\Resources\\Objekt',
+        $config['has_one']['parent'] = [
+            'class_name'  => Objekt::class,
             'foreign_key' => 'parent_id',
-        );
+        ];
 
-        $config['has_one']['root'] = array(
-            'class_name'  => 'Raumaushang\\Resources\\Objekt',
+        $config['has_one']['root'] = [
+            'class_name'  => Objekt::class,
             'foreign_key' => 'root_id',
-        );
+        ];
 
-        $config['has_one']['category'] = array(
-            'class_name'        => 'Raumaushang\\Resources\\Category',
+        $config['has_one']['category'] = [
+            'class_name'        => Category::class,
             'foreign_key'       => 'category_id',
             'assoc_foreign_key' => 'category_id',
-        );
+        ];
 
         $config['additional_fields']['show_weekend'] = [
             'get' => function (Objekt $object, $field) {
@@ -77,7 +77,7 @@ class Objekt extends SimpleORMap
             if ($row['type'] === 'bool') {
                 $value = $value === 'on';
             } elseif ($row['type'] === 'num' && preg_match('/^\d+([,.]\d+)$/', $value)) {
-                $value = (float)str_replace(',', '.', $value);
+                $value = (float) str_replace(',', '.', $value);
             }
 
             $properties[$row['name']] = $value;
