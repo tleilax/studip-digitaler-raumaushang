@@ -15,43 +15,47 @@ class Schedule
     {
         list($begin, $end) = self::getBeginAndEnd($begin, $end);
 
-        $list = new AssignEventList($begin, $end + 1, $resource->id, '', '', true);
-        if ($list->numberOfEvents() === 0) {
+        $bookings = $resource->getResourceBookings(
+            \DateTime::createFromFormat('U', $begin),
+            \DateTime::createFromFormat('U', $end)
+        );
+
+        if (count($bookings) === 0) {
             return [];
         }
 
         $events = [];
         $ids    = [];
-        foreach ($list->events as $event) {
-            if (date('H', $event->getBegin()) >= 22 || date('H', $event->getEnd()) <= 8) {
+        foreach ($bookings as $booking) {
+            if (date('H', $booking->begin) >= 22 || date('H', $booking->end) <= 8) {
                 continue;
             }
 
             $events[] = [
-                'id'    => $event->getAssignId(),
-                'begin' => $event->getBegin(),
-                'end'   => $event->getEnd(),
+                'id'    => $booking->id,
+                'begin' => $booking->begin,
+                'end'   => $booking->end,
             ];
-            $ids[] = $event->getAssignId();
+            $ids[] = $booking->id;
         }
 
-        $query = "SELECT `ra`.`assign_id`,
+        $query = "SELECT `rb`.`id`,
                          `s`.`veranstaltungsnummer` AS `code`,
-                         `s`.`name`, `ra`.`user_free_name`, CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS `user_fullname`,
+                         `s`.`name`, `rb`.`description`, CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS `user_fullname`,
                          GROUP_CONCAT(`su`.`user_id` ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
-                         `ro`.`name` AS `room`,
+                         `r`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`,
                          `s`.`Seminar_id` AS `course_id`,
                          `t`.`termin_id`
-                  FROM `resources_assign` AS `ra`
-                  LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
+                  FROM `resource_bookings` AS `rb`
+                  LEFT JOIN `termine` AS `t` ON (`rb`.`range_id` = `t`.`termin_id`)
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
-                  JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
+                  JOIN `resources` AS `r` ON (`rb`.`resource_id` = `r`.`id`)
                   LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
-                  LEFT JOIN `auth_user_md5` AS `aum` ON (`ra`.`assign_user_id` = `aum`.`user_id`)
-                  WHERE `ra`.`assign_id` IN (:assign_ids)
-                  GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
+                  LEFT JOIN `auth_user_md5` AS `aum` ON (`rb`.`booking_user_id` = `aum`.`user_id`)
+                  WHERE `rb`.`id` IN (:assign_ids)
+                  GROUP BY IFNULL(`su`.`seminar_id`, `rb`.`id`), `t`.`date`, `r`.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get('studip-slave')->prepare($query);
         $statement->bindValue(':assign_ids', $ids);
@@ -67,10 +71,10 @@ class Schedule
             unset($data['termin_id']);
 
             if (!$data['name']) {
-                if (!$data['user_free_name']) {
-                    $data['name'] = $data['user_fullname'];
+                if (!$data['description']) {
+                    $data['name'] = $data['description'];
                 } else {
-                    $data['name'] = $data['user_free_name'];
+                    $data['name'] = $data['description'];
                     if ($data['user_fullname']) {
                         $data['name'] .= ' (' . $data['user_fullname'] . ')';
                     }
@@ -83,10 +87,10 @@ class Schedule
         if (count($termin_ids) > 0 && \PluginEngine::getPlugin('OpenCast')) {
             $query = "SELECT `termin_id`
                       FROM `termine` AS t
-                      JOIN `resources_assign` AS ra
-                        ON (ra.`assign_user_id` = t.`termin_id`)
+                      JOIN `resource_bookings` AS rb
+                        ON (rb.`range_id` = t.`termin_id`)
                       JOIN `oc_scheduled_recordings` AS osr
-                        ON (t.`termin_id` = osr.`date_id` AND ra.`resource_id` = osr.`resource_id`)
+                        ON (t.`termin_id` = osr.`date_id` AND rb.`resource_id` = osr.`resource_id`)
                       WHERE t.`termin_id` IN (:termin_ids)
                         AND osr.`resource_id` = :resource_id";
             $statement = DBManager::get()->prepare($query);
@@ -116,22 +120,22 @@ class Schedule
             );
         }
 
-        $query = "SELECT `ra`.`begin`, `ra`.`end`,
+        $query = "SELECT `rb`.`begin`, `rb`.`end`,
                          `s`.`veranstaltungsnummer` AS `code`,
-                         IFNULL(`s`.`name`, `ra`.`user_free_name`) AS `name`,
+                         IFNULL(`s`.`name`, `rb`.`description`) AS `name`,
                          GROUP_CONCAT(`su`.`user_id` ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
-                         `ro`.`name` AS `room`,
+                         `r`.`name` AS `room`,
                          `s`.`seminar_id` AS `course_id`,
                          `s`.`Beschreibung` AS `description`,
                          `s`.`Seminar_id` AS `course_id`
-                  FROM `resources_assign` AS `ra`
-                  LEFT JOIN `termine` AS `t` ON (`ra`.`assign_user_id` = `t`.`termin_id`)
+                  FROM `resource_bookings` AS `rb`
+                  LEFT JOIN `termine` AS `t` ON (`rb`.`range_id` = `t`.`termin_id`)
                   LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
-                  JOIN `resources_objects` AS `ro` ON (`ra`.`resource_id` = `ro`.`resource_id`)
+                  JOIN `resources` AS `r` ON (`rb`.`resource_id` = `r`.`id`)
                   LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
-                  WHERE `ro`.`parent_id` = :building_id
-                    AND `ra`.`end` >= :begin AND `ra`.`begin` <= :end
-                  GROUP BY IFNULL(`su`.`seminar_id`, `ra`.`assign_id`), `t`.`date`, `ro`.`name`
+                  WHERE `r`.`parent_id` = :building_id
+                    AND `rb`.`end` >= :begin AND `rb`.`begin` <= :end
+                  GROUP BY IFNULL(`su`.`seminar_id`, `rb`.`id`), `t`.`date`, `r`.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':building_id', $building->id);

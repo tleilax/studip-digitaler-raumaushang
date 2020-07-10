@@ -67,10 +67,10 @@ class SchedulesController extends Raumaushang\Controller
         }
 
         $properties = [];
-        $temp = $this->room->getProperties();
         foreach (['Arbeitsplätze', 'Sitzplätze', 'Beamer', 'Tafel'] as $key) {
-            if (array_key_exists($key, $temp)) {
-                $properties[$key] = $temp[$key];
+            $state = $this->room->getProperty($key);
+            if ($state !== null) {
+                $properties[$key] = $state;
             }
         }
         $this->properties = $properties;
@@ -82,9 +82,8 @@ class SchedulesController extends Raumaushang\Controller
             $assets[] = 'assets/room-view-all.min.js';
         }
 
-        $properties = $this->room->getProperties();
         $this->opencast = (bool) PluginEngine::getPlugin('opencast')
-                       && $properties['OCCA#Opencast Capture Agent'];
+                       && $this->room->getProperty('OCCA#Opencast Capture Agent');
 
         $this->addOwnLayout('layout-room-view.php', $assets);
     }
