@@ -59,7 +59,7 @@ class Schedule
                   WHERE rb.`id` IN (:assign_ids)
                   GROUP BY IFNULL(su.`seminar_id`, rb.`id`), t.`date`, r.`name`
                   ORDER BY `begin`, `name`";
-        $statement = DBManager::get('studip-slave')->prepare($query);
+        $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':assign_ids', array_unique(array_column($events, 'id')));
         $statement->execute();
         $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
