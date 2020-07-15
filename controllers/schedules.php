@@ -1,5 +1,4 @@
 <?php
-use Raumaushang\Resources\Category;
 use Raumaushang\Resources\Objekt;
 use Raumaushang\Schedule;
 
@@ -27,7 +26,11 @@ class SchedulesController extends Raumaushang\Controller
 
     public function index_action()
     {
-        $this->resources = Objekt::findByCategory_id(Category::ID_BUILDING, 'ORDER BY name ASC');
+        $this->resources = Objekt::findBySQL(
+            "JOIN resource_categories ON resources.category_id = resource_categories.id
+             WHERE class_name = 'Building'
+             ORDER BY resources.name ASC"
+        );
     }
 
     public function building_action($building_id)
