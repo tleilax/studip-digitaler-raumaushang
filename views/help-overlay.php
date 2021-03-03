@@ -14,14 +14,14 @@
         Bei Problemen mit dem Beamer wenden Sie sich bitte an:
     </p>
     <ul class="contact">
-        <li>Thomas Hots</li>
+        <li>IT-Support</li>
         <li>
-            <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            798 <strong>4468</strong>
+            <?= Icon::create('phone', Icon::ROLE_INFO)->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+            04441 15<strong>432</strong>
         </li>
         <li>
-            <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            thomas.hots@uni-oldenburg.de
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+            it-support@uni-vechta.de
         </li>
     </ul>
 <? endif; ?>
@@ -32,12 +32,12 @@
     <ul class="contact">
         <li>Raumbüro</li>
         <li>
-            <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            798 <strong>2483</strong> / <strong>2545</strong> / <strong>4273</strong>
+            <?= Icon::create('phone', Icon::ROLE_INFO)->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+            04441 15 <strong>200</strong>
         </li>
         <li>
-            <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
-            raumbuero@uni-oldenburg.de
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+            info.raumplanung@uni-vechta.de
         </li>
     </ul>
 </div>
