@@ -27,38 +27,40 @@ class Schedule
         $events = [];
         $ids    = [];
         foreach ($bookings as $booking) {
-            if (date('H', $booking->begin) >= 22 || date('H', $booking->end) <= 8) {
-                continue;
-            }
+            foreach ($booking->time_intervals as $interval) {
+                if (date('H', $interval->begin) >= 22 || date('H', $interval->end) <= 8) {
+                    continue;
+                }
 
-            $events[] = [
-                'id'    => $booking->id,
-                'begin' => $booking->begin,
-                'end'   => $booking->end,
-            ];
-            $ids[] = $booking->id;
+                $events[] = [
+                    'id'    => $booking->id,
+                    'begin' => $interval->begin,
+                    'end'   => $interval->end,
+                ];
+            }
         }
 
         $query = "SELECT `rb`.`id`,
-                         `s`.`veranstaltungsnummer` AS `code`,
-                         `s`.`name`, `rb`.`description`, CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS `user_fullname`,
-                         GROUP_CONCAT(`su`.`user_id` ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS `teacher_ids`,
-                         `r`.`name` AS `room`,
-                         `s`.`seminar_id` AS `course_id`,
-                         `s`.`Beschreibung` AS `description`,
-                         `s`.`Seminar_id` AS `course_id`,
+                         `s`.`veranstaltungsnummer` AS code,
+                         `s`.`name`,
+                         `rb`.`description` AS booking_description,
+                         CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS user_fullname,
+                         GROUP_CONCAT(`su`.`user_id` ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS teacher_ids,
+                         `r`.`name` AS room,
+                         `s`.`seminar_id` AS course_id,
+                         `s`.`Beschreibung` AS description,
                          `t`.`termin_id`
-                  FROM `resource_bookings` AS `rb`
-                  LEFT JOIN `termine` AS `t` ON (`rb`.`range_id` = `t`.`termin_id`)
-                  LEFT JOIN `seminare` AS `s` ON (`s`.`seminar_id` = `t`.`range_id`)
-                  JOIN `resources` AS `r` ON (`rb`.`resource_id` = `r`.`id`)
-                  LEFT JOIN `seminar_user` AS `su` ON (`s`.`seminar_id` = `su`.`seminar_id` AND `su`.`status` = 'dozent')
-                  LEFT JOIN `auth_user_md5` AS `aum` ON (`rb`.`booking_user_id` = `aum`.`user_id`)
-                  WHERE `rb`.`id` IN (:assign_ids)
-                  GROUP BY IFNULL(`su`.`seminar_id`, `rb`.`id`), `t`.`date`, `r`.`name`
+                  FROM `resource_bookings` AS rb
+                  LEFT JOIN `termine` AS t ON (rb.`range_id` = t.`termin_id`)
+                  LEFT JOIN `seminare` AS s ON (s.`seminar_id` = t.`range_id`)
+                  JOIN `resources` AS r ON (rb.`resource_id` = r.`id`)
+                  LEFT JOIN `seminar_user` AS su ON (s.`seminar_id` = su.`seminar_id` AND su.`status` = 'dozent')
+                  LEFT JOIN `auth_user_md5` AS aum ON (rb.`booking_user_id` = aum.`user_id`)
+                  WHERE rb.`id` IN (:assign_ids)
+                  GROUP BY IFNULL(su.`seminar_id`, rb.`id`), t.`date`, r.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get('studip-slave')->prepare($query);
-        $statement->bindValue(':assign_ids', $ids);
+        $statement->bindValue(':assign_ids', array_unique(array_column($events, 'id')));
         $statement->execute();
         $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
 
@@ -71,10 +73,10 @@ class Schedule
             unset($data['termin_id']);
 
             if (!$data['name']) {
-                if (!$data['description']) {
-                    $data['name'] = $data['description'];
+                if (!$data['booking_description']) {
+                    $data['name'] = $data['user_fullname'];
                 } else {
-                    $data['name'] = $data['description'];
+                    $data['name'] = $data['booking_description'];
                     if ($data['user_fullname']) {
                         $data['name'] .= ' (' . $data['user_fullname'] . ')';
                     }
