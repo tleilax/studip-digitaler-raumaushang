@@ -1,5 +1,4 @@
 <?php
-use Raumaushang\Resources\Category;
 use Raumaushang\Resources\Objekt;
 use Raumaushang\Schedule;
 
@@ -27,7 +26,11 @@ class SchedulesController extends Raumaushang\Controller
 
     public function index_action()
     {
-        $this->resources = Objekt::findByCategory_id(Category::ID_BUILDING, 'ORDER BY name ASC');
+        $this->resources = Objekt::findBySQL(
+            "JOIN resource_categories ON resources.category_id = resource_categories.id
+             WHERE class_name = 'Building'
+             ORDER BY resources.name ASC"
+        );
     }
 
     public function building_action($building_id)
@@ -67,10 +70,10 @@ class SchedulesController extends Raumaushang\Controller
         }
 
         $properties = [];
-        $temp = $this->room->getProperties();
         foreach (['Arbeitsplätze', 'Sitzplätze', 'Beamer', 'Tafel'] as $key) {
-            if (array_key_exists($key, $temp)) {
-                $properties[$key] = $temp[$key];
+            $state = $this->room->getProperty($key);
+            if ($state !== null) {
+                $properties[$key] = $state;
             }
         }
         $this->properties = $properties;
@@ -82,9 +85,8 @@ class SchedulesController extends Raumaushang\Controller
             $assets[] = 'assets/room-view-all.min.js';
         }
 
-        $properties = $this->room->getProperties();
         $this->opencast = (bool) PluginEngine::getPlugin('opencast')
-                       && $properties['OCCA#Opencast Capture Agent'];
+                       && $this->room->getProperty('OCCA#Opencast Capture Agent');
 
         $this->addOwnLayout('layout-room-view.php', $assets);
     }

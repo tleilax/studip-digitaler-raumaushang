@@ -1,6 +1,13 @@
 <?php
 class MigrateToCoreApi extends Migration
 {
+    public function __construct($verbose = false)
+    {
+        parent::__construct($verbose);
+
+        require_once __DIR__ . '/../lib/RouteMap.php';
+    }
+
     public function up()
     {
         // Convert plugin type to core API plugin type
@@ -11,13 +18,7 @@ class MigrateToCoreApi extends Migration
         DBManager::get()->exec($query);
 
         // Activate routes
-        $permissions = RESTAPI\ConsumerPermissions::get('global');
-        $permissions->set('/raumaushang/query', 'get', true, true);
-        $permissions->set('/raumaushang/schedule/:resource_id', 'get', true, true);
-        $permissions->set('/raumaushang/schedule/:resource_id/:from', 'get', true, true);
-        $permissions->set('/raumaushang/schedule/:resource_id/:from/:until', 'get', true, true);
-        $permissions->set('/raumaushang/currentschedule/:resource_id', 'get', true, true);
-        $permissions->store();
+        RESTAPI\ConsumerPermissions::get('global')->activateRouteMap(new Raumaushang\RouteMap());
     }
 
     public function down()
@@ -28,5 +29,8 @@ class MigrateToCoreApi extends Migration
                   WHERE `pluginclassname` = 'RaumaushangAPI'
                     AND FIND_IN_SET('RESTAPIPlugin', `plugintype`) > 0";
         DBManager::get()->exec($query);
+
+        // Activate routes
+        RESTAPI\ConsumerPermissions::get('global')->deactivateRouteMap(new Raumaushang\RouteMap());
     }
 }
