@@ -77,9 +77,6 @@ class Schedule
                     $data['name'] = $data['user_fullname'];
                 } else {
                     $data['name'] = $data['booking_description'];
-                    if ($data['user_fullname']) {
-                        $data['name'] .= ' (' . $data['user_fullname'] . ')';
-                    }
                 }
                 $data['name'] = $data['name'] ?: ('(' . _('unbekannt') . ')');
             }
