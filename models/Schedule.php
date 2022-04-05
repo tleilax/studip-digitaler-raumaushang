@@ -2,7 +2,6 @@
 namespace Raumaushang;
 
 use DBManager;
-use AssignEventList;
 use PDO;
 use SimpleORMapCollection;
 use User;
@@ -13,7 +12,7 @@ class Schedule
 
     public static function getByResource(Resources\Objekt $resource, &$begin = null, &$end = null)
     {
-        list($begin, $end) = self::getBeginAndEnd($begin, $end);
+        [$begin, $end] = self::getBeginAndEnd($begin, $end);
 
         $bookings = $resource->getResourceBookings(
             \DateTime::createFromFormat('U', $begin),
@@ -28,6 +27,10 @@ class Schedule
         $ids    = [];
         foreach ($bookings as $booking) {
             foreach ($booking->time_intervals as $interval) {
+                if ($interval->begin >= $end || $interval->end <= $begin) {
+                    continue;
+                }
+
                 if (date('H', $interval->begin) >= 22 || date('H', $interval->end) <= 8) {
                     continue;
                 }
@@ -57,30 +60,45 @@ class Schedule
                   LEFT JOIN `seminar_user` AS su ON (s.`seminar_id` = su.`seminar_id` AND su.`status` = 'dozent')
                   LEFT JOIN `auth_user_md5` AS aum ON (rb.`booking_user_id` = aum.`user_id`)
                   WHERE rb.`id` IN (:assign_ids)
+                    AND rb.`begin` <= :end
+                    AND rb.`end` >= :begin
                   GROUP BY IFNULL(su.`seminar_id`, rb.`id`), t.`date`, r.`name`
                   ORDER BY `begin`, `name`";
         $statement = DBManager::get('studip-slave')->prepare($query);
         $statement->bindValue(':assign_ids', array_unique(array_column($events, 'id')));
+        $statement->bindValue(':begin', $begin);
+        $statement->bindValue(':end', $end);
         $statement->execute();
         $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
 
         $termin_ids = [];
 
+        $ignore = [];
         foreach ($events as $index => $event) {
+            if (in_array($index, $ignore)) {
+                continue;
+            }
+
             $data = array_merge($event, $result[$event['id']]);
 
             $termin_ids[$index] = $data['termin_id'];
             unset($data['termin_id']);
 
-            if (!$data['name']) {
-                if (!$data['booking_description']) {
-                    $data['name'] = $data['user_fullname'];
-                } else {
-                    $data['name'] = $data['booking_description'];
-                }
-                $data['name'] = $data['name'] ?: ('(' . _('unbekannt') . ')');
-            }
+            $data['name'] = $data['name'] ?: $data['booking_description'] ?: $data['user_fullname'] ?: ('(' . _('unbekannt') . ')');
+
             $events[$index] = new self($data);
+
+            if (date('Ymd', $data['begin']) !== date('Ymd', $data['end'])) {
+                $b = strtotime('tomorrow', $data['begin']);
+                $i = 0;
+                while ($b < $data['end']) {
+                    $events["{$index}-{$i}"] = new self(array_merge($data, ['begin' => $b]));
+                    $ignore[] = "{$index}-{$i}";
+
+                    $b = strtotime('tomorrow', $b);
+                    $i += 1;
+                }
+            }
         }
 
         if (count($termin_ids) > 0 && \PluginEngine::getPlugin('OpenCast')) {
