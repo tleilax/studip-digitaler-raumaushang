@@ -1,25 +1,24 @@
-var gulp = require('gulp'),
-    merge = require('merge-stream'),
-    concat = require('gulp-concat'),
-    uglify = require('gulp-uglify'),
-    minifyCss = require('gulp-minify-css'),
-    rename = require('gulp-rename');
+const { src, dest, parallel } = require('gulp');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const assets = require('./assets.json');
 
-gulp.task('js', function () {
-    var assets = require('./assets.json');
+function buildCurrentView(cb) {
+    src(assets.current)
+        .pipe(concat('current-view-all.min.js'))
+        .pipe(uglify())
+        .pipe(dest('./assets/'));
 
-    return merge(
-        gulp.src(assets.current)
-            .pipe(concat('current-view-all.min.js'))
-            .pipe(uglify())
-            .pipe(gulp.dest('./assets/')),
-        gulp.src(assets.room)
-            .pipe(concat('room-view-all.min.js'))
-            .pipe(uglify())
-            .pipe(gulp.dest('./assets/'))
-    );
-});
+    cb();
+}
 
-gulp.task('assets', ['js'], function () {
-    return gulp;
-});
+function buildRoomView(cb) {
+    src(assets.room)
+        .pipe(concat('room-view-all.min.js'))
+        .pipe(uglify())
+        .pipe(dest('./assets/'))
+
+    cb();
+}
+
+exports.default = parallel(buildCurrentView, buildRoomView)
