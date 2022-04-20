@@ -79,6 +79,10 @@ class Schedule
                 continue;
             }
 
+            if (!isset($result[$event['id']]) || !is_array($result[$event['id']])) {
+                continue;
+            }
+
             $data = array_merge($event, $result[$event['id']]);
 
             $termin_ids[$index] = $data['termin_id'];
