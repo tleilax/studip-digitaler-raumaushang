@@ -126,6 +126,10 @@ class Schedule
             }
         }
 
+        $events = array_filter($events, function ($event) {
+            return $event instanceof Schedule;
+        });
+
         return $events;
     }
 
@@ -175,7 +179,7 @@ class Schedule
     {
         $schedules = array_map(function (Schedule $schedule) {
             $array = $schedule->toArray();
-            $array['slot'] = (int)date('H', $array['begin']);
+            $array['slot'] = (int) date('H', $array['begin']);
             $array['duration'] = ceil(($array['end'] - $array['begin']) / (60 * 60 / 4));
             $array['fraction'] = floor(date('i', $array['begin']) / 15);
             $array['is_holiday'] = false;
