@@ -1,24 +1,11 @@
-.flex-item(@growth, @shrink, @basis: auto) {
-    -webkit-box-flex: @growth;
-    -webkit-flex: @growth @shrink @basis;
-    -ms-flex: @growth @shrink @basis;
-    -moz-box-flex: @growth;
-    flex: @growth @shrink @basis;
-}
-.flex-order(@order) {
-    -webkit-order: @order;
-    -ms-order: @order;
-    order: @order;
-}
-
 @import "less/fonts.less";
 
 * {
-    .box-sizing(border-box);
+    box-sizing: border-box;
 }
 
 html, body {
-    font-family: Myriad;
+    font-family: Myriad, sans-serif;
     font-size: 3.1vh;
 
     margin: 0;
@@ -28,39 +15,36 @@ html, body {
     width: 100%;
 }
 body {
-    background-image: url("@{plugin-url}/assets/images/current-background.jpg");
+    background-image: url("@{plugin-url}/assets/images/landscape-light-wide.jpg");
     background-repeat: no-repeat;
     background-size: contain;
 
     > header {
         position: absolute;
-        top: 2vh;
+        top: 0;
         right: 2vw;
-        bottom: 87vh;
-        left: 25vw;
+        bottom: 89vh;
+        left: 27vw;
 
-        .flex();
-        .flex-direction-row();
-        .flex-wrap(nowrap);
-        .flex-justify-content(space-between);
-        .flex-align-items(flex-end);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;;
+        justify-content: space-between;
+        align-items: flex-end;
 
         color: white;
         padding-bottom: 8px;
-        text-transform: uppercase;
 
-        h1, h2 {
+        h1,
+        h2 {
             margin: 0;
             padding: 0;
             font-size: 4vh;
         }
-        h1 {
-            font-family: MyriadBold;
-        }
         aside {
-            .flex();
-            .flex-direction-column();
-            .flex-align-items(flex-end);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
 
             time {
                 font-size: 4vh;
@@ -81,11 +65,11 @@ body {
     }
     > footer {
         position: absolute;
-        top: 94vh;
+        top: 95.5vh;
         right: 2vw;
-        bottom: 2vh;
+        bottom: 0;
         left: 25vw;
-        .flex-align-self(center);
+        align-self: center;
 
         color: white;
         font-size: 3.5vh;
@@ -100,30 +84,32 @@ body {
         padding: 0.4em 0.5em;
         min-height: 3.3em;
 
-        .flex();
-        .flex-wrap(wrap);
+        display: flex;
+        flex-wrap: wrap;
 
-        .time, .room {
-            .flex-item(1, 0, 17%);
+        .time,
+        .room {
+            flex: 1 0 17%;
             text-align: right;
             padding-right: 2vw;
         }
-        .title, .teachers {
-            .flex-item(3, 0, 83%);
+        .title,
+        .teachers {
+            flex: 3 0 83%;
         }
 
         .time {
-            .flex-order(1);
+            order: 1;
         }
         .room {
-            .flex-order(3);
+            order: 3;
         }
         .title {
-            .flex-order(2);
-            font-family: MyriadBold;
+            order: 2;
+            font-family: MyriadBold, sans-serif;
         }
         .teachers {
-            .flex-order(4);
+            order: 4;
         }
 
         .time, .title {
@@ -211,5 +197,73 @@ body:target {
     > footer {
         border: 1px solid blue;
         background: rgba(0, 0, 255, 0.3);
+    }
+}
+
+.portrait {
+    display: none;
+}
+@media (max-width: 768px) {
+    .landscape {
+        display: none;
+    }
+    .portrait {
+        display: initial;
+    }
+
+    body {
+        background-image: url("@{plugin-url}/assets/images/portrait-light.jpg");
+        font-size: 2vh;
+
+        > header {
+            bottom: 94vh;
+            left: 20vw;
+
+            h1,
+            h2 {
+                font-size: inherit;
+            }
+
+            aside {
+                time {
+                    font-size: inherit;
+                }
+                date {
+                    font-size: 1.3vh;
+                }
+            }
+        }
+
+        > section {
+            left: 2vw;
+            top: 7vh;
+        }
+        > footer {
+            left: 2vw;
+            top: 97.5vh;
+            font-size: 2vh;
+        }
+
+        .courses > li {
+            .time,
+            .title {
+                font-size: inherit;
+
+                &:first-line {
+                    font-size: inherit;
+                }
+            }
+
+            .time,
+            .room {
+                flex: 1 0 23%;
+                text-align: right;
+                padding-right: 2vw;
+            }
+            .title,
+            .teachers {
+                flex: 3 0 77%;
+            }
+        }
     }
 }

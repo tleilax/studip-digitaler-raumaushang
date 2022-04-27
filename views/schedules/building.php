@@ -1,9 +1,24 @@
+<?php
+/**
+ * @var SchedulesController $controller
+ * @var Raumaushang\Resources\Objekt $building
+ * @var Raumaushang\Resources\Objekt[] $resources
+ */
+?>
 <h1 class="flex-heading">
     <?= sprintf(_('Gebäude "%s" - Raumübersicht'), htmlReady($building->name)) ?>
 
-    <a href="<?= $controller->url_for('schedules/current/' . $building->id) ?>">
-        <?= _('Aktuelle Sicht') ?>
-    </a>
+    <div>
+        <a href="<?= $controller->current($building) ?>">
+            <?= _('Aktuelle Sicht') ?>
+        </a>
+    <? if (STUDIP\ENV === 'development'): ?>
+        /
+        <a href="<?= $controller->debug('current', $building) ?>">
+            <?= _('Debug') ?>
+        </a>
+    <? endif; ?>
+    </div>
 
     <a href="<?= $controller->url_for('schedules/index') ?>" class="back-link">
         <?= _('Zurück zur Gebäudeübersicht') ?>

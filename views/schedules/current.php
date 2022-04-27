@@ -1,8 +1,18 @@
+<?php
+/**
+ * @var Raumaushang\Resources\Objekt $building
+ * @var Raumaushang\Schedule[] $dates
+ * @var int $total
+ * @var int $max
+ * @var int $page
+ */
+?>
 <output></output>
 
 <header>
     <h1>Veranstaltungen</h1>
-    <h2><?= sprintf('Gebäude %s', htmlReady($building->name)) ?></h2>
+    <h2 class="landscape"><?= sprintf('Gebäude %s', htmlReady($building->name)) ?></h2>
+    <h2 class="portrait"><?= sprintf('Geb. %s', htmlReady($building->name)) ?></h2>
 
     <aside class="date-and-clock">
         <time><?= date('H:i') ?></time>

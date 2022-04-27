@@ -91,6 +91,12 @@ class SchedulesController extends Raumaushang\Controller
         $this->addOwnLayout('layout-room-view.php', $assets);
     }
 
+    public function debug_action(string $action, Objekt $building)
+    {
+        $this->action = $action;
+        $this->building = $building;
+    }
+
     private function requireObject($object_id)
     {
         $object = Objekt::find($object_id);
