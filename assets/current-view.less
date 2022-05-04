@@ -1,7 +1,20 @@
+.flex-item(@growth, @shrink, @basis: auto) {
+    -webkit-box-flex: @growth;
+    -webkit-flex: @growth @shrink @basis;
+    -ms-flex: @growth @shrink @basis;
+    -moz-box-flex: @growth;
+    flex: @growth @shrink @basis;
+}
+.flex-order(@order) {
+    -webkit-order: @order;
+    -ms-order: @order;
+    order: @order;
+}
+
 @import "less/fonts.less";
 
 * {
-    box-sizing: border-box;
+    .box-sizing(border-box);
 }
 
 html, body {
@@ -26,11 +39,11 @@ body {
         bottom: 89vh;
         left: 27vw;
 
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;;
-        justify-content: space-between;
-        align-items: flex-end;
+        .flex();
+        .flex-direction-row();
+        .flex-wrap(nowrap);
+        .flex-justify-content(space-between);
+        .flex-align-items(flex-end);
 
         color: white;
         padding-bottom: 8px;
@@ -42,9 +55,9 @@ body {
             font-size: 4vh;
         }
         aside {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            .flex();
+            .flex-direction-column();
+            .flex-align-items(flex-end);
 
             time {
                 font-size: 4vh;
@@ -69,7 +82,7 @@ body {
         right: 2vw;
         bottom: 0;
         left: 25vw;
-        align-self: center;
+        .flex-align-self(center);
 
         color: white;
         font-size: 3.5vh;
@@ -84,32 +97,32 @@ body {
         padding: 0.4em 0.5em;
         min-height: 3.3em;
 
-        display: flex;
-        flex-wrap: wrap;
+        .flex();
+        .flex-wrap(wrap);
 
         .time,
         .room {
-            flex: 1 0 17%;
+            .flex-item(1, 0, 17%);
             text-align: right;
             padding-right: 2vw;
         }
         .title,
         .teachers {
-            flex: 3 0 83%;
+            .flex-item(3, 0, 83%);
         }
 
         .time {
-            order: 1;
+            .flex-order(1);
         }
         .room {
-            order: 3;
+            .flex-order(3);
         }
         .title {
-            order: 2;
+            .flex-order(2);
             font-family: MyriadBold, sans-serif;
         }
         .teachers {
-            order: 4;
+            .flex-order(4);
         }
 
         .time, .title {
@@ -256,13 +269,13 @@ body:target {
 
             .time,
             .room {
-                flex: 1 0 23%;
+                .flex-item(1, 0, 23%);
                 text-align: right;
                 padding-right: 2vw;
             }
             .title,
             .teachers {
-                flex: 3 0 77%;
+                .flex-item(3, 0, 77%);
             }
         }
     }
