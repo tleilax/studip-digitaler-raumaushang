@@ -70,10 +70,10 @@ class SchedulesController extends Raumaushang\Controller
         }
 
         $properties = [];
-        foreach (['Arbeitsplätze', 'Sitzplätze', 'Beamer', 'Tafel'] as $key) {
-            $state = $this->room->getProperty($key);
+        foreach (['Sitzplätze' => 'seats', 'Beamer' => null, 'Tafel' => null,] as $label => $key) {
+            $state = $this->room->getProperty($key ?? $label);
             if ($state !== null) {
-                $properties[$key] = $state;
+                $properties[$label] = $state;
             }
         }
         $this->properties = $properties;
