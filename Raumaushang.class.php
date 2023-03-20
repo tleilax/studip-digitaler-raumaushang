@@ -116,12 +116,13 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
         // Include asset in page by reference or directly
         $download_uri = $asset->getDownloadLink();
         if ($download_uri === false) {
-            PageLayout::addStyle($asset->getContent(), $link_attr);
+            PageLayout::addStyle($asset->getContent());
         } else {
-            $link_attr['rel']  = 'stylesheet';
-            $link_attr['href'] = $download_uri;
-            $link_attr['type'] = 'text/css';
-            PageLayout::addHeadElement('link', $link_attr);
+            PageLayout::addHeadElement('link', [
+                'rel'  => 'stylesheet',
+                'href' => $download_uri,
+                'type' => 'text/css',
+            ]);
         }
 
         return $asset;

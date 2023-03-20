@@ -2,6 +2,7 @@
 namespace Raumaushang;
 
 use PluginManager;
+use Raumaushang\Resources\Objekt;
 use Request;
 use RESTAPI\RouteMap as GlobalRouteMap;
 
@@ -49,13 +50,9 @@ class RouteMap extends GlobalRoutemap
      * @get /raumaushang/schedule/:resource_id/:from
      * @get /raumaushang/schedule/:resource_id/:from/:until
      */
-    public function getSchedule($id, $from = null, $until = null)
+    public function getSchedule($resource_id, $from = null, $until = null)
     {
-        $resource = Resources\Objekt::find($id);
-
-        if (!$resource) {
-            $this->notFound('Resource not found');
-        }
+        $resource = $this->requireResource($resource_id);
 
         $from = $from ?: strtotime('monday this week  0:00:00');
         if ($resource->show_weekend) {
@@ -90,13 +87,9 @@ class RouteMap extends GlobalRoutemap
      *
      * @get /raumaushang/currentschedule/:resource_id
      */
-    public function getCurrentSchedule($id)
+    public function getCurrentSchedule($resource_id)
     {
-        $resource = Resources\Objekt::find($id);
-
-        if (!$resource) {
-            $this->notFound('Resource not found');
-        }
+        $resource = $this->requireResource($resource_id);
 
         $schedules = Schedule::findByBuilding($resource);
         foreach ($schedules as $index => $schedule) {
@@ -114,5 +107,16 @@ class RouteMap extends GlobalRoutemap
         ]);
 
         return $schedules;
+    }
+
+    private function requireResource(string $resource_id): Objekt
+    {
+        $resource = Objekt::find($resource_id);
+
+        if (!$resource) {
+            $this->notFound('Resource not found');
+        }
+
+        return $resource;
     }
 }
