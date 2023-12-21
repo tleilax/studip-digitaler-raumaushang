@@ -9,7 +9,7 @@ $post = ['r' => time()];
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
 <? foreach ((array) @$plugin_styles as $style): ?>
-    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {

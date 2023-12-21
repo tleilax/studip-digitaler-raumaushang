@@ -1,0 +1,48 @@
+@mixin centered() {
+    text-align: center;
+
+    // Vertical centering
+    &::before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+}
+
+@mixin overlay($centered: false, $with-close: true) {
+    display: none;
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background: #fff;
+    z-index: 3;
+
+    padding: 80px;
+
+    @if $centered {
+        @include centered();
+    }
+
+    @if $with-close {
+        background-image: url("#{$icon-path}/black/decline-circle.svg");
+        background-position: right 3px top 3px;
+        background-repeat: no-repeat;
+        background-size: 74px;
+    }
+}
+
+#loading-overlay {
+    @include overlay(true, false);
+    display: block;
+
+    font-size: 5em;
+
+    img {
+        height: 0.7em;
+    }
+}

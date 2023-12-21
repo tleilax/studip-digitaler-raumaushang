@@ -1,11 +1,6 @@
-@page-padding: 8px;
+$page-padding: 8px;
 
-@import "less/overlay-mixin.less";
-@import "less/loading-overlay.less";
-@import "less/switches.less";
-@import "less/course-overlay.less";
-
-.centered() {
+@mixin centered() {
     text-align: center;
 
     // Vertical centering
@@ -21,23 +16,19 @@
     box-sizing: border-box;
     font-family: Helvetica;
 
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-tap-highlight-color: transparent;
 
-    &:active, &:focus {
+    &:active,
+    &:focus {
         outline: 0;
     }
 }
 body {
     margin: 0;
-    padding: @page-padding;
+    padding: $page-padding;
     position: relative;
 }
 
@@ -96,7 +87,7 @@ header {
 
     nav {
         a {
-            .hide-text();
+            @include hide-text();
 
             position: absolute;
             top: 0;
@@ -110,11 +101,11 @@ header {
             display: block;
 
             &.previous-week {
-                background-image: url("@{image-path}/icons/black/arr_1left.svg");
+                background-image: url("#{$icon-path}/black/arr_1left.svg");
                 left: 0;
             }
             &.next-week {
-                background-image: url("@{image-path}/icons/black/arr_1right.svg");
+                background-image: url("#{$icon-path}/black/arr_1right.svg");
                 right: 0;
             }
         }
@@ -127,7 +118,7 @@ table.week-schedule {
     border-spacing: 0;
     table-layout: fixed;
     margin: 0 auto;
-    width: ~'calc(100% - 64px)';
+    width: calc(100% - 64px);
     z-index: 2;
 
     border-left: 1px solid #444;
@@ -207,7 +198,7 @@ table.week-schedule {
         font-weight: bold;
     }
     &.is-holiday {
-        .centered();
+        @include centered();
         flex-direction: row;
         align-items: center;
         background-color: #fcc;
@@ -225,16 +216,16 @@ table.week-schedule {
             height: 32px;
 
             position: absolute;
-            bottom: 0px;
-            left: 0px;
+            bottom: 0;
+            left: 0;
 
-            padding: 0px 2px 0px;
+            padding: 0 2px 0;
             border: 1px solid #444;
-            border-left: 0px;
-            border-bottom: 0px;
+            border-left: 0;
+            border-bottom: 0;
             border-top-right-radius: 2px;
 
-            background-image: url("@{image-path}/icons/grey/video.svg");
+            background-image: url("#{$icon-path}/grey/video.svg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: 32px;
@@ -250,8 +241,8 @@ table.week-schedule {
             }
 
             &::before {
-                background-color: @red-20;
-                background-image: url("@{image-path}/icons/black/video.svg");
+                background-color: $red-20;
+                background-image: url("#{$icon-path}/black/video.svg");
             }
 
             &::after {
@@ -263,17 +254,17 @@ table.week-schedule {
                 height: 32px;
 
                 position: absolute;
-                bottom: 0px;
-                left: 0px;
+                bottom: 0;
+                left: 0;
 
-                padding: 0px 2px 0px;
-                border: 1px solid @red-60;
-                border-left: 0px;
-                border-bottom: 0px;
+                padding: 0 2px 0;
+                border: 1px solid $red-60;
+                border-left: 0;
+                border-bottom: 0;
                 border-top-right-radius: 2px;
 
-                background-color: @red-20;
-                background-image: url("@{image-path}/icons/red/video.svg");
+                background-color: $red-20;
+                background-image: url("#{$icon-path}/red/video.svg");
                 background-position: center;
                 background-repeat: no-repeat;
                 background-size: 32px;
@@ -304,19 +295,19 @@ ul.teachers {
 }
 
 #clock {
-    @size: 80px;
+    $size: 80px;
 
     position: absolute;
     left: 0;
     top: 0;
     font-size: 40px;
-    padding: 20px 0 20px (@size + 5px);
+    padding: 20px 0 20px ($size + 5px);
     line-height: 1;
 
-    background-image: url("@{image-path}/icons/black/date.svg");
+    background-image: url("#{$icon-path}/black/date.svg");
     background-position: left center;
     background-repeat: no-repeat;
-    background-size: @size;
+    background-size: $size;
 }
 
 #debug-time {
@@ -333,5 +324,3 @@ ul.teachers {
         content: ')';
     }
 }
-
-@import "room-view-mobile.less";

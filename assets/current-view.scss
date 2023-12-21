@@ -1,20 +1,5 @@
-.flex-item(@growth, @shrink, @basis: auto) {
-    -webkit-box-flex: @growth;
-    -webkit-flex: @growth @shrink @basis;
-    -ms-flex: @growth @shrink @basis;
-    -moz-box-flex: @growth;
-    flex: @growth @shrink @basis;
-}
-.flex-order(@order) {
-    -webkit-order: @order;
-    -ms-order: @order;
-    order: @order;
-}
-
-@import "less/fonts.less";
-
 * {
-    .box-sizing(border-box);
+    box-sizing: border-box;
 }
 
 html, body {
@@ -28,7 +13,7 @@ html, body {
     width: 100%;
 }
 body {
-    background-image: url("@{plugin-url}/assets/images/landscape-light-wide.jpg");
+    background-image: url("#{$plugin-path}/assets/images/landscape-light-wide.jpg");
     background-repeat: no-repeat;
     background-size: contain;
 
@@ -39,11 +24,11 @@ body {
         bottom: 89vh;
         left: 27vw;
 
-        .flex();
-        .flex-direction-row();
-        .flex-wrap(nowrap);
-        .flex-justify-content(space-between);
-        .flex-align-items(flex-end);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
 
         color: white;
         padding-bottom: 8px;
@@ -55,9 +40,9 @@ body {
             font-size: 4vh;
         }
         aside {
-            .flex();
-            .flex-direction-column();
-            .flex-align-items(flex-end);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
 
             time {
                 font-size: 4vh;
@@ -82,7 +67,7 @@ body {
         right: 2vw;
         bottom: 0;
         left: 25vw;
-        .flex-align-self(center);
+        align-self: center;
 
         color: white;
         font-size: 3.5vh;
@@ -97,32 +82,32 @@ body {
         padding: 0.4em 0.5em;
         min-height: 3.3em;
 
-        .flex();
-        .flex-wrap(wrap);
+        display: flex;
+        flex-wrap: wrap;
 
         .time,
         .room {
-            .flex-item(1, 0, 17%);
+            flex: 1 0 17%;
             text-align: right;
             padding-right: 2vw;
         }
         .title,
         .teachers {
-            .flex-item(3, 0, 83%);
+            flex: 3 0 83%;
         }
 
         .time {
-            .flex-order(1);
+            order: 1;
         }
         .room {
-            .flex-order(3);
+            order: 3;
         }
         .title {
-            .flex-order(2);
+            order: 2;
             font-family: MyriadBold, sans-serif;
         }
         .teachers {
-            .flex-order(4);
+            order: 4;
         }
 
         .time, .title {
@@ -149,16 +134,16 @@ body {
         }
 
         &.direction-left {
-            background-image: url("@{plugin-url}/assets/images/left.png");
+            background-image: url("#{$plugin-path}/assets/images/left.png");
         }
         &.direction-up-left {
-            background-image: url("@{plugin-url}/assets/images/leftup.png");
+            background-image: url("#{$plugin-path}/assets/images/leftup.png");
         }
         &.direction-right {
-            background-image: url("@{plugin-url}/assets/images/right.png");
+            background-image: url("#{$plugin-path}/assets/images/right.png");
         }
         &.direction-up-left {
-            background-image: url("@{plugin-url}/assets/images/rightup.png");
+            background-image: url("#{$plugin-path}/assets/images/rightup.png");
         }
     }
 
@@ -225,7 +210,7 @@ body:target {
     }
 
     body {
-        background-image: url("@{plugin-url}/assets/images/portrait-light.jpg");
+        background-image: url("#{$plugin-path}/assets/images/portrait-light.jpg");
         font-size: 2vh;
 
         > header {
@@ -269,13 +254,13 @@ body:target {
 
             .time,
             .room {
-                .flex-item(1, 0, 23%);
+                flex: 1 0 23%;
                 text-align: right;
                 padding-right: 2vw;
             }
             .title,
             .teachers {
-                .flex-item(3, 0, 77%);
+                flex: 3 0 77%;
             }
         }
     }

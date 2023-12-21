@@ -16,7 +16,7 @@
     .centered();
 }
 .overlay(@centered: false, @with-close: true) when (@with-close = true) {
-    background-image: url("@{image-path}/icons/black/decline-circle.svg");
+    background-image: url("#{$icon-path}/black/decline-circle.svg");
     background-position: right 3px top 3px;
     background-repeat: no-repeat;
     background-size: 74px;

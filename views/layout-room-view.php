@@ -9,7 +9,7 @@ $post = ['r' => time()];
     <meta name="current-timestamp" content="<?= date('c', strtotime('monday this week 0:00:00')) ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_link('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array) @$plugin_styles as $style): ?>
-    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {

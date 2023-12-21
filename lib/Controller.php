@@ -6,6 +6,9 @@ use PluginController;
 use URLHelper;
 use Studip;
 
+/**
+ * @property \Raumaushang $plugin
+ */
 class Controller extends PluginController
 {
     protected $allow_nobody = true;
@@ -51,10 +54,8 @@ class Controller extends PluginController
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             if ($extension === 'js') {
                 $js[] = $asset;
-            } elseif ($extension === 'less') {
-                $css[] = $this->plugin->addLESS(
-                    substr($asset, 0, strpos($asset, $path) + strlen($path))
-                );
+            } elseif ($extension === 'scss') {
+                $css[] = $this->plugin->addStylesheet($asset);
             } elseif ($extension === 'css') {
                 $css[] = $asset;
             }
