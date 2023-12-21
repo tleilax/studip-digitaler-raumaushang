@@ -37,13 +37,11 @@
     }
 
     // This hides all columns that are not on the current day
-    .hide-days(@day) when (@day > 0) {
-        .hide-days((@day - 1));
-        body[data-current-day="@{day}"] {
-            [data-day]:not([data-day="@{day}"]) {
+    @for $day from 1 through 7 {
+        body[data-current-day="#{$day}"] {
+            [data-day]:not([data-day="#{$day}"]) {
                 display: none;
             }
         }
     }
-    .hide-days(7);
 }

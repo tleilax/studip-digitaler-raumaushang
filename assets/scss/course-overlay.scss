@@ -1,12 +1,51 @@
+@mixin centered() {
+    text-align: center;
+
+    // Vertical centering
+    &::before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+}
+
+@mixin overlay($centered: false, $with-close: true) {
+    display: none;
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background: #fff;
+    z-index: 3;
+
+    padding: 80px;
+
+    @if $centered {
+        @include centered();
+    }
+
+    @if $with-close {
+        background-image: url("#{$icon-path}/black/decline-circle.svg");
+        background-position: right 3px top 3px;
+        background-repeat: no-repeat;
+        background-size: 74px;
+    }
+}
+
 #course-overlay {
-    .overlay();
+    @include overlay();
     font-size: 2em;
     overflow: hidden;
     padding-bottom: 0;
     padding-top: 1em;
 
     &::after {
-        #gradient > .vertical(fadeout(#fff, 100%), #fff);
+        background-color: #fff;
+        background-image: linear-gradient(to bottom, fade-out(#fff, 1), #fff);
 
         content: '';
         position: absolute;
@@ -45,7 +84,7 @@
 
     .qrcode {
         &:not(.enlarged) {
-            background-image: url("@{image-path}/ajax-indicator-black.svg");
+            background-image: url("#{$image-path}/ajax-indicator-black.svg");
             background-position: center;
             background-repeat: no-repeat;
             background-size: 50%;
@@ -54,7 +93,8 @@
         margin-bottom: 1em;
         margin-left: 1em;
         padding-top: 1em;
-        .square(200px);
+        width: 200px;
+        height: 200px;
         float: right;
 
         img {
@@ -62,9 +102,10 @@
         }
 
         &.enlarged {
-            .square(400px);
+            width: 400px;
+            height: 400px;
             margin-top: 3em;
-            padding-right: ~'calc(50% + 200px)';
+            padding-right: calc(50% + 200px);
             padding-left: 50%;
             margin-bottom: 8em;
         }

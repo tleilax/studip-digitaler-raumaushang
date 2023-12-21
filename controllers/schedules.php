@@ -51,7 +51,10 @@ class SchedulesController extends Raumaushang\Controller
         $this->total = count($this->dates);
         $this->dates = array_slice($this->dates, $page * $max, $max);
 
-        $assets = ['assets/current-view.less'];
+        $assets = [
+            'assets/scss/fonts.scss',
+            'assets/current-view.scss',
+        ];
         if ($this->debug) {
             $assets = array_merge($assets, $this->getJSAssets('current'));
         } else {
@@ -78,7 +81,14 @@ class SchedulesController extends Raumaushang\Controller
         }
         $this->properties = $properties;
 
-        $assets = ['assets/room-view.less'];
+        $assets = [
+            'assets/room-view.scss',
+            'assets/room-view-mobile.scss',
+
+            'assets/scss/loading-overlay.scss',
+            'assets/scss/switches.scss',
+            'assets/scss/course-overlay.scss',
+        ];
         if ($this->debug) {
             $assets = array_merge($assets, $this->getJSAssets('room'));
         } else {

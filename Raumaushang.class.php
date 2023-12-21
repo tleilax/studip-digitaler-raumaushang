@@ -27,7 +27,8 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
             Navigation::activateItem('/resources/raumaushang');
         }
 
-        $this->addLESS('assets/style.less');
+        $this->addStylesheet('assets/style.scss');
+        # $this->addLESS('assets/style.less');
 
         URLHelper::removeLinkParam('cid');
 
@@ -37,6 +38,44 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
     protected function url_for($to, $params = array())
     {
         return PluginEngine::getURL($this, $params, $to);
+    }
+
+    public function addStylesheet($filename, array $variables = [], array $link_attr = [])
+    {
+        $variables['plugin-url'] = $this->getPluginURL();
+
+        $before = PageLayout::getHeadElements();
+
+        parent::addStylesheet($filename, $variables, $link_attr);
+
+        $after = PageLayout::getHeadElements();
+
+        $diff = array_values(array_diff(
+            explode("\n", $after),
+            explode("\n", $before)
+        ))[0];
+
+        preg_match('/href="(.*?)"/', $diff, $matches);
+
+        return $matches[1];
+    }
+
+    public function addScript($filename, array $link_attr = [])
+    {
+        $before = PageLayout::getHeadElements();
+
+        parent::addScript($filename, $link_attr);
+
+        $after = PageLayout::getHeadElements();
+
+        $diff = array_values(array_diff(
+            explode("\n", $after),
+            explode("\n", $before)
+        ))[0];
+
+        preg_match('/href="(.*?)"/', $diff, $matches);
+
+        return $matches[1];
     }
 
     public function addJS($asset)
@@ -73,10 +112,6 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
 
         // Get plugin version from metadata
         $metadata = $this->getMetadata();
-        $plugin_version = $metadata['version'];
-
-        // Get plugin id (or parent plugin id if any)
-        $plugin_id = $this->plugin_info['depends'] ?: $this->getPluginId();
 
         // Get asset file from storage
         $asset = Assets\Storage::getFactory()->createCSSFile($less_file, array(
