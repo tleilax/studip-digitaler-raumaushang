@@ -9,13 +9,13 @@ $post = ['r' => time()];
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="current-timestamp" content="<?= strtotime('monday this week 0:00:00') ?>">
 <? foreach ((array) @$plugin_styles as $style): ?>
-    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getURL($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {
         api: {
             auth: <?= json_encode($config['auth']) ?>,
-            url: <?= json_encode(URLHelper::getURL('api.php/', [], true)) ?>
+            url: <?= json_encode(URLHelper::getURL('jsonapi.php/v1/', [], true)) ?>
         },
         current_id: <?= json_encode($building->id) ?>,
         maxPages: <?= json_encode($max) ?>,

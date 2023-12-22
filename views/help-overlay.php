@@ -15,12 +15,10 @@
     </p>
     <ul class="contact">
         <li>Thomas Hots</li>
-        <li>
-            <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+        <li class="phone">
             798 <strong>4468</strong>
         </li>
-        <li>
-            <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+        <li class="mail">
             thomas.hots@uni-oldenburg.de
         </li>
     </ul>
@@ -31,12 +29,10 @@
     </p>
     <ul class="contact">
         <li>Raumbüro</li>
-        <li>
-            <?= Icon::create('phone', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+        <li class="phone">
             798 <strong>2483</strong> / <strong>2545</strong> / <strong>4273</strong>
         </li>
-        <li>
-            <?= Icon::create('mail', 'info')->asImg(36, ['style' => 'vertical-align: text-top']) ?>
+        <li class="mail">
             raumbuero@uni-oldenburg.de
         </li>
     </ul>

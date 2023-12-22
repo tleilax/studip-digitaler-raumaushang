@@ -1,0 +1,283 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: Myriad, sans-serif;
+    font-size: 3.1vh;
+
+    margin: 0;
+    padding: 0;
+
+    height: 100%;
+    width: 100%;
+}
+body {
+    background-image: url("images/landscape-light-wide.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    > header {
+        position: absolute;
+        top: 0;
+        right: 2vw;
+        bottom: 89vh;
+        left: 27vw;
+
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        color: white;
+        padding-bottom: 8px;
+
+        h1,
+        h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 4vh;
+        }
+        aside {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+
+            time {
+                font-size: 4vh;
+            }
+            date {
+                font-size: 3.5vh;
+            }
+        }
+    }
+    > section {
+        position: absolute;
+        top: 14vh;
+        right: 2vw;
+        bottom: 6vh;
+        left: 25vw;
+
+        color: #033baa;
+    }
+    > footer {
+        position: absolute;
+        top: 95.5vh;
+        right: 2vw;
+        bottom: 0;
+        left: 25vw;
+        align-self: center;
+
+        color: white;
+        font-size: 3.5vh;
+    }
+}
+.courses {
+    list-style: none;
+    margin: 0;
+    padding: 2vh 2vw;
+
+    > li {
+        padding: 0.4em 0.5em;
+        min-height: 3.3em;
+
+        display: flex;
+        flex-wrap: wrap;
+
+        .time,
+        .room {
+            flex: 1 0 17%;
+            text-align: right;
+            padding-right: 2vw;
+        }
+        .title,
+        .teachers {
+            flex: 3 0 83%;
+        }
+
+        .time {
+            order: 1;
+        }
+        .room {
+            order: 3;
+        }
+        .title {
+            order: 2;
+            font-family: MyriadBold, sans-serif;
+        }
+        .teachers {
+            order: 4;
+        }
+
+        .time, .title {
+            font-size: 0.75rem;
+
+            &::first-line {
+                font-size: 1rem;
+            }
+        }
+
+        .room, .teachers {
+            max-height: 1.2em;
+            overflow: hidden;
+        }
+
+        &:not(:first-child) {
+            border-top: 1px solid #a2b3cd;
+        }
+
+        &[class^="direction"] {
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-size: 6vh;
+        }
+
+        &.direction-left {
+            background-image: url("images/left.png");
+        }
+        &.direction-up-left {
+            background-image: url("images/leftup.png");
+        }
+        &.direction-right {
+            background-image: url("images/right.png");
+        }
+        &.direction-up-left {
+            background-image: url("images/rightup.png");
+        }
+    }
+
+    > .empty {
+        &:not(:first-child) {
+            display: none;
+        }
+
+        display: block;
+        font-size: 5vh;
+        padding: 21vh 0;
+        text-align: center;
+    }
+}
+ul.teachers {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: inline;
+
+        &:not(:last-child)::after {
+            content: ', ';
+        }
+    }
+}
+
+footer > .progress {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background: #fff;
+    border: 1px solid #eee;
+    left: 0;
+    right: 100%;
+}
+
+body:target {
+    > header {
+        border: 1px solid red;
+        background: rgba(255, 0, 0, 0.3);
+    }
+    > section {
+        border: 1px solid green;
+        background: rgba(0, 255, 0, 0.3);
+    }
+    > footer {
+        border: 1px solid blue;
+        background: rgba(0, 0, 255, 0.3);
+    }
+}
+
+.portrait {
+    display: none;
+}
+@media (max-width: 768px) {
+    .landscape {
+        display: none;
+    }
+    .portrait {
+        display: initial;
+    }
+
+    body {
+        background-image: url("images/portrait-light.jpg");
+        font-size: 2vh;
+
+        > header {
+            bottom: 94vh;
+            left: 20vw;
+
+            h1,
+            h2 {
+                font-size: inherit;
+            }
+
+            aside {
+                time {
+                    font-size: inherit;
+                }
+                date {
+                    font-size: 1.3vh;
+                }
+            }
+        }
+
+        > section {
+            left: 2vw;
+            top: 7vh;
+        }
+        > footer {
+            left: 2vw;
+            top: 97.5vh;
+            font-size: 2vh;
+        }
+
+        .courses > li {
+            .time,
+            .title {
+                font-size: inherit;
+
+                &:first-line {
+                    font-size: inherit;
+                }
+            }
+
+            .time,
+            .room {
+                flex: 1 0 23%;
+                text-align: right;
+                padding-right: 2vw;
+            }
+            .title,
+            .teachers {
+                flex: 3 0 77%;
+            }
+        }
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-image: url("images/landscape-dark-wide.jpg");
+
+        > section {
+            color: #fff;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            background-image: url("images/portrait-dark.jpg");
+        }
+    }
+}

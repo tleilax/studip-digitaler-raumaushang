@@ -54,8 +54,6 @@ class Controller extends PluginController
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             if ($extension === 'js') {
                 $js[] = $asset;
-            } elseif ($extension === 'scss') {
-                $css[] = $this->plugin->addStylesheet($asset);
             } elseif ($extension === 'css') {
                 $css[] = $asset;
             }
@@ -67,14 +65,5 @@ class Controller extends PluginController
         $layout->plugin_base    = $this->plugin->getPluginURL();
         $layout->plugin_version = $this->plugin->getMetadata()['version'];
         $this->set_layout($layout);
-    }
-
-    protected function getJSAssets($index)
-    {
-        $config = json_decode(file_get_contents(__DIR__ . '/../assets.json'), true);
-        if (!isset($config[$index])) {
-            throw new Exception('Unknown asset index "' . $index . '"');
-        }
-        return $config[$index];
     }
 }

@@ -4,7 +4,10 @@
   "description": "Digitale Türschilder für Stud.IP",
   "main": "gulpfile.js",
   "scripts": {
-    "build": "gulp"
+    "build": "webpack --config webpack.prod.conf.js",
+    "build-dev": "webpack --config webpack.dev.conf.js --mode development",
+    "watch": "webpack --config webpack.prod.conf.js --watch",
+    "watch-dev": "webpack --config webpack.dev.conf.js --mode development --watch"
   },
   "repository": {
     "type": "git",
@@ -12,22 +15,28 @@
   },
   "author": "Jan-Hendrik Willms <tleilax+studip@gmail.com>",
   "license": "GPL-2.0",
-  "dependencies": {
-    "base-64": "^0.1.0",
-    "jquery": "^3.1.0",
-    "jquery.event.move": "github:stephband/jquery.event.move",
-    "jquery.event.swipe": "github:stephband/jquery.event.swipe",
-    "lodash": "^4.17.15",
-    "moment": "^2.21.0",
-    "moment-timezone": "^0.5.14",
-    "mustache": "^2.3.0",
-    "qrcode_js": "^1.0.0"
-  },
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-concat": "^2.6.1",
-    "gulp-uglify": "^2.0.1",
-    "merge-stream": "^1.0.1"
+    "autoprefixer": "^10.4.16",
+    "base-64": "^0.1.0",
+    "css-loader": "^6.8.1",
+    "css-minimizer-webpack-plugin": "^5.0.1",
+    "jquery": "^3.1.0",
+    "mini-css-extract-plugin": "^2.7.6",
+    "moment": "^2.21.0",
+    "moment-locales-webpack-plugin": "^1.2.0",
+    "moment-timezone": "^0.5.14",
+    "moment-timezone-data-webpack-plugin": "^1.5.1",
+    "mustache": "^2.3.0",
+    "postcss": "^8.4.32",
+    "postcss-loader": "^7.3.3",
+    "qrcode_js": "^1.0.0",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
+    "style-loader": "^3.3.3",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0"
   },
   "overrides": {
     "graceful-fs": "^4.2.9"

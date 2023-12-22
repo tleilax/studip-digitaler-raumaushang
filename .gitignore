@@ -1,9 +1,1 @@
-assets/*.css
 node_modules/*
-!node_modules/base-64
-!node_modules/jquery.event.move
-!node_modules/jquery.event.swipe
-!node_modules/moment
-!node_modules/moment-timezone
-!node_modules/mustache
-!node_modules/qrcode_js

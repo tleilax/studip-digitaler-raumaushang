@@ -9,13 +9,13 @@ $post = ['r' => time()];
     <meta name="current-timestamp" content="<?= date('c', strtotime('monday this week 0:00:00')) ?>">
     <meta name="course-url-template" content="<?= $controller->absolute_link('dispatch.php/course/details?sem_id=#{course_id}&cancel_login=1', [], true) ?>">
 <? foreach ((array) @$plugin_styles as $style): ?>
-    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getLink($style, $post) ?>" rel="stylesheet" type="text/css">
+    <link href="<?= is_object($style) ? $style->getDownloadLink() : URLHelper::getURL($plugin_base . $style, $post) ?>" rel="stylesheet" type="text/css">
 <? endforeach; ?>
     <script>
     var Raumaushang = {
         api: {
             auth: <?= json_encode($config['auth']) ?>,
-            url: <?= json_encode(URLHelper::getURL('api.php', [], true)) ?>
+            url: <?= json_encode(URLHelper::getURL('jsonapi.php/v1', [], true)) ?>
         },
         version: <?= json_encode($plugin_version) ?>,
         now: <?= json_encode(date('c')) ?>,
@@ -31,8 +31,7 @@ $post = ['r' => time()];
     <?= $content_for_layout ?>
 
     <div id="loading-overlay">
-        <?= Assets::img('ajax-indicator-black.svg') ?>
-        <?= _('Lade') ?> &hellip;
+        <span class="text"><?= _('Lade') ?> &hellip;</span>
     </div>
     <div id="course-overlay"></div>
 

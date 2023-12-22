@@ -1,0 +1,416 @@
+$page-padding: 8px;
+
+@mixin centered() {
+    text-align: center;
+
+    // Vertical centering
+    &::before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Helvetica;
+
+    user-select: none;
+
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+
+    &:active,
+    &:focus {
+        outline: 0;
+    }
+}
+body {
+    margin: 0;
+    padding: $page-padding;
+    position: relative;
+}
+
+body > output {
+    display: none;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: #fec;
+    border-top: 1px solid #888;
+    padding: 0.5em;
+}
+body > progress {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    z-index: 1;
+    opacity: 0.3;
+}
+
+header {
+    margin-top: 7px;
+    max-height: 90px;
+    overflow: hidden;
+
+    h1 {
+        border-bottom: 5px solid transparent;
+        font-size: 2.2em;
+        font-weight: bold;
+
+        margin: 0;
+        padding: 0;
+        text-align: center;
+
+        a {
+            color: #000;
+            text-decoration: none;
+        }
+    }
+
+    small {
+        display: block;
+        font-size: 0.5em;
+        font-weight: normal;
+    }
+
+    nav {
+        a {
+            @include hide-text();
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            padding: 0 12px;
+            width: 40px;
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            display: block;
+
+            &.previous-week {
+                background-image: url("#{$icon-path}/black/arr_1left.svg");
+                left: 0;
+            }
+            &.next-week {
+                background-image: url("#{$icon-path}/black/arr_1right.svg");
+                right: 0;
+            }
+        }
+    }
+}
+
+
+table.week-schedule {
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    margin: 0 auto;
+    width: calc(100% - 64px);
+    z-index: 2;
+
+    border-left: 1px solid #444;
+    border-top: 1px solid #444;
+
+    th, td {
+        vertical-align: top;
+    }
+
+    thead th {
+        border-bottom: 1px solid #444;
+        border-right: 1px solid #444;
+    }
+
+    tbody {
+        th, td {
+            border-bottom: 1px solid #444;
+            border-right: 1px solid #444;
+        }
+        th {
+            height: 3em;
+            font-weight: normal;
+            padding: 0.25em;
+            vertical-align: middle;
+        }
+
+        td {
+            background-color: #eee;
+            height: 3em; // Reduce to 2.8em to gain a line beneath the schedule
+            line-height: 1;
+            position: relative;
+            &.course-info {
+                background-color: #fff;
+            }
+
+        }
+    }
+
+}
+
+.schedule-item {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 0.25em;
+
+    background: white;
+    border: 1px solid #444;
+
+    .name {
+        flex: 1 1 100%;
+
+        overflow: hidden;
+        line-height: 1.2;
+    }
+    .teachers {
+        justify-content: flex-end;
+        flex: 0 0 1em;
+        text-align: right;
+
+    }
+
+    &[data-duration="1"],
+    &[data-duration="2"],
+    &[data-duration="3"] {
+        .teachers {
+            display: none;
+        }
+    }
+
+    &[data-duration="1"] {
+        font-size: 0.5em;
+    }
+
+    &.current-slot {
+        background-color: #fec;
+        font-weight: bold;
+    }
+    &.is-holiday {
+        @include centered();
+        flex-direction: row;
+        align-items: center;
+        background-color: #fcc;
+
+        .name {
+            align-self: center;
+        }
+    }
+
+    &.has-recording {
+        &::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 32px;
+
+            position: absolute;
+            bottom: 0;
+            left: 0;
+
+            padding: 0 2px 0;
+            border: 1px solid #444;
+            border-left: 0;
+            border-bottom: 0;
+            border-top-right-radius: 2px;
+
+            background-image: url("#{$icon-path}/grey/video.svg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 32px;
+
+            pointer-events: none;
+        }
+
+        &.current-slot {
+
+            @keyframes fade-in-out {
+                0% { opacity: 1; }
+                100% {opacity: 0; }
+            }
+
+            &::before {
+                background-color: $red-20;
+                background-image: url("#{$icon-path}/black/video.svg");
+            }
+
+            &::after {
+                animation: fade-in-out 1s alternate infinite;
+
+                content: '';
+                display: block;
+                width: 32px;
+                height: 32px;
+
+                position: absolute;
+                bottom: 0;
+                left: 0;
+
+                padding: 0 2px 0;
+                border: 1px solid $red-60;
+                border-left: 0;
+                border-bottom: 0;
+                border-top-right-radius: 2px;
+
+                background-color: $red-20;
+                background-image: url("#{$icon-path}/red/video.svg");
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 32px;
+
+                pointer-events: none;
+            }
+        }
+
+        .teachers {
+            margin-left: 48px;
+        }
+    }
+}
+
+ul.teachers {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: inline;
+
+        &:not(:last-child)::after {
+            content: ', ';
+        }
+    }
+}
+
+#clock {
+    $size: 80px;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 40px;
+    padding: 20px 0 20px ($size + 5px);
+    line-height: 1;
+
+    background-image: url("#{$icon-path}/black/date.svg");
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: $size;
+}
+
+#debug-time {
+    position: absolute;
+    left: 90px;
+    top: 65px;
+}
+
+.yearweek {
+    &::before {
+        content: '(';
+    }
+    &::after {
+        content: ')';
+    }
+}
+
+#help-overlay {
+    .contact {
+        .phone {
+            @include icon(before, phone, info, 36px);
+            &::before {
+                vertical-align: text-bottom;
+            }
+        }
+        .mail {
+            @include icon(before, mail, info, 36px);
+            &::before {
+                vertical-align: text-bottom;
+            }
+        }
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+
+    header h1 a {
+        color: #fff;
+    }
+
+    header {
+        nav a {
+            &.previous-week {
+                background-image: url("#{$icon-path}/white/arr_1left.svg");
+            }
+            &.next-week {
+                background-image: url("#{$icon-path}/white/arr_1right.svg");
+            }
+
+        }
+    }
+
+    .schedule-item {
+        background-color: #444;
+        border-color: #bbb;
+    }
+
+    table.week-schedule tbody td {
+        background-color: #000;
+    }
+
+    #clock {
+        background-image: url("#{$icon-path}/white/date.svg");
+    }
+
+    #switches {
+        #help-overlay-switch {
+            background-image: url("#{$icon-path}/white/info.svg");
+            border-color: #fff;
+        }
+
+        #opencast-overlay-switch {
+            background-image: url("#{$icon-path}/white/video.svg");
+            border-color: #fff;
+        }
+    }
+
+    #help-overlay,
+    #course-overlay {
+        background-color: #000;
+        background-image: url("#{$icon-path}/white/decline-circle.svg");
+    }
+
+    #help-overlay {
+        .contact {
+            .phone {
+                @include icon(before, phone, info_alt, 36px);
+            }
+            .mail {
+                @include icon(before, mail, info_alt, 36px);
+            }
+        }
+    }
+
+    #course-overlay::after {
+        background-color: #000;
+        background-image: linear-gradient(to bottom, fade-out(#000, 1), #000);
+    }
+}
