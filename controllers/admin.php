@@ -24,10 +24,10 @@ final class AdminController extends \Raumaushang\Controller
     {
         CSRFProtection::verifyUnsafeRequest();
 
-        Config::get()->store('RAUMAUSHANG_AUTH', [
-            'username' => Request::get('username'),
-            'password' => Request::get('password'),
-        ]);
+        Config::get()->store('RAUMAUSHANG_AUTH', array_filter([
+            'username' => trim(Request::get('username')),
+            'password' => trim(Request::get('password')),
+        ]));
         Config::get()->store(
             'RAUMAUSHANG_SHOW_FREE_BOOKINGS',
             Request::bool('free_bookings')
@@ -37,7 +37,7 @@ final class AdminController extends \Raumaushang\Controller
             Request::bool('qrcodes')
         );
         Config::get()->store(
-            'RAUMAUSHANG_HELP_CONTENT',
+            'RAUMAUSHANG_HELP_OVERLAY',
             trim(Request::get('help_content'))
         );
 

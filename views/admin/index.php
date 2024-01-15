@@ -29,13 +29,17 @@
         <legend><?= _('API-Authorisierung') ?></legend>
 
         <label>
-            <span class="required"><?= _('Nutzername') ?></span>
-            <input type="text" required name="username" value="<?= htmlReady($auth['username'] ?? '') ?>">
+            <?= _('Nutzername') ?>
+            <input type="text" name="username"
+                   value="<?= htmlReady($auth['username'] ?? '') ?>"
+                   placeholder="api@raumaushang">
         </label>
 
         <label>
-            <span class="required"><?= _('Passwort') ?></span>
-            <input type="text" required name="password" value="<?= htmlReady($auth['password'] ?? '') ?>">
+            <?= _('Passwort') ?>
+            <input type="text" name="password"
+                   value="<?= htmlReady($auth['password'] ?? '') ?>"
+                   placeholder="raumaushang">
         </label>
     </fieldset>
 
@@ -45,6 +49,12 @@
         <label>
             <?= _('HTML-Inhalt') ?>
             <textarea name="help_content"><?= htmlReady($help_content) ?></textarea>
+
+            <p>
+                <?= _('Spezielle Angaben zu Fragen zum Beamer können in <code>{{beamer}}...{{/beamer}}</code> verschaltet werden.') ?><br>
+                <?= _('Auszeichnungen für Telefonnummern bzw. eMails können mit den CSS-Klassen <code>phone</code> bzw. <code>mail</code> ausgezeichnet werden.') ?>
+                <?= _('Diese Elemente müssen in einem Element mit der CSS-Klasse <code>contact</code> verschachtelt sein.') ?>
+            </p>
         </label>
     </fieldset>
 

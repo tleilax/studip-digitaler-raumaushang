@@ -22,6 +22,7 @@ return new class extends Migration
 
     protected function down()
     {
+        Config::get()->delete('RAUMAUSHANG_HELP_OVERLAY');
         Config::get()->delete('RAUMAUSHANG_SHOW_FREE_BOOKINGS');
     }
 };
