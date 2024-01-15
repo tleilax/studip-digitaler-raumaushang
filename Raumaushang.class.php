@@ -18,15 +18,20 @@ class Raumaushang extends StudIPPlugin implements SystemPlugin
             $navigation->setImage(Icon::create('timetable', Icon::ROLE_INFO_ALT));
             $navigation->setActiveImage(Icon::create('timetable', Icon::ROLE_INFO));
             Navigation::addItem('/resources/raumaushang', $navigation);
+
+            $navigation->addSubNavigation('overview', new Navigation(
+                _('Übersicht'),
+                PluginEngine::getURL($this, [], 'schedules/index')
+            ));
+            $navigation->addSubNavigation('admin', new Navigation(
+                _('Verwaltung'),
+                PluginEngine::getURL($this, [], 'admin')
+            ));
         }
     }
 
     public function perform($unconsumed_path)
     {
-        if (Navigation::hasItem('/resources/raumaushang')) {
-            Navigation::activateItem('/resources/raumaushang');
-        }
-
         $this->addStylesheet('assets/common.css');
 
         URLHelper::removeLinkParam('cid');

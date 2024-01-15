@@ -30,9 +30,9 @@
     <caption>
     </caption>
     <colgroup>
-        <col width="5%">
+        <col style="width: 5%">
     <? foreach ($config['display_days'] as $day): ?>
-        <col data-day="<?= $day ?>" width="<?= round(95 / count($config['display_days']), 2) ?>%">
+        <col data-day="<?= $day ?>" style="width: <?= round(95 / count($config['display_days']), 2) ?>%">
     <? endforeach; ?>
     </colgroup>
     <thead>

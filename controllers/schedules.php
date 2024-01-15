@@ -6,7 +6,7 @@ class SchedulesController extends Raumaushang\Controller
 {
     public function before_filter(&$action, &$args)
     {
-        if (!method_exists($this, $action . '_action')) {
+        if (!$this->has_action($action)) {
             $object = $action;
             if (count($args) > 0) {
                 $object .= ' ' . array_shift($args);
@@ -22,6 +22,8 @@ class SchedulesController extends Raumaushang\Controller
         }
 
         parent::before_filter($action, $args);
+
+        Navigation::activateItem('/resources/raumaushang/overview');
     }
 
     public function index_action()

@@ -47,7 +47,8 @@ class Schedule
                          `s`.`veranstaltungsnummer` AS code,
                          `s`.`name`,
                          `rb`.`description` AS booking_description,
-                         CONCAT(`aum`.`Vorname`, ' ', `Nachname`) AS user_fullname,
+                         CONCAT(`aum`.`Vorname`, ' ',`aum`.`Nachname`) AS user_fullname,
+                         IF(ISNULL(rb.`range_id`), CONCAT(`aum`.`Vorname`, ' ', `aum`.`Nachname`), CONCAT(`aume`.`Vorname`, ' ', `aume`.`Nachname`)) AS user_fullname2,
                          GROUP_CONCAT(`su`.`user_id` ORDER BY `su`.`position` ASC SEPARATOR ',' ) AS teacher_ids,
                          `r`.`name` AS room,
                          `s`.`seminar_id` AS course_id,
@@ -59,6 +60,7 @@ class Schedule
                   JOIN `resources` AS r ON (rb.`resource_id` = r.`id`)
                   LEFT JOIN `seminar_user` AS su ON (s.`seminar_id` = su.`seminar_id` AND su.`status` = 'dozent')
                   LEFT JOIN `auth_user_md5` AS aum ON (rb.`booking_user_id` = aum.`user_id`)
+                  LEFT JOIN `auth_user_md5` AS aume ON (rb.`range_id` = aume.`user_id`)  
                   WHERE rb.`id` IN (:assign_ids)
                     AND rb.`begin` <= :end
                     AND rb.`end` >= :begin
@@ -69,7 +71,7 @@ class Schedule
         $statement->bindValue(':begin', $begin);
         $statement->bindValue(':end', $end);
         $statement->execute();
-        $result = $statement->fetchGrouped(PDO::FETCH_ASSOC);
+        $result = $statement->fetchGrouped();
 
         $termin_ids = [];
 
@@ -82,6 +84,11 @@ class Schedule
             if (!isset($result[$event['id']]) || !is_array($result[$event['id']])) {
                 continue;
             }
+
+            if (\Config::get()->RAUMAUSHANG_SHOW_FREE_BOOKINGS) {
+                $event['user_fullname'] = $event['user_fullname2'];
+            }
+            unset($event['user_fullname2']);
 
             $data = array_merge($event, $result[$event['id']]);
 
