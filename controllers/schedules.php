@@ -23,7 +23,9 @@ class SchedulesController extends Raumaushang\Controller
 
         parent::before_filter($action, $args);
 
-        Navigation::activateItem('/resources/raumaushang/overview');
+        if (!in_array($action, ['room', 'current', 'debug'])) {
+            Navigation::activateItem('/resources/raumaushang/overview');
+        }
     }
 
     public function index_action()
