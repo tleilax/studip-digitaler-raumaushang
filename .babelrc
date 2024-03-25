@@ -5,7 +5,9 @@
             "targets": {
               "android": "4.0",
               "browsers": "> .05% in BE, not ie <= 11"
-            }
+            },
+            "useBuiltIns": "usage",
+            "corejs": "3.22"
         }]
     ]
 }

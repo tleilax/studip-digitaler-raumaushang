@@ -1,1 +1,1 @@
-{"version":3,"file":"common.css","mappings":"AACA,cACI,aACA","sources":["webpack://raumaushang/./resources/css/style.scss"],"sourcesContent":["@import '_scss-prefix.scss';\n.flex-heading {\n    display: flex;\n    justify-content: space-between;\n}\n"],"names":[],"sourceRoot":""}
+{"version":3,"file":"common.css","mappings":"AACA,cACI,qDACA","sources":["webpack://raumaushang/./resources/css/style.scss"],"sourcesContent":["@import '_scss-prefix.scss';\n.flex-heading {\n    display: flex;\n    justify-content: space-between;\n}\n"],"names":[],"sourceRoot":""}
