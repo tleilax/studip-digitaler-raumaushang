@@ -46,4 +46,7 @@ jQuery.fn.extend({
     }
 });
 
+// Dectivate JSUpdater
+STUDIP.JSUpdater.stop();
+
 export { jQuery, moment, Raumaushang };

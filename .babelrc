@@ -1,7 +1,6 @@
 {
     "presets": [
         ["@babel/preset-env", {
-            "debug":true,
             "targets": {
               "android": "4.0",
               "browsers": "> .05% in BE, not ie <= 11"
