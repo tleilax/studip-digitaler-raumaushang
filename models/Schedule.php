@@ -32,6 +32,7 @@ class Schedule
                 }
 
                 if (date('H', $interval->begin) >= 22 || date('H', $interval->end) <= 8) {
+                    dd('bar');
                     continue;
                 }
 
@@ -54,18 +55,19 @@ class Schedule
                          `s`.`seminar_id` AS course_id,
                          `s`.`Beschreibung` AS description,
                          `t`.`termin_id`
-                  FROM `resource_bookings` AS rb
+                  FROM `resource_booking_intervals` AS rbi
+                  JOIN `resource_bookings` AS rb ON rbi.`booking_id` = rb.`id`
                   LEFT JOIN `termine` AS t ON (rb.`range_id` = t.`termin_id`)
                   LEFT JOIN `seminare` AS s ON (s.`seminar_id` = t.`range_id`)
                   JOIN `resources` AS r ON (rb.`resource_id` = r.`id`)
                   LEFT JOIN `seminar_user` AS su ON (s.`seminar_id` = su.`seminar_id` AND su.`status` = 'dozent')
                   LEFT JOIN `auth_user_md5` AS aum ON (rb.`booking_user_id` = aum.`user_id`)
-                  LEFT JOIN `auth_user_md5` AS aume ON (rb.`range_id` = aume.`user_id`)  
+                  LEFT JOIN `auth_user_md5` AS aume ON (rb.`range_id` = aume.`user_id`)
                   WHERE rb.`id` IN (:assign_ids)
-                    AND rb.`begin` <= :end
-                    AND rb.`end` >= :begin
+                    AND rbi.`begin` <= :end
+                    AND rbi.`end` >= :begin
                   GROUP BY IFNULL(su.`seminar_id`, rb.`id`), t.`date`, r.`name`
-                  ORDER BY `begin`, `name`";
+                  ORDER BY rbi.`begin`, `name`";
         $statement = DBManager::get('studip-slave')->prepare($query);
         $statement->bindValue(':assign_ids', array_unique(array_column($events, 'id')));
         $statement->bindValue(':begin', $begin);
@@ -133,11 +135,9 @@ class Schedule
             }
         }
 
-        $events = array_filter($events, function ($event) {
+        return array_filter($events, function ($event) {
             return $event instanceof Schedule;
         });
-
-        return $events;
     }
 
     public static function findByBuilding(Resources\Objekt $building, $start = null, $end = null)
