@@ -207,9 +207,10 @@ class Schedule
         }
         foreach ($schedules as $schedule) {
             $wday = strftime('%u', $schedule['begin']);
-            $hour = (int)strftime('%H', $schedule['begin']);
 
-            $temp[$wday]['slots'][] = $schedule;
+            if (isset($temp[$wday])) {
+                $temp[$wday]['slots'][] = $schedule;
+            }
         }
 
         // Check for holiday and fill empty slots per day
