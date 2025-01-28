@@ -32,7 +32,6 @@ class Schedule
                 }
 
                 if (date('H', $interval->begin) >= 22 || date('H', $interval->end) <= 8) {
-                    dd('bar');
                     continue;
                 }
 
