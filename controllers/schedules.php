@@ -79,7 +79,7 @@ class SchedulesController extends Raumaushang\Controller
         }
         $this->properties = $properties;
 
-        $this->opencast = (bool) PluginEngine::getPlugin('opencast')
+        $this->opencast = true // (bool) PluginEngine::getPlugin('opencast')
                        && $this->room->getProperty('OCCA#Opencast Capture Agent');
 
         $this->addOwnLayout('layout-room-view.php', [

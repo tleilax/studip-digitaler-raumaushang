@@ -344,6 +344,15 @@ ul.teachers {
     }
 }
 
+#opencast-overlay {
+    .mail {
+        @include icon(before, mail, info, 36px);
+        &::before {
+            vertical-align: text-bottom;
+        }
+    }
+}
+
 
 @media (prefers-color-scheme: dark) {
     body {
@@ -370,6 +379,10 @@ ul.teachers {
     .schedule-item {
         background-color: #444;
         border-color: #bbb;
+
+        &.current-slot {
+            color: #000;
+        }
     }
 
     table.week-schedule tbody td {
@@ -393,7 +406,8 @@ ul.teachers {
     }
 
     #help-overlay,
-    #course-overlay {
+    #course-overlay,
+    #opencast-overlay {
         background-color: #000;
         background-image: url("#{$icon-path}/white/decline-circle.svg");
     }
@@ -406,6 +420,15 @@ ul.teachers {
             .mail {
                 @include icon(before, mail, info_alt, 36px);
             }
+        }
+    }
+
+    #opencast-overlay {
+        h2 {
+            background-image: url("#{$icon-path}/white/video.svg");
+        }
+        .mail {
+            @include icon(before, mail, info_alt, 36px);
         }
     }
 

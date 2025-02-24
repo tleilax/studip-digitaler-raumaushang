@@ -10,8 +10,7 @@
         </li>
         <li>
             <?= _('Bei Fragen und Problemen wenden Sie sich bitte an:') ?><br>
-            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(36) ?>
-            servicedesk@uni-oldenburg.de
+            <span class="mail">servicedesk@uni-oldenburg.de</span>
         </li>
     </ul>
 </div>
