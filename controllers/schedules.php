@@ -99,7 +99,10 @@ class SchedulesController extends Raumaushang\Controller
         $object = Objekt::find($object_id);
 
         if (!$object) {
-            throw new Trails_UnknownAction("Unknown object with id '{$object_id}'");
+            $this->set_status(404, "Unknown object with id '{$object_id}'");
+            $this->render_text("Unknown object with id '{$object_id}'");
+            page_close();
+            die;
         }
 
         return $object;
