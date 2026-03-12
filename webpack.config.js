@@ -4,7 +4,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin');
 
-module.exports = {
+module.exports = (env, argv) => ({
+    mode: env.mode === 'development' ? 'development' : 'production',
+    devtool: env.mode === 'development' ? 'source-map' : false,
+    stats: env.mode === 'development' ? 'errors-warnings' : 'errors-only',
+    optimization: {
+        minimize: env.mode === 'production',
+    },
     entry: {
         common: ['./resources/entries.js'],
         'current-view': ['./resources/entries-current-view.js'],
@@ -16,7 +22,6 @@ module.exports = {
         publicPath: undefined,
         path: path.resolve(__dirname, 'assets')
     },
-    devtool: 'source-map',
     module: {
         rules: [
             {
@@ -73,4 +78,4 @@ module.exports = {
             '@': path.resolve(__dirname, 'resources'),
         },
     }
-};
+});
