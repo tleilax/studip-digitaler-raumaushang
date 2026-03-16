@@ -24,7 +24,6 @@ class Schedule
         }
 
         $events = [];
-        $ids    = [];
         foreach ($bookings as $booking) {
             foreach ($booking->time_intervals as $interval) {
                 if ($interval->begin >= $end || $interval->end <= $begin) {
@@ -86,12 +85,12 @@ class Schedule
                 continue;
             }
 
-            if (\Config::get()->RAUMAUSHANG_SHOW_FREE_BOOKINGS) {
-                $event['user_fullname'] = $event['user_fullname2'];
-            }
-            unset($event['user_fullname2']);
-
             $data = array_merge($event, $result[$event['id']]);
+
+            if (\Config::get()->getValue('RAUMAUSHANG_SHOW_FREE_BOOKINGS')) {
+                $data['user_fullname'] = $data['user_fullname2'];
+            }
+            unset($data['user_fullname2']);
 
             $termin_ids[$index] = $data['termin_id'];
             unset($data['termin_id']);
