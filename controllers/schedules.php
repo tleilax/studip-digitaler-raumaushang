@@ -101,7 +101,7 @@ class SchedulesController extends Raumaushang\Controller
         if (!$object) {
             $this->set_status(404, "Unknown object with id '{$object_id}'");
             $this->render_text("Unknown object with id '{$object_id}'");
-            page_close();
+            sess()->save();
             die;
         }
 
