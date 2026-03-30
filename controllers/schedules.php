@@ -94,7 +94,7 @@ class SchedulesController extends Raumaushang\Controller
         $this->building = $building;
     }
 
-    private function requireObject($object_id)
+    private function requireObject($object_id): Objekt
     {
         $object = Objekt::find($object_id);
 

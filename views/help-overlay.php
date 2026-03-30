@@ -31,15 +31,19 @@ if ($template) {
 <? else: ?>
     <? if (!empty($properties['Beamer'])): ?>
         <p>
-            Bei Problemen mit dem Beamer wenden Sie sich bitte an:
+            Bei Problemen mit der Medientechnik wenden Sie sich bitte an:
         </p>
         <ul class="contact">
-            <li>Thomas Hots</li>
+            <li>Hörsaal-/Veranstaltungstechnik</li>
+        </ul>
+        <ul class="contact">
             <li class="phone">
-                798 <strong>4468</strong>
+                0441/798 -<strong>2192</strong>/-<strong>3193</strong>/-<strong>4468</strong>
             </li>
+        </ul>
+        <ul class="contact">
             <li class="mail">
-                thomas.hots@uni-oldenburg.de
+                bis-veranstaltungstechnik@uol.de
             </li>
         </ul>
 
