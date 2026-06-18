@@ -7,7 +7,7 @@ use SimpleORMap;
 
 class Objekt extends \Resource
 {
-    const PROPERTY_WEEKEND = 'Raumaushang: Ganze Woche anzeigen';
+    const PROPERTY_WEEKEND = 'Ganze Woche anzeigen';
 
     protected static function configure($config = [])
     {
